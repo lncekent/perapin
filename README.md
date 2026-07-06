@@ -1,20 +1,97 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# PeraPin
 
-# Run and deploy your AI Studio app
+Merchant-pull micro-payments for consumers with zero phone, battery, or signal.
 
-This contains everything you need to run your app locally.
+## Problem
 
-View your app in AI Studio: https://ai.studio/apps/ef6d9479-a20e-478d-bf91-e393bcb188ee
+Digital wallets assume either the consumer has a working phone, or the merchant
+has invested in card-reading hardware. Neither holds for the Philippines'
+informal micro-economy: consumers regularly lose access to their money when
+their phone dies, runs out of data, or loses signal, and micro-merchants
+(sari-sari stores, school canteens, PUV drivers) can rarely afford or qualify
+for a POS terminal or card-network merchant agreement.
 
-## Run Locally
+## Solution
 
-**Prerequisites:**  Node.js
+PeraPin flips the payment flow into a merchant-pull model. Consumers carry a
+static QR sticker linked to their account at signup — no phone or power needed
+at the moment of purchase. The merchant scans the QR with their own phone's
+browser (no dedicated hardware) and hands the phone to the consumer to enter a
+4-digit PIN. The PIN is combined with a one-time transaction nonce and hashed
+client-side before being sent to this Soroban contract, which validates the
+challenge, enforces spending limits, and settles the payment.
 
+## Timeline
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+Built for the Stellar APAC Hackathon (Payment & Consumer Applications track),
+submission window closing July 15, 2026.
+
+## Stellar features used
+
+- **Soroban smart contract** holds each consumer's PIN hash and validates the
+  hash-plus-nonce challenge at the point of sale, enforcing per-transaction and
+  daily spending limits on-chain.
+- **Low fees and fast settlement** make it viable to process small-value
+  micro-payments (₱5–₱150) that would be uneconomical on higher-fee chains.
+- Future direction: Stellar anchors for real cash-in/cash-out, replacing the
+  current demo-only `initial_balance` parameter with an actual funding flow.
+
+## Vision and purpose
+
+Give any smartphone-owning micro-merchant in the Philippines a zero-hardware,
+zero-card-network way to accept digital payments — and give any consumer,
+even with a dead or absent phone, a reliable way to pay.
+
+## Prerequisites
+
+- Rust (edition 2021 toolchain; a recent stable release, e.g. 1.85+, is
+  recommended since current `soroban-sdk` releases pull in dependencies that
+  require newer Rust editions)
+- Stellar CLI (formerly distributed as `soroban-cli`; the command prefix is
+  now `stellar`, e.g. `stellar contract build`, `stellar contract deploy`.
+  If your environment still ships the older `soroban` binary, the same
+  subcommands apply — just swap the prefix.)
+- `wasm32v1-none` (or `wasm32-unknown-unknown`, depending on your CLI version)
+  compilation target added via `rustup target add`
+
+## How to build
+
+```
+stellar contract build
+```
+
+## How to test
+
+```
+cargo test
+```
+
+## How to deploy to testnet
+
+```
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/perapin.wasm \
+  --source-account <your-testnet-identity> \
+  --network testnet \
+  --alias perapin
+```
+
+## Sample CLI invocation
+
+Register a consumer (dummy address and PIN hash — replace with real values):
+
+```
+stellar contract invoke \
+  --id perapin \
+  --source-account <your-testnet-identity> \
+  --network testnet \
+  -- \
+  register_consumer \
+  --consumer GDUMMYCONSUMERADDRESS... \
+  --pin_hash 0000000000000000000000000000000000000000000000000000000000dead \
+  --initial_balance 20000
+```
+
+## License
+
+MIT
