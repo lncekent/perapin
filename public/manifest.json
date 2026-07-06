@@ -1,0 +1,24 @@
+{
+  "short_name": "PeraPin",
+  "name": "PeraPin — Zero-Connectivity Payments",
+  "description": "Stellar/Soroban digital payments for zero-connectivity consumers and zero-hardware merchants in the Philippines.",
+  "icons": [
+    {
+      "src": "https://picsum.photos/seed/perapin192/192/192",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://picsum.photos/seed/perapin512/512/512",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "display": "standalone",
+  "orientation": "portrait"
+}

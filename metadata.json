@@ -1,0 +1,6 @@
+{
+  "name": "PeraPin",
+  "description": "A digital payments system for the Philippines designed for zero-connectivity consumers and zero-hardware micro-merchants, built on Stellar/Soroban.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

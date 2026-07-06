@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui;
+  --font-mono: var(--font-mono), ui-monospace, SFMono-Regular;
+}
+
+/* Custom scrollbars and focus-ring resets for a mobile app experience */
+body {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+input, button, select, textarea {
+  outline: none;
+}
+
+@keyframes laser-pulse {
+  0%, 100% {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(220px);
+    opacity: 0.3;
+  }
+}
+
+.animate-laser {
+  animation: laser-pulse 2s infinite ease-in-out;
+}
