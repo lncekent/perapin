@@ -30,7 +30,7 @@ jobs:
 
   smart-contract:
     runs-on: ubuntu-latest
-    if: hashFiles('Cargo.toml') != ""
+    if: hashFiles('Cargo.toml') != ''
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
