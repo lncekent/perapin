@@ -33,6 +33,8 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+import InspectorConsole from "@/components/shared/InspectorConsole";
+
 export default function RootLayout({
   children,
 }: {
@@ -42,6 +44,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
       <body suppressHydrationWarning className="bg-slate-50 text-slate-900 min-h-screen font-sans">
         {children}
+        <InspectorConsole />
       </body>
     </html>
   );
