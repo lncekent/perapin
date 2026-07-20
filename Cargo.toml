@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "contracts/perapin",
+]
+resolver = "2"
+
+
+# Optimization profile for all Soroban contracts in this workspace.
+# Produces the smallest possible .wasm binary for on-chain deployment.
+[profile.release]
+opt-level = "z"       # Optimize for binary size (critical for on-chain contracts)
+overflow-checks = true # Panic on integer overflow (safety)
+debug = 0
+strip = "symbols"     # Remove debug symbols from final .wasm
+debug-assertions = false
+panic = "abort"       # Abort on panic (no stack unwinding in WASM)
+codegen-units = 1     # Single codegen unit = better optimization
+lto = true            # Link-time optimization (reduces binary size further)
