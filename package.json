@@ -12,7 +12,7 @@
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@hookform/resolvers": "^5.2.1",
-    "@stellar/stellar-sdk": "^15.1.0",
+    "@stellar/stellar-sdk": "^16.0.1",
     "@supabase/supabase-js": "^2.109.0",
     "@types/ws": "^8.18.1",
     "autoprefixer": "^10.4.21",
