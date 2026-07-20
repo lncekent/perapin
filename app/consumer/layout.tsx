@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { LogOut, Wifi, WifiOff, QrCode, Home, Info } from "lucide-react";
 import { mockStorage } from "@/lib/services/mockStorage";
 import { CustomerAccount } from "@/lib/types";
@@ -13,6 +13,7 @@ export default function ConsumerLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [activeCustomer, setActiveCustomer] = useState<CustomerAccount | null>(null);
   const [isOffline, setIsOffline] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -128,25 +129,53 @@ export default function ConsumerLayout({
       </main>
 
       {/* Customer Mobile Footer Nav */}
-      <footer className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2.5 z-40 shadow-lg">
+      <footer className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 py-2 z-40 shadow-lg">
         <div className="max-w-md mx-auto grid grid-cols-4 text-center">
-          <Link href="/consumer/dashboard" className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-blue-600 transition-all">
+          <Link
+            href="/consumer/dashboard"
+            className={`flex flex-col items-center gap-0.5 transition-all ${
+              pathname === "/consumer/dashboard"
+                ? "text-blue-600 font-bold scale-105"
+                : "text-slate-400 hover:text-slate-600 font-medium"
+            }`}
+          >
             <Home className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Home</span>
+            <span className="text-[10px]">Home</span>
           </Link>
-          <Link href="/consumer/qr" className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-blue-600 transition-all">
+          <Link
+            href="/consumer/qr"
+            className={`flex flex-col items-center gap-0.5 transition-all ${
+              pathname === "/consumer/qr"
+                ? "text-blue-600 font-bold scale-105"
+                : "text-slate-400 hover:text-slate-600 font-medium"
+            }`}
+          >
             <QrCode className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Sticker</span>
+            <span className="text-[10px]">Sticker</span>
           </Link>
-          <Link href="/consumer/topup" className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-blue-600 transition-all">
+          <Link
+            href="/consumer/topup"
+            className={`flex flex-col items-center gap-0.5 transition-all ${
+              pathname === "/consumer/topup"
+                ? "text-blue-600 font-bold scale-105"
+                : "text-slate-400 hover:text-slate-600 font-medium"
+            }`}
+          >
             <Info className="w-5 h-5" />
-            <span className="text-[10px] font-medium">Topup</span>
+            <span className="text-[10px]">Topup</span>
           </Link>
-          <Link href="/feedback" className="flex flex-col items-center gap-0.5 text-slate-500 hover:text-blue-600 transition-all">
+          <Link
+            href="/feedback"
+            className={`flex flex-col items-center gap-0.5 transition-all ${
+              pathname === "/feedback"
+                ? "text-blue-600 font-bold scale-105"
+                : "text-slate-400 hover:text-slate-400 font-medium"
+            }`}
+          >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
-            <span className="text-[10px] font-medium">Feedback</span>
+            <span className="text-[10px]">Feedback</span>
           </Link>
         </div>
       </footer>
