@@ -5,3 +5,9 @@ coverage/
 *.log
 .env*
 !.env.example
+.cargo/
+*.tsbuildinfo
+
+# Rust / Soroban
+target/
+*.wasm.map
