@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, User, Phone, ShieldAlert, KeyRound, CheckCircle2, QrCode, Download, RefreshCw } from "lucide-react";
+import { ArrowLeft, User, Phone, ShieldAlert, KeyRound, CheckCircle2, Download } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import QRCode from "qrcode";
 import { mockStorage } from "@/lib/services/mockStorage";
@@ -12,7 +12,6 @@ import { CustomerAccount } from "@/lib/types";
 
 export default function ConsumerRegisterPage() {
   const router = useRouter();
-  const qrCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Flow State
   const [step, setStep] = useState<"form" | "pin" | "confirm_pin" | "creating" | "qr">("form");
@@ -22,8 +21,6 @@ export default function ConsumerRegisterPage() {
   // Form Fields
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [kycType, setKycType] = useState("UMID");
-  const [kycId, setKycId] = useState("");
 
   // PIN fields
   const [pin, setPin] = useState("");
@@ -40,12 +37,8 @@ export default function ConsumerRegisterPage() {
       setError("Full Name is required.");
       return;
     }
-    if (!phone.trim() || phone.length < 10) {
-      setError("Please enter a valid phone number (min 10 digits).");
-      return;
-    }
-    if (!kycId.trim()) {
-      setError("KYC ID Document Number is required.");
+    if (!phone.trim()) {
+      setError("Valid Email Address or Phone Number is required.");
       return;
     }
 
@@ -54,7 +47,7 @@ export default function ConsumerRegisterPage() {
     mockStorage.logToInspector(
       "info",
       "Registration Form Complete",
-      `Customer inputs checked. Entering 4-digit PIN setup phase for ${name}.`
+      `Customer inputs verified. Entering 4-digit PIN setup phase for ${name}.`
     );
   };
 
@@ -82,45 +75,60 @@ export default function ConsumerRegisterPage() {
     );
 
     try {
-      // Call mock signup API
-      const res = await fetch("/api/signup", {
+      // Create user email identifier (using phone or name for demo)
+      const userEmail = phone.includes("@") ? phone : `${phone.replace(/\D/g, "") || Date.now()}@perapin.com`;
+      
+      // Calculate PIN hash using Web Crypto API
+      // Formula: SHA-256(pin + salt_email)
+      const { computePinHash } = await import("@/lib/client-crypto");
+      const pinHashHex = await computePinHash(pin, userEmail);
+
+      // Call live PeraPin registration API
+      const res = await fetch("/api/user/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, kycType, kycId }),
+        body: JSON.stringify({
+          email: userEmail,
+          role: "consumer",
+          pinHash: pinHashHex,
+        }),
       });
 
       if (!res.ok) {
-        throw new Error("Failed to register account via Soroban API.");
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || errData.message || "Failed to register account via Soroban API.");
       }
 
       const data = await res.json();
+      const stellarPublicKey = data.user.stellarPublicKey;
 
       const newCustAccount: CustomerAccount = {
-        customerId: data.customerId,
+        customerId: stellarPublicKey,
         name,
         phone,
-        kycType,
-        kycId,
-        pin, // Client-side hashed in production, simulated raw check for mockup
-        stellarPublicKey: data.stellarPublicKey,
-        balance: data.initialBalance,
-        registeredAt: data.timestamp,
+        kycType: "Email Verified",
+        kycId: "Verified",
+        pin,
+        stellarPublicKey,
+        balance: 100,
+        registeredAt: data.user.createdAt,
       };
 
-      // Add to mock storage
+      // Add to local storage
       const customers = mockStorage.getCustomers();
       mockStorage.saveCustomers([...customers, newCustAccount]);
 
-      // Set active customer
-      localStorage.setItem("perapin_active_customer_id", newCustAccount.customerId);
+      // Set active customer session
+      localStorage.setItem("perapin_active_customer_id", stellarPublicKey);
+      localStorage.setItem("perapin_active_public_key", stellarPublicKey);
       localStorage.setItem("perapin_user_role", "consumer");
-      localStorage.setItem("perapin_user_email", phone);
+      localStorage.setItem("perapin_user_email", userEmail);
       setNewCustomer(newCustAccount);
 
       mockStorage.logToInspector(
         "success",
         "Soroban Registration Success",
-        `Stellar Account deployed on testnet. Allocated ₱${data.initialBalance} signup bonus. ID: ${data.customerId}`
+        `Stellar Account ${stellarPublicKey.slice(0, 8)}... created & registered on-chain!`
       );
 
       setStep("qr");
@@ -132,29 +140,27 @@ export default function ConsumerRegisterPage() {
 
   // Step 4: Render QR Sticker once account is ready
   useEffect(() => {
-    if (step === "qr" && newCustomer && qrCanvasRef.current) {
-      QRCode.toCanvas(
-        qrCanvasRef.current,
+    if (newCustomer) {
+      QRCode.toDataURL(
         newCustomer.customerId,
         {
-          width: 220,
+          width: 280,
           margin: 1.5,
           color: {
             dark: "#0f172a", // Slate 900
             light: "#ffffff", // White
           },
         },
-        (err) => {
+        (err, url) => {
           if (err) {
             console.error("QR Code rendering error", err);
-          } else if (qrCanvasRef.current) {
-            const dataUrl = qrCanvasRef.current.toDataURL("image/png");
-            setQrDataUrl(dataUrl);
+          } else if (url) {
+            setQrDataUrl(url);
           }
         }
       );
     }
-  }, [step, newCustomer]);
+  }, [newCustomer]);
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 font-sans text-slate-900 justify-center py-12 px-6">
@@ -218,50 +224,22 @@ export default function ConsumerRegisterPage() {
 
                 <div className="space-y-2">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                    Phone / Email
+                    Email Address / Mobile Number
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
-                      type="tel"
+                      type="text"
                       required
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      placeholder="e.g. 09175551234"
+                      placeholder="e.g. maria@example.com or 09175551234"
                       className="w-full pl-10 pr-3 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     />
                   </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                      ID Type
-                    </label>
-                    <select
-                      value={kycType}
-                      onChange={(e) => setKycType(e.target.value)}
-                      className="w-full p-3 rounded-xl border border-slate-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                    >
-                      <option>UMID</option>
-                      <option>Postal ID</option>
-                      <option>Driver's License</option>
-                      <option>Student ID</option>
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-slate-500">
-                      Document No.
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={kycId}
-                      onChange={(e) => setKycId(e.target.value)}
-                      placeholder="e.g. 8219-B"
-                      className="w-full p-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                    />
-                  </div>
+                  <p className="text-[11px] text-slate-400">
+                    🔒 Privacy-first: We use your email to secure your wallet and send transaction updates.
+                  </p>
                 </div>
 
                 <button
@@ -395,33 +373,44 @@ export default function ConsumerRegisterPage() {
                 </div>
 
                 {/* QR Code Canvas Sticker Design */}
-                <div className="relative inline-block bg-slate-900 text-white rounded-3xl p-5 shadow-lg border border-slate-800">
-                  <div className="font-bold text-xs tracking-wider uppercase mb-3 opacity-80 text-center font-mono">
-                    ₱ PeraPin Payment Pass
+                <div className="relative w-full max-w-xs mx-auto bg-slate-900 text-white rounded-3xl p-5 shadow-xl border border-slate-800 flex flex-col items-center">
+                  <div className="font-bold text-xs tracking-wider uppercase mb-3 text-center font-mono flex items-center justify-center gap-1.5 text-blue-400">
+                    <span>₱ PeraPin Payment Pass</span>
                   </div>
                   
-                  {/* Invisible canvas used for generation */}
-                  <div className="bg-white p-2 rounded-2xl inline-block mb-3">
-                    <canvas ref={qrCanvasRef} className="mx-auto" />
+                  {/* QR Image container */}
+                  <div className="bg-white p-3 rounded-2xl shadow-inner mb-3 flex items-center justify-center min-h-[200px]">
+                    {qrDataUrl ? (
+                      <img src={qrDataUrl} alt="PeraPin QR Code" className="w-48 h-48 object-contain rounded-xl" />
+                    ) : (
+                      <div className="w-48 h-48 bg-slate-100 rounded-xl flex items-center justify-center text-xs text-slate-400 font-mono animate-pulse">
+                        Generating QR Sticker...
+                      </div>
+                    )}
                   </div>
 
-                  <div className="text-[10px] font-mono opacity-60 uppercase">
-                    ID: {newCustomer.customerId}
+                  <div className="w-full text-center space-y-1">
+                    <span className="text-[9px] font-mono uppercase text-slate-400 tracking-wider block">
+                      Stellar Public Key
+                    </span>
+                    <div className="text-[10px] font-mono text-blue-300 font-semibold break-all bg-slate-950/80 py-1.5 px-3 rounded-xl border border-slate-800/80">
+                      {newCustomer.customerId.slice(0, 14)}...{newCustomer.customerId.slice(-14)}
+                    </div>
                   </div>
                 </div>
 
                 {/* CTA Action Buttons */}
                 <div className="space-y-3 pt-2">
-                  {qrDataUrl && (
-                    <a
-                      href={qrDataUrl}
-                      download={`perapin-sticker-${newCustomer.customerId}.png`}
-                      className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm transition-all hover:scale-[1.01] active:scale-98"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download QR Sticker</span>
-                    </a>
-                  )}
+                  <a
+                    href={qrDataUrl || "#"}
+                    download={`perapin-sticker-${newCustomer.customerId.slice(0, 8)}.png`}
+                    className={`w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-sm font-bold shadow-sm transition-all ${
+                      !qrDataUrl ? "opacity-50 pointer-events-none" : "hover:scale-[1.01] active:scale-98"
+                    }`}
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download PNG QR Sticker</span>
+                  </a>
 
                   <button
                     onClick={() => router.push("/consumer/dashboard")}

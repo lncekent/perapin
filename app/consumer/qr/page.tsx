@@ -72,17 +72,22 @@ export default function ConsumerQrPage() {
       </div>
 
       {/* QR Sticker Container */}
-      <div className="relative inline-block bg-slate-900 text-white rounded-3xl p-5 shadow-lg border border-slate-800">
-        <div className="font-bold text-xs tracking-wider uppercase mb-3 opacity-80 text-center font-mono">
-          ₱ PeraPin Payment Pass
+      <div className="relative w-full max-w-xs mx-auto bg-slate-900 text-white rounded-3xl p-5 shadow-xl border border-slate-800 flex flex-col items-center">
+        <div className="font-bold text-xs tracking-wider uppercase mb-3 text-center font-mono flex items-center justify-center gap-1.5 text-blue-400">
+          <span>₱ PeraPin Payment Pass</span>
         </div>
         
-        <div className="bg-white p-2 rounded-2xl inline-block mb-3">
-          <canvas ref={qrCanvasRef} className="mx-auto" />
+        <div className="bg-white p-3 rounded-2xl shadow-inner mb-3 flex items-center justify-center">
+          <canvas ref={qrCanvasRef} className="max-w-full h-auto" />
         </div>
 
-        <div className="text-[11px] font-mono opacity-60 uppercase">
-          ID: {activeCustomer.customerId}
+        <div className="w-full text-center space-y-1">
+          <span className="text-[9px] font-mono uppercase text-slate-400 tracking-wider block">
+            Stellar Public Key
+          </span>
+          <div className="text-[10px] font-mono text-blue-300 font-semibold break-all bg-slate-950/80 py-1.5 px-3 rounded-xl border border-slate-800/80">
+            {activeCustomer.customerId.slice(0, 14)}...{activeCustomer.customerId.slice(-14)}
+          </div>
         </div>
       </div>
 

@@ -75,7 +75,7 @@ export default function MerchantHandoffPage() {
     if (!customer || !merchant) return;
 
     setStep("processing");
-    setProcessingStage("Generating cryptographic transaction salt...");
+    setProcessingStage("Computing client-side SHA-256 PIN hash...");
     mockStorage.logToInspector(
       "info",
       "Payment Authorized",
@@ -83,114 +83,79 @@ export default function MerchantHandoffPage() {
     );
 
     try {
-      // 1. Fetch Nonce from API
-      const nonceRes = await fetch("/api/nonce", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ customerId: customer.customerId }),
-      });
+      // 1. Compute Client-side SHA-256 Hash using native Web Crypto API
+      const { computePinHash } = await import("@/lib/client-crypto");
+      
+      const consumerPublicKey = customer.stellarPublicKey || customer.customerId;
+      const merchantPublicKey = merchant.id.startsWith("G") ? merchant.id : "GDGARS7VJIWEW3E4ODPXJY53SLEFV3CWBVEMEOO7X6HH5E4BWQZVYR7W";
+      const salt = localStorage.getItem("perapin_user_email") || consumerPublicKey;
+      const clientHash = await computePinHash(submittedPin, salt);
 
-      if (!nonceRes.ok) {
-        throw new Error("Failed to secure unique transaction nonce from Horizon.");
-      }
+      mockStorage.logToInspector(
+        "blockchain",
+        "Client-Side PIN Hash Computed",
+        `Web Crypto API SHA-256 Hash: ${clientHash}\n(Raw PIN never leaves the merchant browser!)`
+      );
 
-      const nonceData = await nonceRes.json();
-      const currentNonce = nonceData.nonce;
+      setProcessingStage("Submitting transaction payload to Soroban Testnet...");
 
-      setProcessingStage("Hashing PIN preimage locally...");
-
-      // 2. Compute Client-side SHA-256 Hash
-      const preimage = `${customer.customerId}:${submittedPin}:${currentNonce}:${amount}`;
-      let clientHash = "";
-      try {
-        const msgUint8 = new TextEncoder().encode(preimage);
-        const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        clientHash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-        
-        mockStorage.logToInspector(
-          "blockchain",
-          "Preimage Hash Created",
-          `Client-side SHA-256 computed.\nHash: ${clientHash}\n(Raw PIN never leaves the browser!)`
-        );
-      } catch (hashErr) {
-        // Fallback hash
-        let h = 0;
-        for (let i = 0; i < preimage.length; i++) {
-          h = (Math.imul(31, h) + preimage.charCodeAt(i)) | 0;
-        }
-        clientHash = "hash_" + Math.abs(h).toString(16);
-      }
-
-      setProcessingStage("Submitting signed payment payload to Soroban...");
-
-      // 3. Submit Transaction to /api/pay
-      const payRes = await fetch("/api/pay", {
+      // 2. Call live PeraPin Payment Initiation API
+      const payRes = await fetch("/api/payment/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerId: customer.customerId,
-          merchantId: merchant.id,
-          amount: amount,
-          nonce: currentNonce,
-          clientHash: clientHash,
-          expectedPin: customer.pin, // Secure simulation check
+          consumerPublicKey,
+          merchantPublicKey,
+          amountXlm: amount,
+          pinHash: clientHash,
         }),
       });
 
       const payData = await payRes.json();
 
       if (!payRes.ok || !payData.success) {
-        if (payData.error === "AUTHENTICATION_FAILED") {
+        if (payData.error === "WALLET_LOCKED" || payRes.status === 423) {
+          throw new Error("WALLET_LOCKED");
+        }
+        if (payData.error === "INVALID_PIN" || payData.message?.includes("PIN")) {
           throw new Error("INVALID_PIN");
         }
-        throw new Error(payData.message || "Transaction settlement failed.");
+        throw new Error(payData.message || payData.error || "Transaction settlement failed.");
       }
 
       setProcessingStage("Committing ledger changes on Stellar Testnet...");
 
-      // 4. Update balances in local database
+      // 3. Update customer local cache
       const customers = mockStorage.getCustomers();
       const updatedCustomers = customers.map((c) => {
         if (c.customerId === customer.customerId) {
-          return { ...c, balance: c.balance - amount };
+          return { ...c, balance: Math.max(0, c.balance - amount) };
         }
         return c;
       });
       mockStorage.saveCustomers(updatedCustomers);
 
-      // Record transaction
+      // Save transaction record to local history
       const newTx: Transaction = {
-        id: payData.transactionId,
+        id: payData.txHash || `tx_${Date.now()}`,
         type: "payment",
-        amount: amount,
-        partnerName: merchant.name,
-        partnerId: merchant.id,
-        timestamp: payData.settlementTime,
+        amount,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        partnerName: customer.name,
+        partnerId: customer.customerId,
         status: "success",
-        ledgerIndex: payData.ledgerSequence,
-        txHash: payData.paymentProof.preimageHash,
+        ledgerIndex: 0,
+        txHash: payData.txHash || "",
       };
 
-      const transactions = mockStorage.getTransactions();
-      mockStorage.saveTransactions([newTx, ...transactions]);
-
-      // Save Receipt details
-      const receipt = {
-        success: true,
-        txId: payData.transactionId,
-        ledgerSequence: payData.ledgerSequence,
-        amount: amount,
-        customerName: customer.name,
-        customerId: customer.customerId,
-        stellarFeeXlm: payData.stellarFeePaidXlm,
-      };
-      localStorage.setItem("perapin_recent_receipt", JSON.stringify(receipt));
+      const allTxs = mockStorage.getTransactions();
+      mockStorage.saveTransactions([newTx, ...allTxs]);
+      localStorage.setItem("perapin_last_transaction", JSON.stringify(newTx));
 
       mockStorage.logToInspector(
         "success",
         "Soroban Transaction Settled",
-        `Ledger #${payData.ledgerSequence} confirmed payment. Transferred ₱${amount.toFixed(2)} from ${customer.name} to ${merchant.name}.`
+        `Ledger tx: ${payData.txHash || "confirmed"}. Transferred ${amount} XLM from ${customer.name} to ${merchant.name}.`
       );
 
       // Redirect to results screen
@@ -198,10 +163,12 @@ export default function MerchantHandoffPage() {
     } catch (err: any) {
       console.error(err);
       let errMsg = "Stellar Horizon node timed out. Please try again.";
-      if (err.message === "INVALID_PIN") {
-        errMsg = "Authentication failed: You entered an incorrect PIN code.";
-      } else if (err.message === "INSUFFICIENT_FUNDS") {
-        errMsg = "Soroban check failed: Customer has insufficient balance.";
+      if (err.message === "WALLET_LOCKED") {
+        errMsg = "WALLET_LOCKED: Wallet is locked out for 15 minutes due to 3 failed PIN attempts.";
+      } else if (err.message === "INVALID_PIN") {
+        errMsg = "Authentication failed: Invalid PIN code.";
+      } else if (err.message) {
+        errMsg = err.message;
       }
       setErrorMsg(errMsg);
       setStep("error");

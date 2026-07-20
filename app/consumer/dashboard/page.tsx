@@ -7,22 +7,76 @@ import { motion } from "motion/react";
 import { mockStorage } from "@/lib/services/mockStorage";
 import { CustomerAccount, Transaction } from "@/lib/types";
 
+function maskEmail(email?: string): string {
+  if (!email || !email.includes("@")) return "ken•••@perapin.com";
+  const [local, domain] = email.split("@");
+  if (local.length <= 3) {
+    return `${local}•••@${domain}`;
+  }
+  return `${local.slice(0, 3)}•••@${domain}`;
+}
+
+function formatXlmBalance(val: string | null): string {
+  if (!val) return "0.00";
+  const num = parseFloat(val);
+  if (isNaN(num)) return val;
+  return num.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
 export default function ConsumerDashboard() {
   const [activeCustomer, setActiveCustomer] = useState<CustomerAccount | null>(null);
   const [txs, setTxs] = useState<Transaction[]>([]);
 
+  const [liveBalanceXlm, setLiveBalanceXlm] = useState<string | null>(null);
+  const [isLocked, setIsLocked] = useState<boolean>(false);
+
   useEffect(() => {
     const customer = mockStorage.getActiveCustomer();
+    const activePublicKey = localStorage.getItem("perapin_active_public_key") || customer?.stellarPublicKey;
+    const activeEmail = localStorage.getItem("perapin_user_email");
+
     if (customer) {
       setActiveCustomer(customer);
-      
-      // Load and filter transactions for this customer
+    }
+
+    if (activePublicKey || activeEmail) {
+      const query = activePublicKey ? `publicKey=${activePublicKey}` : `email=${activeEmail}`;
+      fetch(`/api/user/me?${query}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user) {
+            if (!customer) {
+              setActiveCustomer({
+                customerId: data.user.stellarPublicKey,
+                name: data.user.email.split("@")[0],
+                phone: data.user.email,
+                kycType: "UMID",
+                kycId: "Registered",
+                pin: "****",
+                stellarPublicKey: data.user.stellarPublicKey,
+                balance: parseFloat(data.balanceXlm || "0"),
+                registeredAt: data.user.createdAt,
+              });
+            }
+          }
+          if (data.balanceXlm) setLiveBalanceXlm(data.balanceXlm);
+          if (data.isLocked !== undefined) setIsLocked(data.isLocked);
+        })
+        .catch(() => {
+          if (customer) setLiveBalanceXlm(customer.balance.toFixed(2));
+        });
+    }
+
+    if (customer) {
       const allTxs = mockStorage.getTransactions();
       const filtered = allTxs.filter(
         (tx) =>
           tx.partnerId === customer.customerId || 
           tx.id.includes(customer.customerId) || 
-          tx.type === "signup_bonus" // Show signup rewards as well
+          tx.type === "signup_bonus"
       );
       setTxs(filtered);
     }
@@ -44,20 +98,24 @@ export default function ConsumerDashboard() {
     >
       {/* Balance Card */}
       <div
-        className="bg-white border border-slate-200 shadow-md rounded-3xl p-5 flex flex-col justify-between space-y-4"
+        className="bg-white border border-slate-200 shadow-md rounded-3xl p-5 flex flex-col justify-between space-y-4 overflow-hidden"
         id="wallet-balance-card"
       >
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1 min-w-0 pr-2">
             <span className="text-[10px] text-slate-400 block uppercase font-mono tracking-wider">
-              PeraPin Balance
+              PeraPin XLM Balance
             </span>
-            <h2 className="text-3xl font-bold font-mono text-slate-800 tracking-tight">
-              ₱{activeCustomer.balance.toFixed(2)}
-            </h2>
+            {liveBalanceXlm === null ? (
+              <div className="h-9 w-44 bg-slate-100 rounded-xl animate-pulse mt-1" />
+            ) : (
+              <h2 className="text-3xl font-bold font-mono text-slate-800 tracking-tight truncate" title={`${liveBalanceXlm} XLM`}>
+                {formatXlmBalance(liveBalanceXlm)} <span className="text-lg font-semibold text-slate-500">XLM</span>
+              </h2>
+            )}
           </div>
-          <div className="text-right">
-            <span className="text-[10px] text-blue-600 bg-blue-50 border border-blue-100 py-0.5 px-2 rounded font-mono font-medium">
+          <div className="flex-shrink-0">
+            <span className="text-[10px] text-blue-600 bg-blue-50 border border-blue-100 py-1 px-2.5 rounded-lg font-mono font-medium whitespace-nowrap shadow-xs inline-block">
               Stellar Wallet
             </span>
           </div>
@@ -70,13 +128,18 @@ export default function ConsumerDashboard() {
           <div>
             <span className="text-slate-400">Consumer:</span>
             <p className="text-slate-800 font-bold">{activeCustomer.name}</p>
+            <p className="text-[10px] text-slate-500 font-mono">
+              {maskEmail(localStorage.getItem("perapin_user_email") || activeCustomer.phone)}
+            </p>
           </div>
-          <div>
+          <div className="text-right max-w-[55%]">
             <span className="text-slate-400 text-right block font-sans">
-              PeraPin ID:
+              Stellar Key:
             </span>
-            <p className="text-slate-800 font-mono font-bold">
-              {activeCustomer.customerId}
+            <p className="text-slate-800 font-mono font-bold text-[10px] truncate" title={activeCustomer.customerId}>
+              {activeCustomer.customerId.length > 16
+                ? `${activeCustomer.customerId.slice(0, 8)}...${activeCustomer.customerId.slice(-6)}`
+                : activeCustomer.customerId}
             </p>
           </div>
         </div>
