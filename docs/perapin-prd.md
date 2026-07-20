@@ -1,8 +1,6 @@
 # PeraPin — Product Requirements Document
 
 **Version:** 1.0  
-**Status:** Active — Level 4 (Green Belt) MVP  
-**Program:** Stellar Journey to Mastery — Monthly Builder Challenges (Rise In × Stellar)  
 **Last Updated:** July 2026  
 
 ---
