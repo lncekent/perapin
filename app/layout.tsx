@@ -16,7 +16,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "PeraPin — Zero-Connectivity Digital Payments",
-  description: "Offline-first payments system for the Philippines designed for zero-connectivity consumers and zero-hardware micro-merchants, built on Stellar/Soroban.",
+  description:
+    "Offline-first payments system for the Philippines designed for zero-connectivity consumers and zero-hardware micro-merchants, built on Stellar/Soroban.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -34,17 +35,15 @@ export const viewport: Viewport = {
 };
 
 import InspectorConsole from "@/components/shared/InspectorConsole";
+import { Analytics } from "@vercel/analytics/react";
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
-      <body suppressHydrationWarning className="bg-slate-50 text-slate-900 min-h-screen font-sans">
+      <body suppressHydrationWarning className="min-h-screen bg-slate-50 font-sans text-slate-900">
         {children}
-        <InspectorConsole />
+        {process.env.NODE_ENV !== "production" && <InspectorConsole />}
+        <Analytics />
       </body>
     </html>
   );

@@ -11,12 +11,16 @@ body {
   user-select: none;
 }
 
-input, button, select, textarea {
+input,
+button,
+select,
+textarea {
   outline: none;
 }
 
 @keyframes laser-pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
     opacity: 0.8;
   }
