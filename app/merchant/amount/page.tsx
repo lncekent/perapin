@@ -2,19 +2,23 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useSessionStorageValue } from "@/hooks/use-session-storage";
+
+interface PaymentContext {
+  consumerPublicKey: string;
+  amountXlm?: number;
+}
+
 export default function MerchantAmountPage() {
   const router = useRouter();
-  const [consumer, setConsumer] = useState("");
+  const paymentContext = useSessionStorageValue<PaymentContext>("perapin_payment_context");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
-    const raw = sessionStorage.getItem("perapin_payment_context");
-    if (!raw) {
-      router.replace("/merchant/scan");
-      return;
-    }
-    setConsumer(JSON.parse(raw).consumerPublicKey);
-  }, [router]);
+    if (!paymentContext) router.replace("/merchant/scan");
+  }, [paymentContext, router]);
+
+  const consumer = paymentContext?.consumerPublicKey ?? "";
   function submit(e: FormEvent) {
     e.preventDefault();
     const value = Number(amount);
@@ -30,6 +34,8 @@ export default function MerchantAmountPage() {
     );
     router.push("/merchant/handoff");
   }
+  if (!paymentContext) return <p className="py-12 text-center text-slate-500">Loading scanned sticker…</p>;
+
   return (
     <form onSubmit={submit} className="space-y-5">
       <div>

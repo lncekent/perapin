@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useSessionStorageValue } from "@/hooks/use-session-storage";
 interface Receipt {
   txHash: string;
   amountXlm: number;
@@ -11,12 +12,10 @@ interface Receipt {
 }
 export default function MerchantResultPage() {
   const router = useRouter();
-  const [receipt, setReceipt] = useState<Receipt | null>(null);
+  const receipt = useSessionStorageValue<Receipt>("perapin_recent_receipt");
   useEffect(() => {
-    const raw = sessionStorage.getItem("perapin_recent_receipt");
-    if (!raw) router.replace("/merchant/scan");
-    else setReceipt(JSON.parse(raw));
-  }, [router]);
+    if (!receipt) router.replace("/merchant/scan");
+  }, [receipt, router]);
   if (!receipt) return <p className="py-12 text-center">Loading receipt…</p>;
   function finish() {
     sessionStorage.removeItem("perapin_recent_receipt");
