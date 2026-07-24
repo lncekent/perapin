@@ -49,7 +49,6 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 // Polyfill globalThis.WebSocket for Node 20 server environments if not defined
 if (typeof window === "undefined" && !globalThis.WebSocket) {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     globalThis.WebSocket = require("ws");
   } catch {
     // Ignore if ws is unavailable

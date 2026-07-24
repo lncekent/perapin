@@ -95,6 +95,22 @@ export async function checkIsLockedOnChain(walletAddress: string): Promise<boole
   }
 }
 
+/** Returns the on-chain consecutive failed PIN count for precise UI feedback. */
+export async function getFailedAttemptsOnChain(walletAddress: string): Promise<number> {
+  try {
+    const result = await sorobanServer.simulateTransaction(
+      await buildContractTx(walletAddress, "get_failed_attempts", [new Address(walletAddress).toScVal()]),
+    );
+    if (SorobanRpc.Api.isSimulationSuccess(result) && result.result) {
+      return Number(scValToNative(result.result.retval));
+    }
+  } catch {
+    // The payment endpoint will still return a safe generic error if this
+    // best-effort display query is unavailable.
+  }
+  return 0;
+}
+
 /**
  * Helper to build an un-signed Soroban contract invocation transaction.
  */
