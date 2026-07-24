@@ -1,38 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
-import { dbGetUserByEmail, dbCreateUser } from "@/lib/supabase";
-import { generateStellarKeyPair, fundTestnetWallet, invokeRegisterOnChain } from "@/lib/stellar";
+import { dbGetUserById, dbCreateUser } from "@/lib/supabase";
+import { generateStellarKeyPair, fundTestnetWallet } from "@/lib/stellar";
 import { encryptPrivateKey } from "@/lib/crypto";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 /**
  * POST /api/user/register
- * Creates a user profile, generates a Stellar wallet, encrypts the private key,
- * funds it via Friendbot on Testnet, and registers the pin_hash on the Soroban contract.
+ * Starts authenticated onboarding. The wallet is created first so the browser can
+ * compute SHA-256(PIN + actual_wallet_public_key) without exposing the raw PIN.
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { email, role, businessName, pinHash } = body;
+    const authUser = await getAuthenticatedUser();
+    if (!authUser?.email) return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
 
-    if (!email || !role || (role === "consumer" && !pinHash)) {
-      return NextResponse.json(
-        { error: "Missing required fields: email, role (and pinHash for consumers)" },
-        { status: 400 }
-      );
+    const body = await req.json();
+    const { role, businessName } = body;
+
+    if (!role) {
+      return NextResponse.json({ error: "Missing required field: role" }, { status: 400 });
     }
 
     if (role !== "consumer" && role !== "merchant") {
-      return NextResponse.json(
-        { error: "Role must be 'consumer' or 'merchant'" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Role must be 'consumer' or 'merchant'" }, { status: 400 });
     }
 
     // Check if user already exists
-    const existing = await dbGetUserByEmail(email);
+    const existing = await dbGetUserById(authUser.id);
     if (existing) {
       return NextResponse.json(
         { error: "USER_EXISTS", message: "An account with this email already exists." },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
@@ -43,24 +41,18 @@ export async function POST(req: NextRequest) {
     const encryptedSecretKey = encryptPrivateKey(secretKey);
 
     // 3. Fund testnet wallet via Friendbot
-    await fundTestnetWallet(publicKey);
+    const funded = await fundTestnetWallet(publicKey);
+    if (!funded) throw new Error("Unable to fund the new Testnet wallet. Please try again.");
 
-    // 4. If consumer, register PIN hash on the Soroban Smart Contract
-    let onChainTxHash: string | undefined = undefined;
-    if (role === "consumer" && pinHash) {
-      const regResult = await invokeRegisterOnChain(secretKey, pinHash);
-      if (regResult.success) {
-        onChainTxHash = regResult.hash;
-      }
-    }
-
-    // 5. Save to database
+    // 4. Save encrypted custodial key. Consumers must still complete PIN registration.
     const newUser = await dbCreateUser({
-      email,
+      id: authUser.id,
+      email: authUser.email,
       role,
       business_name: businessName || null,
       stellar_public_key: publicKey,
       stellar_private_key_enc: encryptedSecretKey,
+      pin_registered_at: null,
     });
 
     return NextResponse.json({
@@ -73,12 +65,9 @@ export async function POST(req: NextRequest) {
         stellarPublicKey: newUser.stellar_public_key,
         createdAt: newUser.created_at,
       },
-      onChainTxHash,
+      setupRequired: role === "consumer",
     });
   } catch (error: any) {
-    return NextResponse.json(
-      { error: "Registration failed: " + error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Registration failed: " + error.message }, { status: 500 });
   }
 }

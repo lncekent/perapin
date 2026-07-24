@@ -1,27 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { dbGetUserByPublicKey, dbGetUserByEmail } from "@/lib/supabase";
+import { dbGetUserById } from "@/lib/supabase";
 import { getWalletBalanceXlm, checkIsLockedOnChain } from "@/lib/stellar";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 /**
- * GET /api/user/me?publicKey=... OR ?email=...
- * Returns user profile, current XLM balance from Stellar Horizon, and on-chain lockout status.
+ * Returns only the signed-in user's profile, current XLM balance, and lockout status.
  */
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url);
-    const publicKey = searchParams.get("publicKey");
-    const email = searchParams.get("email");
-
-    if (!publicKey && !email) {
-      return NextResponse.json(
-        { error: "Provide either publicKey or email search param" },
-        { status: 400 }
-      );
-    }
-
-    let user = publicKey
-      ? await dbGetUserByPublicKey(publicKey)
-      : await dbGetUserByEmail(email!);
+    const authUser = await getAuthenticatedUser();
+    if (!authUser) return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
+    const user = await dbGetUserById(authUser.id);
 
     if (!user) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -42,11 +31,12 @@ export async function GET(req: NextRequest) {
       },
       balanceXlm,
       isLocked,
+      pinSetupRequired: user.role === "consumer" && !user.pin_registered_at,
     });
   } catch (error: any) {
     return NextResponse.json(
       { error: "Failed to fetch user profile: " + error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
