@@ -1,7 +1,7 @@
 # PeraPin — Product Requirements Document
 
 **Version:** 1.0  
-**Last Updated:** July 2026  
+**Last Updated:** July 2026
 
 ---
 
@@ -120,15 +120,15 @@ The consumer's phone is never involved. No app needed. No internet needed on the
 
 ### Component Roles
 
-| Component | Role |
-|---|---|
-| Static QR Sticker | Contains consumer's Stellar public key. Permanent, printable, costs nothing. |
-| Next.js Frontend | Mobile-responsive web app serving both consumer and merchant views. |
-| Next.js API Routes | Backend logic: wallet management, key encryption/decryption, transaction signing. |
-| Supabase (PostgreSQL) | Stores user accounts, merchant profiles, encrypted wallet keys. |
-| Soroban Smart Contract | On-chain PIN hash verification, XLM transfer execution, brute-force lockout. |
-| Stellar Testnet | Blockchain infrastructure for development and Level 4 submission. |
-| Vercel | Hosting for the frontend and API routes. |
+| Component              | Role                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------- |
+| Static QR Sticker      | Contains consumer's Stellar public key. Permanent, printable, costs nothing.      |
+| Next.js Frontend       | Mobile-responsive web app serving both consumer and merchant views.               |
+| Next.js API Routes     | Backend logic: wallet management, key encryption/decryption, transaction signing. |
+| Supabase (PostgreSQL)  | Stores user accounts, merchant profiles, encrypted wallet keys.                   |
+| Soroban Smart Contract | On-chain PIN hash verification, XLM transfer execution, brute-force lockout.      |
+| Stellar Testnet        | Blockchain infrastructure for development and Level 4 submission.                 |
+| Vercel                 | Hosting for the frontend and API routes.                                          |
 
 ---
 
@@ -192,25 +192,30 @@ The consumer's phone is never involved. No app needed. No internet needed on the
 ### 6.4 Error Flows
 
 **Wrong PIN (1st or 2nd attempt):**
+
 - Contract returns error
 - Frontend shows: "Incorrect PIN. X attempts remaining."
 - Consumer can try again
 
 **Wrong PIN (3rd attempt):**
+
 - Contract triggers lockout for the consumer wallet
 - Frontend shows: "Too many incorrect attempts. Account locked for 15 minutes."
 - Consumer must wait or contact support to reset
 
 **Insufficient Balance:**
+
 - Contract checks balance before transfer
 - Frontend shows: "Insufficient XLM balance. Please top up your wallet."
 - Transaction cancelled, no funds moved
 
 **Consumer wallet not registered:**
+
 - Contract returns error (no pin_hash found for this wallet)
 - Frontend shows: "This QR code is not linked to a PeraPin account."
 
 **Network/RPC error:**
+
 - API returns timeout/failure
 - Frontend shows: "Payment could not be processed. Please try again."
 - No funds are moved (transaction was not submitted or failed atomically)
@@ -221,42 +226,42 @@ The consumer's phone is never involved. No app needed. No internet needed on the
 
 ### 7.1 Consumer Features
 
-| Feature | Priority | Description |
-|---|---|---|
-| Email registration + OTP | Must Have | Sign up with email, verify via one-time code |
-| Custodial Stellar wallet creation | Must Have | Auto-generated wallet, private key stored encrypted |
-| 4-digit PIN setup | Must Have | Set PIN, hashed client-side before storage |
-| PIN change | Should Have | Allow consumer to update PIN from dashboard |
-| QR sticker download | Must Have | PNG download of their static QR code |
-| Consumer dashboard | Must Have | Shows XLM balance, recent transactions |
-| Transaction history | Must Have | List of past payments with timestamp and merchant name |
-| Wallet top-up info | Must Have | Display public key so user can receive XLM (testnet faucet link for MVP) |
-| Feedback submission | Must Have | Simple satisfaction form (required for Level 4) |
+| Feature                           | Priority    | Description                                                              |
+| --------------------------------- | ----------- | ------------------------------------------------------------------------ |
+| Email registration + OTP          | Must Have   | Sign up with email, verify via one-time code                             |
+| Custodial Stellar wallet creation | Must Have   | Auto-generated wallet, private key stored encrypted                      |
+| 4-digit PIN setup                 | Must Have   | Set PIN, hashed client-side before storage                               |
+| PIN change                        | Should Have | Allow consumer to update PIN from dashboard                              |
+| QR sticker download               | Must Have   | PNG download of their static QR code                                     |
+| Consumer dashboard                | Must Have   | Shows XLM balance, recent transactions                                   |
+| Transaction history               | Must Have   | List of past payments with timestamp and merchant name                   |
+| Wallet top-up info                | Must Have   | Display public key so user can receive XLM (testnet faucet link for MVP) |
+| Feedback submission               | Must Have   | Simple satisfaction form (required for Level 4)                          |
 
 ### 7.2 Merchant Features
 
-| Feature | Priority | Description |
-|---|---|---|
-| Email registration + OTP | Must Have | Same auth system as consumer |
-| Custodial receiving wallet | Must Have | Merchant wallet for receiving XLM |
-| QR scanner page | Must Have | Camera-based QR scanner for consumer stickers |
-| Amount entry | Must Have | Numeric input after scanning |
-| PIN entry handoff screen | Must Have | Full-screen PIN pad for consumer to use |
-| Payment confirmation screen | Must Have | Clear success/failure result with amount |
-| Merchant dashboard | Must Have | Shows XLM balance, incoming transaction history |
-| Business name display | Should Have | Show merchant name on consumer's confirmation |
+| Feature                     | Priority    | Description                                     |
+| --------------------------- | ----------- | ----------------------------------------------- |
+| Email registration + OTP    | Must Have   | Same auth system as consumer                    |
+| Custodial receiving wallet  | Must Have   | Merchant wallet for receiving XLM               |
+| QR scanner page             | Must Have   | Camera-based QR scanner for consumer stickers   |
+| Amount entry                | Must Have   | Numeric input after scanning                    |
+| PIN entry handoff screen    | Must Have   | Full-screen PIN pad for consumer to use         |
+| Payment confirmation screen | Must Have   | Clear success/failure result with amount        |
+| Merchant dashboard          | Must Have   | Shows XLM balance, incoming transaction history |
+| Business name display       | Should Have | Show merchant name on consumer's confirmation   |
 
 ### 7.3 Smart Contract Functions
 
-| Function | Description |
-|---|---|
-| `register(wallet_address, pin_hash)` | Stores pin_hash for a wallet address. One-time setup per wallet. |
+| Function                                              | Description                                                                             |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `register(wallet_address, pin_hash)`                  | Stores pin_hash for a wallet address. One-time setup per wallet.                        |
 | `pay(from_wallet, to_wallet, amount, submitted_hash)` | Verifies hash, checks balance, executes XLM transfer, resets attempt counter on success |
-| `record_failed_attempt(wallet_address)` | Increments failed attempt counter for a wallet |
-| `is_locked(wallet_address)` | Returns true if wallet is in lockout state |
-| `unlock(wallet_address)` | Resets lockout after 15-minute cooldown (checked via Stellar ledger timestamp) |
-| `change_pin(wallet_address, old_hash, new_hash)` | Updates PIN hash if old hash is correct |
-| `get_balance(wallet_address)` | Returns XLM balance for a wallet |
+| `record_failed_attempt(wallet_address)`               | Increments failed attempt counter for a wallet                                          |
+| `is_locked(wallet_address)`                           | Returns true if wallet is in lockout state                                              |
+| `unlock(wallet_address)`                              | Resets lockout after 15-minute cooldown (checked via Stellar ledger timestamp)          |
+| `change_pin(wallet_address, old_hash, new_hash)`      | Updates PIN hash if old hash is correct                                                 |
+| `get_balance(wallet_address)`                         | Returns XLM balance for a wallet                                                        |
 
 ---
 
@@ -278,6 +283,7 @@ enum DataKey {
 **PIN Hashing Convention:**
 
 The PIN hash is always computed as:
+
 ```
 pin_hash = SHA-256(raw_4_digit_pin + consumer_stellar_public_key)
 ```
@@ -317,28 +323,29 @@ All pages must be mobile-responsive (320px–1200px). The primary use case is th
 
 ### Page List
 
-| Route | User | Description |
-|---|---|---|
-| `/` | Public | Landing page — explains PeraPin, CTAs for consumer and merchant signup |
-| `/register/consumer` | Consumer | Email + OTP registration form |
-| `/register/merchant` | Merchant | Email + business name + OTP form |
-| `/login` | Both | Email + OTP login |
-| `/consumer/dashboard` | Consumer | Balance, recent transactions, QR sticker download |
-| `/consumer/qr` | Consumer | Full-screen QR code view + download button |
-| `/consumer/topup` | Consumer | Shows public key + testnet faucet link |
-| `/consumer/history` | Consumer | Full transaction history |
-| `/consumer/settings` | Consumer | Change PIN, account info |
-| `/merchant/dashboard` | Merchant | Balance, incoming transactions, "Accept Payment" button |
-| `/merchant/scan` | Merchant | Camera QR scanner page |
-| `/merchant/amount` | Merchant | Amount entry after QR scanned |
-| `/merchant/handoff` | Merchant | Full-screen PIN pad for consumer to enter PIN |
-| `/merchant/result` | Merchant | Success or failure confirmation |
-| `/merchant/history` | Merchant | Full incoming transaction history |
-| `/feedback` | Both | Short satisfaction form (Level 4 requirement) |
+| Route                 | User     | Description                                                            |
+| --------------------- | -------- | ---------------------------------------------------------------------- |
+| `/`                   | Public   | Landing page — explains PeraPin, CTAs for consumer and merchant signup |
+| `/register/consumer`  | Consumer | Email + OTP registration form                                          |
+| `/register/merchant`  | Merchant | Email + business name + OTP form                                       |
+| `/login`              | Both     | Email + OTP login                                                      |
+| `/consumer/dashboard` | Consumer | Balance, recent transactions, QR sticker download                      |
+| `/consumer/qr`        | Consumer | Full-screen QR code view + download button                             |
+| `/consumer/topup`     | Consumer | Shows public key + testnet faucet link                                 |
+| `/consumer/history`   | Consumer | Full transaction history                                               |
+| `/consumer/settings`  | Consumer | Change PIN, account info                                               |
+| `/merchant/dashboard` | Merchant | Balance, incoming transactions, "Accept Payment" button                |
+| `/merchant/scan`      | Merchant | Camera QR scanner page                                                 |
+| `/merchant/amount`    | Merchant | Amount entry after QR scanned                                          |
+| `/merchant/handoff`   | Merchant | Full-screen PIN pad for consumer to enter PIN                          |
+| `/merchant/result`    | Merchant | Success or failure confirmation                                        |
+| `/merchant/history`   | Merchant | Full incoming transaction history                                      |
+| `/feedback`           | Both     | Short satisfaction form (Level 4 requirement)                          |
 
 ### Key UI States to Handle
 
 **`/merchant/handoff` (most critical screen):**
+
 - Must fill the entire screen (no UI chrome visible)
 - Large PIN dot indicators (not digits)
 - "Cancel" button accessible to merchant (bottom corner, small)
@@ -346,11 +353,13 @@ All pages must be mobile-responsive (320px–1200px). The primary use case is th
 - No back-navigation visible to consumer (prevents confusion)
 
 **`/merchant/scan`:**
+
 - Must request camera permission gracefully
 - Fallback: manual wallet address entry for devices where camera fails
 - Show last scanned QR with option to re-scan
 
 **Loading states required on:**
+
 - All form submissions
 - QR scan processing
 - Payment processing (show "Processing payment..." spinner with estimated time)
@@ -362,39 +371,39 @@ All pages must be mobile-responsive (320px–1200px). The primary use case is th
 
 ### `users` table
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID (PK) | Auto-generated |
-| `email` | VARCHAR UNIQUE | User's email address |
-| `role` | ENUM ('consumer', 'merchant') | Determines routing after login |
-| `business_name` | VARCHAR NULLABLE | Merchant only |
-| `stellar_public_key` | VARCHAR | The wallet's public address |
-| `stellar_private_key_enc` | TEXT | AES-256 encrypted private key |
-| `created_at` | TIMESTAMP | Account creation time |
-| `last_login` | TIMESTAMP | Last successful login |
+| Column                    | Type                          | Notes                          |
+| ------------------------- | ----------------------------- | ------------------------------ |
+| `id`                      | UUID (PK)                     | Auto-generated                 |
+| `email`                   | VARCHAR UNIQUE                | User's email address           |
+| `role`                    | ENUM ('consumer', 'merchant') | Determines routing after login |
+| `business_name`           | VARCHAR NULLABLE              | Merchant only                  |
+| `stellar_public_key`      | VARCHAR                       | The wallet's public address    |
+| `stellar_private_key_enc` | TEXT                          | AES-256 encrypted private key  |
+| `created_at`              | TIMESTAMP                     | Account creation time          |
+| `last_login`              | TIMESTAMP                     | Last successful login          |
 
 ### `transactions` table
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID (PK) | Auto-generated |
-| `stellar_tx_hash` | VARCHAR UNIQUE | On-chain transaction hash |
-| `from_user_id` | UUID (FK → users) | Consumer |
-| `to_user_id` | UUID (FK → users) | Merchant |
-| `amount_xlm` | DECIMAL | Amount transferred |
-| `amount_php_approx` | DECIMAL NULLABLE | Approximate PHP value at time of transaction |
-| `status` | ENUM ('success', 'failed') | Result |
-| `created_at` | TIMESTAMP | When transaction was processed |
+| Column              | Type                       | Notes                                        |
+| ------------------- | -------------------------- | -------------------------------------------- |
+| `id`                | UUID (PK)                  | Auto-generated                               |
+| `stellar_tx_hash`   | VARCHAR UNIQUE             | On-chain transaction hash                    |
+| `from_user_id`      | UUID (FK → users)          | Consumer                                     |
+| `to_user_id`        | UUID (FK → users)          | Merchant                                     |
+| `amount_xlm`        | DECIMAL                    | Amount transferred                           |
+| `amount_php_approx` | DECIMAL NULLABLE           | Approximate PHP value at time of transaction |
+| `status`            | ENUM ('success', 'failed') | Result                                       |
+| `created_at`        | TIMESTAMP                  | When transaction was processed               |
 
 ### `otp_codes` table
 
-| Column | Type | Notes |
-|---|---|---|
-| `id` | UUID (PK) | Auto-generated |
-| `email` | VARCHAR | Target email |
-| `code` | VARCHAR(6) | 6-digit OTP |
-| `expires_at` | TIMESTAMP | 10 minutes from creation |
-| `used` | BOOLEAN | Prevent replay |
+| Column       | Type       | Notes                    |
+| ------------ | ---------- | ------------------------ |
+| `id`         | UUID (PK)  | Auto-generated           |
+| `email`      | VARCHAR    | Target email             |
+| `code`       | VARCHAR(6) | 6-digit OTP              |
+| `expires_at` | TIMESTAMP  | 10 minutes from creation |
+| `used`       | BOOLEAN    | Prevent replay           |
 
 ---
 
@@ -402,21 +411,22 @@ All pages must be mobile-responsive (320px–1200px). The primary use case is th
 
 All endpoints are Next.js API Routes under `/api/`.
 
-| Method | Route | Description |
-|---|---|---|
-| POST | `/api/auth/request-otp` | Send OTP to email |
-| POST | `/api/auth/verify-otp` | Verify OTP, return session token |
-| POST | `/api/user/register` | Create user + generate Stellar wallet |
-| GET | `/api/user/me` | Get current user profile + balance |
-| GET | `/api/user/qr` | Return QR code image for consumer wallet |
-| POST | `/api/payment/initiate` | Process payment: verify hash, sign tx, submit |
-| GET | `/api/transactions` | Get transaction history for current user |
-| POST | `/api/feedback` | Submit user feedback |
-| GET | `/api/wallet/balance` | Get current XLM balance from Stellar |
+| Method | Route                   | Description                                   |
+| ------ | ----------------------- | --------------------------------------------- |
+| POST   | `/api/auth/request-otp` | Send OTP to email                             |
+| POST   | `/api/auth/verify-otp`  | Verify OTP, return session token              |
+| POST   | `/api/user/register`    | Create user + generate Stellar wallet         |
+| GET    | `/api/user/me`          | Get current user profile + balance            |
+| GET    | `/api/user/qr`          | Return QR code image for consumer wallet      |
+| POST   | `/api/payment/initiate` | Process payment: verify hash, sign tx, submit |
+| GET    | `/api/transactions`     | Get transaction history for current user      |
+| POST   | `/api/feedback`         | Submit user feedback                          |
+| GET    | `/api/wallet/balance`   | Get current XLM balance from Stellar          |
 
 ### `/api/payment/initiate` — Detail
 
 **Request body:**
+
 ```json
 {
   "consumer_wallet": "GABC...XYZ",
@@ -427,6 +437,7 @@ All endpoints are Next.js API Routes under `/api/`.
 ```
 
 **Server-side process:**
+
 1. Authenticate merchant (session check)
 2. Retrieve consumer's encrypted private key from Supabase
 3. Decrypt private key in memory (never log or persist decrypted key)
@@ -438,6 +449,7 @@ All endpoints are Next.js API Routes under `/api/`.
 9. Scrub decrypted private key from memory
 
 **Response codes:**
+
 - `200` — Payment successful
 - `400` — Invalid PIN / Wallet locked / Insufficient balance (error code in body)
 - `401` — Merchant not authenticated
@@ -453,13 +465,13 @@ Only the consumer's **Stellar public key**. This is public information by design
 
 ### PIN Security
 
-| Stage | What happens |
-|---|---|
-| Consumer enters PIN | Raw digits typed on screen, masked with dots |
-| Client-side hashing | `SHA-256(raw_pin + stellar_public_key)` computed in browser |
-| Transmission | Only the hash is sent to the server — raw PIN never transmitted |
-| Server-side | Hash is included in the Soroban transaction — server never sees raw PIN |
-| On-chain storage | Only the hash stored in contract storage — irreversible |
+| Stage               | What happens                                                            |
+| ------------------- | ----------------------------------------------------------------------- |
+| Consumer enters PIN | Raw digits typed on screen, masked with dots                            |
+| Client-side hashing | `SHA-256(raw_pin + stellar_public_key)` computed in browser             |
+| Transmission        | Only the hash is sent to the server — raw PIN never transmitted         |
+| Server-side         | Hash is included in the Soroban transaction — server never sees raw PIN |
+| On-chain storage    | Only the hash stored in contract storage — irreversible                 |
 
 **The raw PIN never leaves the browser.** Even if the API server is compromised, no PINs are exposed.
 
@@ -484,6 +496,7 @@ They have your public key. Without your 4-digit PIN, they cannot initiate any pa
 ### PIN entry on merchant's phone — social risk
 
 The consumer types their PIN on the merchant's device. Mitigations:
+
 - PIN digits are masked (dots only), making shoulder-surfing harder
 - Large PIN pad fills the full screen to minimize viewing angles
 - The merchant is physically present — same trust level as entering an ATM PIN at a terminal
@@ -495,15 +508,18 @@ This is an accepted UX trade-off for the offline-phone use case. Future versions
 ## 13. Non-Functional Requirements
 
 ### Performance
+
 - Payment flow (from PIN entry to confirmation) must complete in under 5 seconds on average
 - Page load time under 3 seconds on a 4G mobile connection
 - QR scanner must initialize within 2 seconds of entering scan page
 
 ### Availability
+
 - Target: 99% uptime (Vercel + Supabase free tier SLAs)
 - Graceful degradation: show clear error screens when Stellar network is slow, not blank pages
 
 ### Mobile-First Design
+
 - All screens designed at 375px width first
 - Touch targets minimum 44×44px
 - No horizontal scrolling on any screen
@@ -511,6 +527,7 @@ This is an accepted UX trade-off for the offline-phone use case. Future versions
 - Camera permission handled gracefully with fallback input
 
 ### Error Handling (all cases must be handled explicitly)
+
 - Wrong PIN (1st/2nd attempt) — show remaining attempts
 - Wrong PIN (3rd attempt) — show lockout with timer
 - Insufficient XLM balance — show balance + top-up link
@@ -520,6 +537,7 @@ This is an accepted UX trade-off for the offline-phone use case. Future versions
 - Stellar network degraded — show status message
 
 ### Monitoring & Analytics
+
 - Vercel Analytics enabled for page views and web vitals
 - Custom analytics events to track:
   - Successful payments (count + total volume)
@@ -531,23 +549,23 @@ This is an accepted UX trade-off for the offline-phone use case. Future versions
 
 ## 14. Tech Stack
 
-| Layer | Technology | Reason |
-|---|---|---|
-| Frontend Framework | Next.js 14 (App Router) | SSR, file-based routing, API routes in one codebase |
-| Styling | Tailwind CSS | Mobile-first, rapid development |
-| UI Components | shadcn/ui | Accessible, unstyled base components |
-| QR Scanner | `@zxing/browser` | Best-in-class browser camera QR scanning |
-| QR Generator | `qrcode.react` | Simple, reliable QR image generation |
-| Authentication | Supabase Auth (email OTP) | Free, simple, no password management needed |
-| Database | Supabase (PostgreSQL) | Free tier, real-time, integrates with auth |
-| Blockchain | Stellar Testnet | Level 4 requirement; fast, low-fee transactions |
-| Smart Contracts | Rust + Soroban SDK | Stellar's native smart contract platform |
-| Stellar SDK | `@stellar/stellar-sdk` (JS) | Official SDK for transaction building and submission |
-| Key Encryption | Node.js `crypto` (AES-256-GCM) | Built-in, no extra dependencies |
-| PIN Hashing | Web Crypto API (SHA-256) | Client-side, browser-native, no library needed |
-| Hosting | Vercel (free tier) | Auto-deploys from GitHub, free SSL |
-| Analytics | Vercel Analytics | Zero-config, privacy-friendly |
-| Version Control | GitHub (public repo) | Level 4 requirement |
+| Layer              | Technology                     | Reason                                               |
+| ------------------ | ------------------------------ | ---------------------------------------------------- |
+| Frontend Framework | Next.js 14 (App Router)        | SSR, file-based routing, API routes in one codebase  |
+| Styling            | Tailwind CSS                   | Mobile-first, rapid development                      |
+| UI Components      | shadcn/ui                      | Accessible, unstyled base components                 |
+| QR Scanner         | `@zxing/browser`               | Best-in-class browser camera QR scanning             |
+| QR Generator       | `qrcode.react`                 | Simple, reliable QR image generation                 |
+| Authentication     | Supabase Auth (email OTP)      | Free, simple, no password management needed          |
+| Database           | Supabase (PostgreSQL)          | Free tier, real-time, integrates with auth           |
+| Blockchain         | Stellar Testnet                | Level 4 requirement; fast, low-fee transactions      |
+| Smart Contracts    | Rust + Soroban SDK             | Stellar's native smart contract platform             |
+| Stellar SDK        | `@stellar/stellar-sdk` (JS)    | Official SDK for transaction building and submission |
+| Key Encryption     | Node.js `crypto` (AES-256-GCM) | Built-in, no extra dependencies                      |
+| PIN Hashing        | Web Crypto API (SHA-256)       | Client-side, browser-native, no library needed       |
+| Hosting            | Vercel (free tier)             | Auto-deploys from GitHub, free SSL                   |
+| Analytics          | Vercel Analytics               | Zero-config, privacy-friendly                        |
+| Version Control    | GitHub (public repo)           | Level 4 requirement                                  |
 
 ---
 
@@ -556,6 +574,7 @@ This is an accepted UX trade-off for the offline-phone use case. Future versions
 Use this checklist before your Level 4 submission.
 
 ### Production MVP
+
 - [ ] Web app is deployed and publicly accessible via a live URL
 - [ ] Consumer registration flow works end-to-end
 - [ ] Merchant registration flow works end-to-end
@@ -564,17 +583,20 @@ Use this checklist before your Level 4 submission.
 - [ ] Smart contract handles: successful payment, wrong PIN, lockout, insufficient balance
 
 ### Stable Architecture
+
 - [ ] Frontend and smart contract code are separated cleanly in the repo
 - [ ] Environment variables used for all secrets (no hardcoded keys)
 - [ ] Error boundaries in place — no uncaught exceptions visible to users
 
 ### Mobile Responsive UI
+
 - [ ] Tested on 375px (iPhone SE), 390px (iPhone 14), 412px (Pixel)
 - [ ] All touch targets are at least 44×44px
 - [ ] Merchant scan page works on mobile browser camera
 - [ ] No horizontal scroll on any page
 
 ### Loading States & Error Handling
+
 - [ ] Payment processing shows spinner (prevents double-tap)
 - [ ] Wrong PIN shows remaining attempts
 - [ ] Wallet lockout shows clear message + countdown
@@ -582,11 +604,13 @@ Use this checklist before your Level 4 submission.
 - [ ] Camera permission denial shows fallback input
 
 ### User Onboarding (minimum 10 real users)
+
 - [ ] At least 10 unique users have created accounts
 - [ ] At least 10 real on-chain wallet interactions (visible on Stellar testnet explorer)
 - [ ] User feedback collected (link to feedback form shared with all users)
 
 ### Product Quality
+
 - [ ] Vercel Analytics enabled and showing data
 - [ ] Feedback form responses saved (Google Form or Supabase)
 - [ ] README.md in GitHub repo explains the project clearly
@@ -594,11 +618,13 @@ Use this checklist before your Level 4 submission.
 - [ ] No console errors in production
 
 ### Technical Standards
+
 - [ ] Soroban contract deployed to Stellar Testnet (contract address documented in README)
 - [ ] At least 15 meaningful commits in the public GitHub repo
 - [ ] Commits follow a pattern: `feat:`, `fix:`, `contract:`, `docs:` prefixes
 
 ### Demo & Review
+
 - [ ] Live demo video recorded (screen record the full payment flow)
 - [ ] Video shows: consumer QR sticker, merchant scan, PIN entry, confirmation
 - [ ] README includes link to live app + contract address on testnet explorer
@@ -625,6 +651,7 @@ The following are explicitly excluded from the Level 4 MVP and should not be bui
 ## 17. Future Roadmap
 
 ### Level 5 (Blue Belt) — Scale & Feedback
+
 - Onboard 50 real users (from campus pilot)
 - Professional pitch deck for PeraPin
 - In-app feedback system with ratings
@@ -633,6 +660,7 @@ The following are explicitly excluded from the Level 4 MVP and should not be bui
 - Basic KYC (email + school ID photo) for higher limits
 
 ### Level 6 (Black Belt) — Mainnet Launch
+
 - Deploy smart contract to Stellar Mainnet
 - At least 20 real mainnet users
 - Security audit of smart contract before mainnet
@@ -642,6 +670,7 @@ The following are explicitly excluded from the Level 4 MVP and should not be bui
 - 30+ total users with proof of on-chain activity
 
 ### Post-Level 6 Vision
+
 - NFC sticker variant (upgrade from QR)
 - Merchant API for integration with existing POS systems
 - "PeraPin Business" tier with merchant analytics and bulk management
@@ -650,6 +679,6 @@ The following are explicitly excluded from the Level 4 MVP and should not be bui
 
 ---
 
-*This PRD covers the complete Level 4 (Green Belt) MVP scope. Refer to this document before implementing each feature. Update this document when scope changes are agreed upon.*
+_This PRD covers the complete Level 4 (Green Belt) MVP scope. Refer to this document before implementing each feature. Update this document when scope changes are agreed upon._
 
-*Built for the Stellar Journey to Mastery — Monthly Builder Challenges (Rise In × Stellar Foundation)*
+_Built for the Stellar Journey to Mastery — Monthly Builder Challenges (Rise In × Stellar Foundation)_
