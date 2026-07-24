@@ -26,7 +26,7 @@
 
 use soroban_sdk::{
     contract, contractimpl, contracttype, contracterror,
-    Address, BytesN, Env, Symbol,
+    token, Address, BytesN, Env, MuxedAddress, Symbol,
     log,
 };
 
@@ -51,6 +51,12 @@ pub enum DataKey {
     /// Ledger timestamp (u64) recorded when FailedAttempts reaches 3.
     /// Used to check whether the 15-minute lockout window has elapsed.
     LockTimestamp(Address),
+
+    /// Configured canonical native-XLM Stellar Asset Contract address.
+    NativeToken,
+
+    /// Deployment operator permitted to make one-time configuration calls.
+    Admin,
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -100,6 +106,8 @@ pub enum ContractError {
 
     /// Caller is not authorized to perform this operation.
     Unauthorized = 8,
+
+    NativeTokenNotConfigured = 9,
 }
 
 // ─────────────────────────────────────────────────────────────────
@@ -111,6 +119,18 @@ pub struct PeraPinContract;
 
 #[contractimpl]
 impl PeraPinContract {
+
+    /// One-time post-deployment setup. Pass the Testnet native-XLM Stellar
+    /// Asset Contract address, then register wallets and settle payments.
+    pub fn initialize(env: Env, admin: Address, native_token: Address) -> Result<(), ContractError> {
+        if env.storage().instance().has(&DataKey::NativeToken) {
+            return Err(ContractError::Unauthorized);
+        }
+        admin.require_auth();
+        env.storage().instance().set(&DataKey::Admin, &admin);
+        env.storage().instance().set(&DataKey::NativeToken, &native_token);
+        Ok(())
+    }
 
     // ─────────────────────────────────────────────────────────────
     //  REGISTRATION
@@ -264,6 +284,20 @@ impl PeraPinContract {
         // bundled in the same transaction as the payment operation.
         //
         // Emit an on-chain event for auditability and indexing.
+        // Settle inside the contract. A wrong PIN returns Ok(false) so that the
+        // failed-attempt state persists; placing a payment operation after this
+        // invocation would incorrectly transfer on a wrong PIN.
+        let native_token: Address = env
+            .storage()
+            .instance()
+            .get(&DataKey::NativeToken)
+            .ok_or(ContractError::NativeTokenNotConfigured)?;
+        let token_client = token::Client::new(&env, &native_token);
+        if token_client.balance(&from) < amount_stroops {
+            return Err(ContractError::InsufficientBalance);
+        }
+        token_client.transfer(&from, &MuxedAddress::from(to.clone()), &amount_stroops);
+
         env.events().publish(
             (Symbol::new(&env, "payment"), from.clone()),
             (to.clone(), amount_stroops),
@@ -516,19 +550,26 @@ mod tests {
         BytesN::from_array(env, &bytes)
     }
 
-    fn setup() -> (Env, PeraPinContractClient<'static>) {
+    fn setup() -> (Env, PeraPinContractClient<'static>, Address) {
         let env = Env::default();
         env.mock_all_auths();
         let contract_id = env.register(PeraPinContract, ());
         let client = PeraPinContractClient::new(&env, &contract_id);
-        (env, client)
+        let admin = Address::generate(&env);
+        let token_id = env.register_stellar_asset_contract_v2(admin.clone()).address();
+        client.initialize(&admin, &token_id);
+        (env, client, token_id)
+    }
+
+    fn fund(env: &Env, token_id: &Address, wallet: &Address) {
+        token::StellarAssetClient::new(env, token_id).mint(wallet, &100_000_000i128);
     }
 
     // ── Registration Tests ────────────────────────────────────────
 
     #[test]
     fn test_register_success() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let wallet = Address::generate(&env);
         let pin_hash = make_hash(&env, 1);
 
@@ -539,7 +580,7 @@ mod tests {
 
     #[test]
     fn test_register_duplicate_fails() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let wallet = Address::generate(&env);
         let pin_hash = make_hash(&env, 1);
 
@@ -557,15 +598,20 @@ mod tests {
 
     #[test]
     fn test_pay_success() {
-        let (env, client) = setup();
+        let (env, client, token_id) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let pin_hash = make_hash(&env, 42);
 
         client.register(&consumer, &pin_hash);
+        fund(&env, &token_id, &consumer);
 
         let result = client.pay(&consumer, &merchant, &10_000_000i128, &pin_hash);
         assert_eq!(result, true);
+
+        let token_client = token::Client::new(&env, &token_id);
+        assert_eq!(token_client.balance(&consumer), 90_000_000i128);
+        assert_eq!(token_client.balance(&merchant), 10_000_000i128);
 
         // Failed attempts should be reset to 0
         assert_eq!(client.get_failed_attempts(&consumer), 0);
@@ -573,7 +619,7 @@ mod tests {
 
     #[test]
     fn test_pay_wrong_pin_increments_attempts() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let correct_hash = make_hash(&env, 42);
@@ -593,7 +639,7 @@ mod tests {
 
     #[test]
     fn test_pay_lockout_after_three_failures() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let correct_hash = make_hash(&env, 42);
@@ -615,13 +661,14 @@ mod tests {
 
     #[test]
     fn test_lockout_expires_after_15_minutes() {
-        let (env, client) = setup();
+        let (env, client, token_id) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let correct_hash = make_hash(&env, 42);
         let wrong_hash = make_hash(&env, 99);
 
         client.register(&consumer, &correct_hash);
+        fund(&env, &token_id, &consumer);
 
         // Lock the wallet
         for _ in 0..3 {
@@ -643,13 +690,14 @@ mod tests {
 
     #[test]
     fn test_pay_resets_counter_on_success() {
-        let (env, client) = setup();
+        let (env, client, token_id) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let correct_hash = make_hash(&env, 42);
         let wrong_hash = make_hash(&env, 99);
 
         client.register(&consumer, &correct_hash);
+        fund(&env, &token_id, &consumer);
 
         // Two failed attempts
         assert_eq!(client.pay(&consumer, &merchant, &10_000_000i128, &wrong_hash), false);
@@ -665,13 +713,14 @@ mod tests {
 
     #[test]
     fn test_change_pin_success() {
-        let (env, client) = setup();
+        let (env, client, token_id) = setup();
         let wallet = Address::generate(&env);
         let old_hash = make_hash(&env, 1);
         let new_hash = make_hash(&env, 2);
         let merchant = Address::generate(&env);
 
         client.register(&wallet, &old_hash);
+        fund(&env, &token_id, &wallet);
 
         // Change PIN
         let result = client.try_change_pin(&wallet, &old_hash, &new_hash);
@@ -688,7 +737,7 @@ mod tests {
 
     #[test]
     fn test_change_pin_wrong_old_hash_fails() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let wallet = Address::generate(&env);
         let correct_hash = make_hash(&env, 1);
         let wrong_hash = make_hash(&env, 9);
@@ -704,7 +753,7 @@ mod tests {
 
     #[test]
     fn test_unregistered_wallet_not_locked() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let wallet = Address::generate(&env);
         assert!(!client.is_locked(&wallet));
         assert!(!client.is_registered(&wallet));
@@ -712,7 +761,7 @@ mod tests {
 
     #[test]
     fn test_pay_unregistered_wallet_fails() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let hash = make_hash(&env, 1);
@@ -723,7 +772,7 @@ mod tests {
 
     #[test]
     fn test_pay_zero_amount_fails() {
-        let (env, client) = setup();
+        let (env, client, _) = setup();
         let consumer = Address::generate(&env);
         let merchant = Address::generate(&env);
         let hash = make_hash(&env, 1);
