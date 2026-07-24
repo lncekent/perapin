@@ -1,46 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState, useSyncExternalStore } from "react";
 import { RefreshCw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { mockStorage } from "@/lib/services/mockStorage";
 import { InspectorLog } from "@/lib/types";
 
 export default function InspectorConsole() {
-  const [showConsole, setShowConsole] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [logs, setLogs] = useState<InspectorLog[]>([]);
+  const showConsole = useSyncExternalStore(subscribeToDebugMode, getDebugMode, () => false);
+  const logs = useSyncExternalStore(subscribeToInspectorLogs, getInspectorLogs, () => EMPTY_LOGS);
 
   useEffect(() => {
-    // Check if URL search has dev=true or dev=false
     const searchParams = new URLSearchParams(window.location.search);
     const devParam = searchParams.get("dev");
-
     if (devParam === "true") {
       localStorage.setItem("perapin_debug", "true");
-      setShowConsole(true);
     } else if (devParam === "false") {
       localStorage.removeItem("perapin_debug");
-      setShowConsole(false);
-    } else {
-      // Default to localStorage persistence
-      const isDevSaved = localStorage.getItem("perapin_debug") === "true";
-      setShowConsole(isDevSaved);
     }
-
-    // Load historical logs on mount
-    setLogs(mockStorage.getInspectorLogs());
-
-    // Listen for any new logs dispatched globally
-    const handleLogEvent = (e: Event) => {
-      const customEvent = e as CustomEvent<InspectorLog>;
-      setLogs((prev) => [customEvent.detail, ...prev].slice(0, 50));
-    };
-
-    window.addEventListener("perapin_log", handleLogEvent);
-    return () => {
-      window.removeEventListener("perapin_log", handleLogEvent);
-    };
   }, []);
 
   const handleReset = () => {
@@ -169,4 +146,43 @@ export default function InspectorConsole() {
       </AnimatePresence>
     </>
   );
+}
+
+const EMPTY_LOGS: InspectorLog[] = [];
+let cachedLogsRaw: string | null = null;
+let cachedLogs: InspectorLog[] = EMPTY_LOGS;
+
+function subscribeToDebugMode(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  return () => window.removeEventListener("storage", onStoreChange);
+}
+
+function getDebugMode() {
+  const devParam = new URLSearchParams(window.location.search).get("dev");
+  if (devParam === "true") return true;
+  if (devParam === "false") return false;
+  return window.localStorage.getItem("perapin_debug") === "true";
+}
+
+function subscribeToInspectorLogs(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener("perapin_log", onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener("perapin_log", onStoreChange);
+  };
+}
+
+function getInspectorLogs() {
+  const raw = window.localStorage.getItem("perapin_inspector_logs");
+  if (raw === cachedLogsRaw) return cachedLogs;
+  try {
+    cachedLogs = raw ? (JSON.parse(raw) as InspectorLog[]) : EMPTY_LOGS;
+    cachedLogsRaw = raw;
+    return cachedLogs;
+  } catch {
+    cachedLogsRaw = raw;
+    cachedLogs = EMPTY_LOGS;
+    return cachedLogs;
+  }
 }
