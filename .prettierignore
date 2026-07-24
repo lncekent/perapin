@@ -1,0 +1,12 @@
+# Build outputs
+.next/
+target/
+node_modules/
+
+# Generated files
+*.lock
+package-lock.json
+Cargo.lock
+
+# Config that should not be reformatted
+tsconfig.tsbuildinfo
