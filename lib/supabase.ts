@@ -9,6 +9,7 @@ export interface UserRecord {
   stellar_private_key_enc: string;
   created_at: string;
   last_login?: string;
+  pin_registered_at?: string | null;
 }
 
 export interface TransactionRecord {
@@ -23,6 +24,15 @@ export interface TransactionRecord {
   created_at: string;
 }
 
+export interface FeedbackRecord {
+  id: string;
+  user_id?: string | null;
+  role: "consumer" | "merchant";
+  rating: number;
+  comments: string;
+  created_at: string;
+}
+
 // Global in-memory fallback database for local dev prior to Supabase credentials
 const memoryStore = {
   users: new Map<string, UserRecord>(),
@@ -34,7 +44,7 @@ const memoryStore = {
 let supabaseClient: SupabaseClient | null = null;
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 // Polyfill globalThis.WebSocket for Node 20 server environments if not defined
 if (typeof window === "undefined" && !globalThis.WebSocket) {
@@ -46,7 +56,12 @@ if (typeof window === "undefined" && !globalThis.WebSocket) {
   }
 }
 
-if (supabaseUrl && supabaseKey && supabaseUrl !== "MY_SUPABASE_URL") {
+if (
+  supabaseUrl &&
+  supabaseKey &&
+  !supabaseUrl.startsWith("PUT_YOUR") &&
+  !supabaseKey.startsWith("PUT_YOUR")
+) {
   supabaseClient = createClient(supabaseUrl, supabaseKey, {
     auth: { persistSession: false },
   });
@@ -84,10 +99,19 @@ export async function dbGetUserByPublicKey(publicKey: string): Promise<UserRecor
   return memoryStore.usersByPublicKey.get(publicKey) || null;
 }
 
-export async function dbCreateUser(user: Omit<UserRecord, "id" | "created_at">): Promise<UserRecord> {
+export async function dbGetUserById(id: string): Promise<UserRecord | null> {
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient.from("users").select("*").eq("id", id).single();
+    if (error || !data) return null;
+    return data as UserRecord;
+  }
+  return memoryStore.users.get(id) || null;
+}
+
+export async function dbCreateUser(user: Omit<UserRecord, "created_at">): Promise<UserRecord> {
   const newRecord: UserRecord = {
     ...user,
-    id: crypto.randomUUID(),
+    id: user.id || crypto.randomUUID(),
     email: user.email.toLowerCase(),
     created_at: new Date().toISOString(),
   };
@@ -109,7 +133,34 @@ export async function dbCreateUser(user: Omit<UserRecord, "id" | "created_at">):
   return newRecord;
 }
 
-export async function dbRecordTransaction(tx: Omit<TransactionRecord, "id" | "created_at">): Promise<TransactionRecord> {
+export async function dbMarkPinRegistered(userId: string): Promise<void> {
+  const timestamp = new Date().toISOString();
+  if (supabaseClient) {
+    const { error } = await supabaseClient
+      .from("users")
+      .update({ pin_registered_at: timestamp })
+      .eq("id", userId);
+    if (error) throw new Error(`Supabase PIN registration update error: ${error.message}`);
+    return;
+  }
+  const user = memoryStore.users.get(userId);
+  if (!user) throw new Error("User not found");
+  user.pin_registered_at = timestamp;
+}
+
+export async function dbUpdateLastLogin(userId: string): Promise<void> {
+  const timestamp = new Date().toISOString();
+  if (supabaseClient) {
+    await supabaseClient.from("users").update({ last_login: timestamp }).eq("id", userId);
+    return;
+  }
+  const user = memoryStore.users.get(userId);
+  if (user) user.last_login = timestamp;
+}
+
+export async function dbRecordTransaction(
+  tx: Omit<TransactionRecord, "id" | "created_at">,
+): Promise<TransactionRecord> {
   const record: TransactionRecord = {
     ...tx,
     id: crypto.randomUUID(),
@@ -142,6 +193,26 @@ export async function dbGetTransactionsForUser(publicKey: string): Promise<Trans
   }
 
   return memoryStore.transactions.filter(
-    (t) => t.from_public_key === publicKey || t.to_public_key === publicKey
+    (t) => t.from_public_key === publicKey || t.to_public_key === publicKey,
   );
+}
+
+export async function dbRecordFeedback(
+  feedback: Omit<FeedbackRecord, "id" | "created_at">,
+): Promise<FeedbackRecord> {
+  const record: FeedbackRecord = {
+    ...feedback,
+    id: crypto.randomUUID(),
+    created_at: new Date().toISOString(),
+  };
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient
+      .from("feedback")
+      .insert([record])
+      .select()
+      .single();
+    if (error) throw new Error(`Supabase feedback insert error: ${error.message}`);
+    return data as FeedbackRecord;
+  }
+  return record;
 }

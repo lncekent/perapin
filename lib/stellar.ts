@@ -11,21 +11,35 @@ import {
 } from "@stellar/stellar-sdk";
 
 export const STELLAR_NETWORK_PASSPHRASE =
-  process.env.NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE ||
-  "Test SDF Network ; September 2015";
+  process.env.NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE || "Test SDF Network ; September 2015";
 
 export const STELLAR_RPC_URL =
-  process.env.NEXT_PUBLIC_SOROBAN_RPC_URL ||
-  "https://soroban-testnet.stellar.org";
+  process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || "https://soroban-testnet.stellar.org";
 
 export const HORIZON_URL = "https://horizon-testnet.stellar.org";
 
 export const CONTRACT_ID =
-  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID ||
-  "CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND";
+  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID || "";
 
 const sorobanServer = new SorobanRpc.Server(STELLAR_RPC_URL);
 const horizonServer = new Horizon.Server(HORIZON_URL);
+
+async function waitForFinalTransaction(
+  hash: string,
+): Promise<{ success: boolean; error?: string; returnValue?: xdr.ScVal }> {
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
+    const result = await sorobanServer.getTransaction(hash);
+    if (result.status === "SUCCESS") {
+      return { success: true, returnValue: result.returnValue };
+    }
+    if (result.status === "FAILED") {
+      return { success: false, error: "The Soroban transaction failed on Stellar Testnet." };
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  return { success: false, error: "Timed out waiting for Stellar Testnet confirmation." };
+}
 
 /**
  * Generates a new random Stellar keypair for onboarding a consumer or merchant.
@@ -70,7 +84,7 @@ export async function checkIsLockedOnChain(walletAddress: string): Promise<boole
   try {
     const addressScVal = new Address(walletAddress).toScVal();
     const result = await sorobanServer.simulateTransaction(
-      await buildContractTx(walletAddress, "is_locked", [addressScVal])
+      await buildContractTx(walletAddress, "is_locked", [addressScVal]),
     );
     if (SorobanRpc.Api.isSimulationSuccess(result) && result.result) {
       return Boolean(scValToNative(result.result.retval));
@@ -87,8 +101,11 @@ export async function checkIsLockedOnChain(walletAddress: string): Promise<boole
 async function buildContractTx(
   sourceAddress: string,
   functionName: string,
-  args: xdr.ScVal[] = []
+  args: xdr.ScVal[] = [],
 ) {
+  if (!CONTRACT_ID) {
+    throw new Error("NEXT_PUBLIC_SOROBAN_CONTRACT_ID must be set to the newly deployed PeraPin contract.");
+  }
   const account = await sorobanServer.getAccount(sourceAddress);
 
   const tx = new TransactionBuilder(account, {
@@ -100,7 +117,7 @@ async function buildContractTx(
         contract: CONTRACT_ID,
         function: functionName,
         args,
-      })
+      }),
     )
     .setTimeout(30)
     .build();
@@ -113,7 +130,7 @@ async function buildContractTx(
  */
 export async function invokeRegisterOnChain(
   walletSecretKey: string,
-  pinHashHex: string
+  pinHashHex: string,
 ): Promise<{ success: boolean; hash?: string; error?: string }> {
   try {
     const keypair = Keypair.fromSecret(walletSecretKey);
@@ -141,8 +158,10 @@ export async function invokeRegisterOnChain(
     if (sendResult.status === "ERROR" || !sendResult.hash) {
       return { success: false, error: `Transaction submission error: ${sendResult.status}` };
     }
-
-    return { success: true, hash: sendResult.hash };
+    const finalResult = await waitForFinalTransaction(sendResult.hash);
+    return finalResult.success
+      ? { success: true, hash: sendResult.hash }
+      : { success: false, error: finalResult.error };
   } catch (err: any) {
     return { success: false, error: err.message || "Failed to register on-chain" };
   }
@@ -156,7 +175,7 @@ export async function invokePayOnChain(
   consumerSecretKey: string,
   merchantPublicKey: string,
   amountXlm: number,
-  pinHashHex: string
+  pinHashHex: string,
 ): Promise<{ success: boolean; txHash?: string; isLocked?: boolean; error?: string }> {
   try {
     const consumerPair = Keypair.fromSecret(consumerSecretKey);
@@ -190,8 +209,54 @@ export async function invokePayOnChain(
       return { success: false, error: `On-chain submission error: ${sendResult.status}` };
     }
 
+    const finalResult = await waitForFinalTransaction(sendResult.hash);
+    if (!finalResult.success) return { success: false, error: finalResult.error };
+
+    // The current deployed contract returns false for a wrong PIN rather than
+    // reverting, so submission alone must never be treated as settlement.
+    if (finalResult.returnValue && scValToNative(finalResult.returnValue) === false) {
+      return { success: false, error: "INVALID_PIN" };
+    }
     return { success: true, txHash: sendResult.hash };
   } catch (err: any) {
     return { success: false, error: err.message || "Soroban payment invocation failed" };
+  }
+}
+
+/** Invokes change_pin with hashes that were computed in the browser. */
+export async function invokeChangePinOnChain(
+  walletSecretKey: string,
+  oldHashHex: string,
+  newHashHex: string,
+): Promise<{ success: boolean; txHash?: string; error?: string }> {
+  try {
+    const keypair = Keypair.fromSecret(walletSecretKey);
+    const oldHash = Buffer.from(oldHashHex, "hex");
+    const newHash = Buffer.from(newHashHex, "hex");
+    if (oldHash.length !== 32 || newHash.length !== 32)
+      return { success: false, error: "PIN hashes must be 32 bytes." };
+
+    const tx = await buildContractTx(keypair.publicKey(), "change_pin", [
+      new Address(keypair.publicKey()).toScVal(),
+      nativeToScVal(oldHash, { type: "bytes" }),
+      nativeToScVal(newHash, { type: "bytes" }),
+    ]);
+    const simulation = await sorobanServer.simulateTransaction(tx);
+    if (!SorobanRpc.Api.isSimulationSuccess(simulation))
+      return { success: false, error: "PIN update was rejected by the contract." };
+    const prepared = SorobanRpc.assembleTransaction(tx, simulation).build();
+    prepared.sign(keypair);
+    const sent = await sorobanServer.sendTransaction(prepared);
+    if (sent.status === "ERROR" || !sent.hash)
+      return { success: false, error: `Transaction submission error: ${sent.status}` };
+    const finalResult = await waitForFinalTransaction(sent.hash);
+    return finalResult.success
+      ? { success: true, txHash: sent.hash }
+      : { success: false, error: finalResult.error };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unable to change PIN.",
+    };
   }
 }

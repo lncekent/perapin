@@ -1,9 +1,4 @@
-import {
-  CustomerAccount,
-  Transaction,
-  InspectorLog,
-  MerchantAccount,
-} from "../types";
+import { CustomerAccount, Transaction, InspectorLog, MerchantAccount } from "../types";
 
 const DEMO_MERCHANTS: MerchantAccount[] = [
   {
@@ -64,8 +59,7 @@ const INITIAL_TRANSACTIONS: Transaction[] = [
     timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
     status: "success",
     ledgerIndex: 6421092,
-    txHash:
-      "0x82f1b822d991b29a8fcf12398d7912a7a8d8e1c2e1f292398282717a2818a721",
+    txHash: "0x82f1b822d991b29a8fcf12398d7912a7a8d8e1c2e1f292398282717a2818a721",
   },
 ];
 
@@ -89,10 +83,7 @@ export const mockStorage = {
     if (typeof window === "undefined") return [];
     const saved = localStorage.getItem("perapin_transactions");
     if (!saved) {
-      localStorage.setItem(
-        "perapin_transactions",
-        JSON.stringify(INITIAL_TRANSACTIONS),
-      );
+      localStorage.setItem("perapin_transactions", JSON.stringify(INITIAL_TRANSACTIONS));
       return INITIAL_TRANSACTIONS;
     }
     return JSON.parse(saved);
@@ -112,9 +103,7 @@ export const mockStorage = {
     const customers = this.getCustomers();
     // Exclude demo customers to find if a new user has registered
     const userCreated = customers.filter(
-      (c) =>
-        !c.customerId.startsWith("PP-0988") &&
-        !c.customerId.startsWith("PP-0812"),
+      (c) => !c.customerId.startsWith("PP-0988") && !c.customerId.startsWith("PP-0812"),
     );
     if (userCreated.length > 0) {
       return userCreated[userCreated.length - 1];
