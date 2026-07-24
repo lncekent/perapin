@@ -76,6 +76,25 @@ stellar contract deploy \
   --alias perapin
 ```
 
+## Production MVP setup
+
+The app uses Supabase Auth email OTP, Supabase Postgres, and encrypted
+custodial Testnet wallets. Before deploying, run
+[`docs/supabase-schema.sql`](docs/supabase-schema.sql) in the Supabase SQL
+editor, configure the Supabase email template to include the six-digit OTP
+token, and populate every variable in `.env.example`.
+
+The current production contract source now settles XLM through Stellar's
+native asset contract inside `pay`; it must be redeployed before use. After
+deployment, initialize it once with an operator address and the Testnet native
+XLM Stellar Asset Contract address, then set `NEXT_PUBLIC_SOROBAN_CONTRACT_ID`
+to the new contract ID. Do not use the previous contract ID: it only validated
+PINs and did not move XLM.
+
+For Level 4 evidence, document the deployed URL and contract explorer URL here,
+then onboard ten real Testnet users, save their feedback through `/feedback`,
+and record the scan → amount → PIN → confirmation flow.
+
 ## Sample CLI invocation
 
 Register a consumer (dummy address and PIN hash — replace with real values):
