@@ -25,8 +25,8 @@
 #![no_std]
 
 use soroban_sdk::{
-    contract, contractimpl, contracttype, contracterror,
-    token, Address, BytesN, Env, MuxedAddress, Symbol,
+    contract, contractevent, contractimpl, contracttype, contracterror,
+    token, Address, BytesN, Env, MuxedAddress,
     log,
 };
 
@@ -116,6 +116,15 @@ pub enum ContractError {
 
 #[contract]
 pub struct PeraPinContract;
+
+#[contractevent(topics = ["payment"])]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PaymentEvent {
+    #[topic]
+    pub from: Address,
+    pub to: Address,
+    pub amount_stroops: i128,
+}
 
 #[contractimpl]
 impl PeraPinContract {
@@ -298,10 +307,11 @@ impl PeraPinContract {
         }
         token_client.transfer(&from, &MuxedAddress::from(to.clone()), &amount_stroops);
 
-        env.events().publish(
-            (Symbol::new(&env, "payment"), from.clone()),
-            (to.clone(), amount_stroops),
-        );
+        env.events().publish_event(&PaymentEvent {
+            from: from.clone(),
+            to: to.clone(),
+            amount_stroops,
+        });
 
         // ── Step 5: Reset failed attempts on success ─────────────────
         env.storage()
