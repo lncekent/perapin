@@ -34,14 +34,14 @@ export default function VirtualPinPad({
   };
 
   return (
-    <div className="max-w-[280px] w-full mx-auto" id="custom-tactical-keypad">
+    <div className="mx-auto w-full max-w-[280px]" id="custom-tactical-keypad">
       <div className="grid grid-cols-3 gap-3">
         {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
           <button
             key={num}
             type="button"
             onClick={() => handleKeyPress(num)}
-            className="aspect-square flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 active:bg-slate-100 rounded-2xl text-xl font-semibold font-mono text-slate-800 active:scale-95 transition-all min-h-[44px]"
+            className="flex aspect-square min-h-[44px] items-center justify-center rounded-2xl border border-slate-200 bg-white font-mono text-xl font-semibold text-slate-800 transition-all hover:bg-slate-50 active:scale-95 active:bg-slate-100"
           >
             {num}
           </button>
@@ -50,7 +50,7 @@ export default function VirtualPinPad({
         <button
           type="button"
           onClick={onCancel}
-          className="aspect-square flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-500 rounded-2xl active:scale-95 transition-all min-h-[44px]"
+          className="flex aspect-square min-h-[44px] items-center justify-center rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-500 transition-all hover:bg-slate-50 active:scale-95"
         >
           Cancel
         </button>
@@ -58,7 +58,7 @@ export default function VirtualPinPad({
         <button
           type="button"
           onClick={() => handleKeyPress("0")}
-          className="aspect-square flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 active:bg-slate-100 rounded-2xl text-xl font-semibold font-mono text-slate-800 active:scale-95 transition-all min-h-[44px]"
+          className="flex aspect-square min-h-[44px] items-center justify-center rounded-2xl border border-slate-200 bg-white font-mono text-xl font-semibold text-slate-800 transition-all hover:bg-slate-50 active:scale-95 active:bg-slate-100"
         >
           0
         </button>
@@ -66,7 +66,7 @@ export default function VirtualPinPad({
         <button
           type="button"
           onClick={handleBackspace}
-          className="aspect-square flex items-center justify-center bg-white border border-slate-200 hover:bg-slate-50 text-slate-500 rounded-2xl active:scale-95 transition-all min-h-[44px]"
+          className="flex aspect-square min-h-[44px] items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-all hover:bg-slate-50 active:scale-95"
         >
           ⌫
         </button>

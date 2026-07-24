@@ -15,7 +15,7 @@ export default function InspectorConsole() {
     // Check if URL search has dev=true or dev=false
     const searchParams = new URLSearchParams(window.location.search);
     const devParam = searchParams.get("dev");
-    
+
     if (devParam === "true") {
       localStorage.setItem("perapin_debug", "true");
       setShowConsole(true);
@@ -46,7 +46,7 @@ export default function InspectorConsole() {
   const handleReset = () => {
     if (
       confirm(
-        "Are you sure you want to reset all local transaction ledgers and customer balances? This will reload the page."
+        "Are you sure you want to reset all local transaction ledgers and customer balances? This will reload the page.",
       )
     ) {
       localStorage.removeItem("perapin_customers");
@@ -65,10 +65,10 @@ export default function InspectorConsole() {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-4 right-4 z-50 p-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-full shadow-lg border border-slate-700 hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5 text-xs font-mono"
+        className="fixed right-4 bottom-4 z-50 flex items-center gap-1.5 rounded-full border border-slate-700 bg-slate-900 p-2.5 font-mono text-xs text-white shadow-lg transition-all hover:scale-105 hover:bg-slate-800 active:scale-95"
         id="inspector-toggle"
       >
-        <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+        <span className="h-2 w-2 animate-pulse rounded-full bg-blue-500" />
         <span>Soroban Console</span>
       </button>
 
@@ -80,29 +80,29 @@ export default function InspectorConsole() {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50 h-[380px] flex flex-col shadow-2xl"
+            className="fixed inset-x-0 bottom-0 z-50 flex h-[380px] flex-col border-t border-slate-200 bg-white shadow-2xl"
             id="inspector-drawer"
           >
             {/* Drawer Header */}
-            <div className="bg-slate-50 px-4 py-2 flex items-center justify-between border-b border-slate-200">
+            <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2">
               <div className="flex items-center gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-blue-600 animate-pulse" />
-                <span className="font-mono text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-blue-600" />
+                <span className="font-mono text-xs font-bold tracking-wider text-slate-700 uppercase">
                   Soroban Smart Contract Audit Console (Live)
                 </span>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleReset}
-                  className="px-2.5 py-1 bg-white hover:bg-red-50 border border-slate-200 rounded text-[10px] text-red-650 font-mono flex items-center gap-1 active:scale-95 transition-all"
+                  className="text-red-650 flex items-center gap-1 rounded border border-slate-200 bg-white px-2.5 py-1 font-mono text-[10px] transition-all hover:bg-red-50 active:scale-95"
                   id="btn-reset-ledger"
                 >
-                  <RefreshCw className="w-3 h-3" />
+                  <RefreshCw className="h-3 w-3" />
                   <span>Reset Database</span>
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-2.5 py-1 bg-slate-800 text-white text-[10px] font-bold rounded hover:bg-slate-700"
+                  className="rounded bg-slate-800 px-2.5 py-1 text-[10px] font-bold text-white hover:bg-slate-700"
                   id="btn-close-inspector"
                 >
                   Close
@@ -112,21 +112,18 @@ export default function InspectorConsole() {
 
             {/* Logs Scroll List */}
             <div
-              className="flex-1 overflow-y-auto p-4 space-y-3 font-mono text-[11px] bg-slate-50 text-slate-700"
+              className="flex-1 space-y-3 overflow-y-auto bg-slate-50 p-4 font-mono text-[11px] text-slate-700"
               id="inspector-logs-scroll"
             >
               {logs.length === 0 ? (
-                <div className="text-center text-slate-400 py-12">
-                  No execution logs recorded. Initiate a sign-up or merchant
-                  payment to audit Soroban state changes.
+                <div className="py-12 text-center text-slate-400">
+                  No execution logs recorded. Initiate a sign-up or merchant payment to audit
+                  Soroban state changes.
                 </div>
               ) : (
                 logs.map((log, index) => (
-                  <div
-                    key={index}
-                    className="border-b border-slate-200/60 pb-2.5 space-y-1"
-                  >
-                    <div className="flex justify-between items-center">
+                  <div key={index} className="space-y-1 border-b border-slate-200/60 pb-2.5">
+                    <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
                         <span className="text-slate-400">[{log.time}]</span>
                         <span
@@ -140,23 +137,19 @@ export default function InspectorConsole() {
                                   : "text-slate-500"
                           }`}
                         >
-                          {log.type === "blockchain"
-                            ? "⚡ SOROBAN_CONTRACT"
-                            : `● ${log.type}`}
+                          {log.type === "blockchain" ? "⚡ SOROBAN_CONTRACT" : `● ${log.type}`}
                         </span>
                       </div>
-                      <span className="text-[10px] text-slate-400">
-                        PeraPin Core V1
-                      </span>
+                      <span className="text-[10px] text-slate-400">PeraPin Core V1</span>
                     </div>
 
-                    <p className="text-slate-800 font-bold">{log.title}</p>
-                    <p className="text-slate-500 leading-normal whitespace-pre-wrap">
+                    <p className="font-bold text-slate-800">{log.title}</p>
+                    <p className="leading-normal whitespace-pre-wrap text-slate-500">
                       {log.message}
                     </p>
 
                     {log.details && (
-                      <pre className="mt-1 bg-white p-2 rounded border border-slate-200 text-[10px] overflow-x-auto text-slate-600">
+                      <pre className="mt-1 overflow-x-auto rounded border border-slate-200 bg-white p-2 text-[10px] text-slate-600">
                         {JSON.stringify(log.details, null, 2)}
                       </pre>
                     )}
@@ -166,7 +159,7 @@ export default function InspectorConsole() {
             </div>
 
             {/* Network Info Footer */}
-            <div className="bg-slate-100 py-1.5 px-4 flex justify-between items-center text-[10px] font-mono border-t border-slate-200 text-slate-500">
+            <div className="flex items-center justify-between border-t border-slate-200 bg-slate-100 px-4 py-1.5 font-mono text-[10px] text-slate-500">
               <span>Stellar Protocol: v21 (Soroban Mainnet)</span>
               <span>Ledger Sequence: #6421096</span>
               <span>Gas Limit: 100,000,000 CPU instructions</span>
