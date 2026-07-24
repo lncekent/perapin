@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { dbGetUserByPublicKey, dbGetUserById, dbRecordTransaction } from "@/lib/supabase";
 import { decryptPrivateKey } from "@/lib/crypto";
-import { invokePayOnChain, checkIsLockedOnChain, getWalletBalanceXlm } from "@/lib/stellar";
+import { invokePayOnChain, checkIsLockedOnChain, getFailedAttemptsOnChain } from "@/lib/stellar";
 import { getAuthenticatedUser } from "@/lib/auth";
 
 /**
@@ -97,6 +97,23 @@ export async function POST(req: NextRequest) {
     decryptedConsumerKey = null;
 
     if (!payResult.success) {
+      if (payResult.error === "INVALID_PIN") {
+        const failedAttempts = await getFailedAttemptsOnChain(consumerPublicKey);
+        if (failedAttempts >= 3) {
+          return NextResponse.json(
+            { error: "WALLET_LOCKED", message: "Too many incorrect PIN attempts. This wallet is locked for 15 minutes." },
+            { status: 423 },
+          );
+        }
+        return NextResponse.json(
+          {
+            error: "INVALID_PIN",
+            message: "Incorrect PIN.",
+            remainingAttempts: Math.max(0, 3 - failedAttempts),
+          },
+          { status: 400 },
+        );
+      }
       return NextResponse.json(
         {
           error: "PAYMENT_FAILED",
