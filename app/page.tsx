@@ -90,7 +90,7 @@ export default function LandingPage() {
                   <Store className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">I'm a merchant</h3>
+                  <h3 className="text-base font-bold text-white">I&apos;m a merchant</h3>
                   <p className="text-xs leading-tight text-blue-100">
                     Scan stickers & accept payments with your mobile browser
                   </p>
@@ -108,7 +108,7 @@ export default function LandingPage() {
                   <User className="h-6 w-6" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-800">I'm a customer</h3>
+                  <h3 className="text-base font-bold text-slate-800">I&apos;m a customer</h3>
                   <p className="text-xs leading-tight text-slate-500">
                     Register and generate a static payment sticker for checkout
                   </p>
