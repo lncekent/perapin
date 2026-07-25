@@ -8,7 +8,6 @@ import {
   nativeToScVal,
   scValToNative,
   xdr,
-  Asset,
 } from "@stellar/stellar-sdk";
 
 export const STELLAR_NETWORK_PASSPHRASE =
@@ -206,37 +205,25 @@ export async function invokePayOnChain(
     // Convert XLM to stroops (1 XLM = 10,000,000 stroops)
     const amountStroops = BigInt(Math.round(amountXlm * 10_000_000));
 
-    const account = await sorobanServer.getAccount(consumerAddress);
-
-    const tx = new TransactionBuilder(account, {
-      fee: "20000",
-      networkPassphrase: STELLAR_NETWORK_PASSPHRASE,
-    })
-      .addOperation(
-        Operation.invokeContractFunction({
-          contract: CONTRACT_ID,
-          function: "pay",
-          args: [
-            new Address(consumerAddress).toScVal(),
-            new Address(merchantPublicKey).toScVal(),
-            nativeToScVal(amountStroops, { type: "i128" }),
-            nativeToScVal(pinHashBytes, { type: "bytes" }),
-          ],
-        }),
-      )
-      .addOperation(
-        Operation.payment({
-          destination: merchantPublicKey,
-          amount: amountXlm.toFixed(7),
-          asset: Asset.native(),
-        }),
-      )
-      .setTimeout(30)
-      .build();
+    // A Soroban transaction must contain exactly ONE host-function operation.
+    // The contract's pay() performs the XLM transfer internally via the native
+    // Stellar Asset Contract, so we must NOT add a separate classic payment
+    // operation — doing so makes simulation fail and would double-spend on
+    // success. This mirrors register()/change_pin() via buildContractTx().
+    const tx = await buildContractTx(consumerAddress, "pay", [
+      new Address(consumerAddress).toScVal(),
+      new Address(merchantPublicKey).toScVal(),
+      nativeToScVal(amountStroops, { type: "i128" }),
+      nativeToScVal(pinHashBytes, { type: "bytes" }),
+    ]);
 
     const simResult = await sorobanServer.simulateTransaction(tx);
     if (!SorobanRpc.Api.isSimulationSuccess(simResult)) {
-      return { success: false, error: "Simulation failed. Check PIN or wallet registration." };
+      const detail =
+        "error" in simResult && simResult.error
+          ? String(simResult.error)
+          : "Check PIN or wallet registration.";
+      return { success: false, error: `Simulation failed: ${detail}` };
     }
 
     const preparedTx = SorobanRpc.assembleTransaction(tx, simResult).build();
