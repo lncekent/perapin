@@ -60,8 +60,8 @@ pin_hash = SHA-256(raw_4_digit_pin + consumer_stellar_public_key)
 | Setting               | Value                                                              |
 | --------------------- | ------------------------------------------------------------------ |
 | **Network**           | Stellar Testnet (Horizon + Soroban RPC)                            |
-| **Contract ID**       | `CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND`         |
-| **WASM Hash**         | `d36c137634649aedd8eadf98960ffc36d2f960e1e948c08297cc7e28ed493a9e` |
+| **Contract ID**       | `CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D`         |
+| **WASM Hash**         | `db1b07c1ac25ebdd3bf93cd37108f7eb6d7536fb3d11221cbc215963e86de8f6` |
 | **Contract Language** | Rust (Soroban SDK v27)                                             |
 | **Token**             | XLM only (no custom tokens in MVP)                                 |
 | **Model**             | Custodial wallets (backend holds encrypted private keys)           |

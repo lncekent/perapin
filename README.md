@@ -2,7 +2,7 @@
 
 > **Merchant-Pull Micropayments for Zero-Connectivity Consumers on Stellar/Soroban**
 
-[![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-blue.svg)](https://stellar.expert/explorer/testnet/contract/CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND)
+[![Stellar Testnet](https://img.shields.io/badge/Stellar-Testnet-blue.svg)](https://stellar.expert/explorer/testnet/contract/CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Next.js 16](https://img.shields.io/badge/Framework-Next.js%2016-black)](https://nextjs.org/)
 [![Soroban SDK](https://img.shields.io/badge/Smart%20Contract-Soroban%20SDK%20v27-orange)](https://soroban.stellar.org/)
@@ -17,8 +17,8 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 |---|---|
 | **Live Production MVP** | [https://perapin.vercel.app](https://perapin.vercel.app) |
 | **GitHub Repository** | [https://github.com/lncekent/perapin](https://github.com/lncekent/perapin) |
-| **Soroban Contract ID** | `CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND` |
-| **Stellar Expert Explorer** | [View Contract on Explorer](https://stellar.expert/explorer/testnet/contract/CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND) |
+| **Soroban Contract ID** | `CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D` |
+| **Stellar Expert Explorer** | [View Contract on Explorer](https://stellar.expert/explorer/testnet/contract/CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D) |
 | **Demo Video** | [Video Link]() |
 
 ---
@@ -146,7 +146,7 @@ NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-key"
 NEXT_PUBLIC_SOROBAN_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
 NEXT_PUBLIC_SOROBAN_RPC_URL="https://soroban-testnet.stellar.org"
-NEXT_PUBLIC_SOROBAN_CONTRACT_ID="CBJZXQKOAVURMAJXOBUNHOXCYEULO33OJATYKSXAMTPGL22WPHBIH7ND"
+NEXT_PUBLIC_SOROBAN_CONTRACT_ID="CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D"
 SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
 ENCRYPTION_SECRET="your-32byte-aes-encryption-secret"
 ```
