@@ -1,4 +1,4 @@
-# PeraPin ₱ 📍
+# 📍 PeraPin ₱ 
 
 > **Merchant-Pull Micropayments for Zero-Connectivity Consumers on Stellar/Soroban**
 
@@ -23,26 +23,13 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 
 ---
 
-## 🏆 Level 4 — Green Belt Submission Checklist
-
-- [x] **Public GitHub Repository** — Clean repository with 35+ commits
-- [x] **Production MVP Deployed** — Hosted live on Vercel with real Stellar Testnet integration
-- [x] **Smart Contract Deployed** — Soroban Rust smart contract deployed on Stellar Testnet
-- [x] **Mobile Responsive Design** — Tested & optimized for 375px–412px viewports
-- [x] **Analytics & Monitoring** — Integrated `@vercel/analytics` and dev inspector console
-- [ ] **Live Demo Video** — *[PLACEHOLDER: Add link once recorded]*
-- [ ] **Proof of 10+ User Interactions** — *[PLACEHOLDER: Populate table below after onboarding 10 users]*
-- [ ] **User Feedback Summary** — *[PLACEHOLDER: Populate table below after user testing]*
-
----
-
-## 📸 Level 4 Media & Evidence
+## 📸 Media & Evidence
 
 ### 1. Product Screenshots
 
 | Consumer Dashboard | Merchant QR Scan | PIN Handoff Pad |
 |:---:|:---:|:---:|
-| *[PLACEHOLDER: Add Screenshot]* | *[PLACEHOLDER: Add Screenshot]* | *[PLACEHOLDER: Add Screenshot]* |
+| ![Consummer Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784980678/Screenshot_2026-07-25_195744_pmsfqg.png) | *[PLACEHOLDER: Add Screenshot]* | *[PLACEHOLDER: Add Screenshot]* |
 
 ### 2. Mobile Responsive Design (375px Viewport)
 
