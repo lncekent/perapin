@@ -8,6 +8,7 @@ import {
   nativeToScVal,
   scValToNative,
   xdr,
+  Asset,
 } from "@stellar/stellar-sdk";
 
 export const STELLAR_NETWORK_PASSPHRASE =
@@ -205,12 +206,33 @@ export async function invokePayOnChain(
     // Convert XLM to stroops (1 XLM = 10,000,000 stroops)
     const amountStroops = BigInt(Math.round(amountXlm * 10_000_000));
 
-    const tx = await buildContractTx(consumerAddress, "pay", [
-      new Address(consumerAddress).toScVal(),
-      new Address(merchantPublicKey).toScVal(),
-      nativeToScVal(amountStroops, { type: "i128" }),
-      nativeToScVal(pinHashBytes, { type: "bytes" }),
-    ]);
+    const account = await sorobanServer.getAccount(consumerAddress);
+
+    const tx = new TransactionBuilder(account, {
+      fee: "20000",
+      networkPassphrase: STELLAR_NETWORK_PASSPHRASE,
+    })
+      .addOperation(
+        Operation.invokeContractFunction({
+          contract: CONTRACT_ID,
+          function: "pay",
+          args: [
+            new Address(consumerAddress).toScVal(),
+            new Address(merchantPublicKey).toScVal(),
+            nativeToScVal(amountStroops, { type: "i128" }),
+            nativeToScVal(pinHashBytes, { type: "bytes" }),
+          ],
+        }),
+      )
+      .addOperation(
+        Operation.payment({
+          destination: merchantPublicKey,
+          amount: amountXlm.toFixed(7),
+          asset: Asset.native(),
+        }),
+      )
+      .setTimeout(30)
+      .build();
 
     const simResult = await sorobanServer.simulateTransaction(tx);
     if (!SorobanRpc.Api.isSimulationSuccess(simResult)) {
