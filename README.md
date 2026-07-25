@@ -29,13 +29,13 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 
 | Consumer Dashboard | Merchant QR Scan | PIN Handoff Pad |
 |:---:|:---:|:---:|
-| ![Consummer Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784980678/Screenshot_2026-07-25_195744_pmsfqg.png) | ![Merchant Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981755/Screenshot_2026-07-25_201536_syhylx.png) | ![PIN Handoff Pad](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981793/7f549c47-eee4-42cb-a19b-aedc3f758ec0_uvokp0.jpg) |
+| ![Consummer Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784980678/Screenshot_2026-07-25_195744_pmsfqg.png) | ![Merchant Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981755/Screenshot_2026-07-25_201536_syhylx.png) | ![PIN Handoff Pad](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784982300/7f549c47-eee4-42cb-a19b-aedc3f758ec0_1_zreuqt.png) |
 
 ### 2. Mobile Responsive Design (375px Viewport)
 
 | Mobile Navigation | Merchant Payment Confirmation |
 |:---:|:---:|
-| ![Mobile Navigation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981870/Screenshot_2026-07-25_201713_w8pnze.png) | ![Merchant Payment Confirmation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981896/d0c9c3be-b653-45de-a0c6-d200f1176559_jcdloq.jpg) |
+| ![Mobile Navigation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784981870/Screenshot_2026-07-25_201713_w8pnze.png) | ![Merchant Payment Confirmation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1784982299/d0c9c3be-b653-45de-a0c6-d200f1176559_1_pdquqc.png) |
 
 ### 3. Analytics & Monitoring Setup
 
