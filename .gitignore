@@ -11,3 +11,7 @@ coverage/
 # Rust / Soroban
 target/
 *.wasm.map
+
+# AI agent skills — regenerable via `npx skills add shadcn/ui`
+.agents/
+.kiro/skills/shadcn
