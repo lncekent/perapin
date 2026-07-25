@@ -1,12 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  display: "swap",
-});
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -36,12 +32,15 @@ export const viewport: Viewport = {
 
 import InspectorConsole from "@/components/shared/InspectorConsole";
 import { Analytics } from "@vercel/analytics/react";
+import { Toaster } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}>
+    <html lang="en" className={cn("antialiased", jetbrainsMono.variable, "font-sans", geist.variable)}>
       <body suppressHydrationWarning className="min-h-screen bg-slate-50 font-sans text-slate-900">
         {children}
+        <Toaster />
         {process.env.NODE_ENV !== "production" && <InspectorConsole />}
         <Analytics />
       </body>

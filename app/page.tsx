@@ -2,32 +2,40 @@
 
 import React from "react";
 import Link from "next/link";
-import { Store, User, ChevronRight, Info, LogIn } from "lucide-react";
+import { Store, User, ChevronRight, ShieldCheck, WifiOff, Zap } from "lucide-react";
 import { motion } from "motion/react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+const steps = [
+  { n: "1", title: "Get your pass", copy: "Generate and print your QR sticker." },
+  { n: "2", title: "Merchant scans", copy: "They scan your sticker in-browser." },
+  { n: "3", title: "Enter PIN", copy: "Type your PIN to settle on-chain." },
+];
 
 export default function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-slate-50 font-sans text-slate-900">
-      {/* Dynamic Header */}
-      <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 px-6 py-4 shadow-xs backdrop-blur-md">
+    <div className="bg-brand-wash flex min-h-screen flex-col justify-between font-sans text-slate-900">
+      {/* Header */}
+      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-md items-center justify-between">
-          <div className="flex items-center gap-2">
-            <svg className="h-8 w-8 flex-shrink-0" viewBox="0 0 32 32" fill="none">
+          <div className="flex items-center gap-2.5">
+            <svg className="h-9 w-9 flex-shrink-0" viewBox="0 0 32 32" fill="none">
               <defs>
                 <linearGradient id="landing-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#2563eb" />
-                  <stop offset="100%" stopColor="#1d4ed8" />
+                  <stop offset="0%" stopColor="#3b6af5" />
+                  <stop offset="100%" stopColor="#1e40af" />
                 </linearGradient>
               </defs>
-              <rect width="32" height="32" rx="8" fill="url(#landing-logo-grad)" />
+              <rect width="32" height="32" rx="9" fill="url(#landing-logo-grad)" />
               <rect
                 x="0.5"
                 y="0.5"
                 width="31"
                 height="31"
-                rx="7.5"
+                rx="8.5"
                 stroke="white"
-                strokeOpacity="0.15"
+                strokeOpacity="0.2"
               />
               <text
                 x="50%"
@@ -42,128 +50,131 @@ export default function LandingPage() {
               </text>
             </svg>
             <div>
-              <span className="block text-lg font-bold tracking-tight text-slate-800">PeraPin</span>
-              <span className="-mt-1 block font-mono text-[10px] tracking-widest text-slate-500">
+              <span className="block text-lg font-bold tracking-tight text-slate-900">PeraPin</span>
+              <span className="-mt-0.5 block font-mono text-[10px] tracking-[0.2em] text-slate-400">
                 SOROBAN PAY
               </span>
             </div>
           </div>
 
-          <Link
-            href="/login"
-            className="flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors hover:bg-slate-50"
-          >
-            <LogIn className="h-3.5 w-3.5 text-slate-500" />
-            <span>Sign In</span>
+          <Link href="/login">
+            <Button variant="secondary" size="sm">
+              Sign in
+            </Button>
           </Link>
         </div>
       </header>
 
-      {/* Hero Body */}
+      {/* Hero */}
       <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center space-y-8 px-6 py-8">
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex flex-grow flex-col justify-between space-y-8"
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="space-y-8"
         >
           {/* Brand block */}
-          <div className="space-y-4 pt-4 text-center">
-            <div className="mb-4 inline-flex items-center justify-center rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600">
-              ⛓️ Deployed on Stellar Testnet
+          <div className="space-y-4 pt-2 text-center">
+            <div className="inline-flex items-center gap-1.5 rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-brand-500" />
+              </span>
+              Live on Stellar Testnet
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">PeraPin</h1>
+            <h1 className="text-[2.5rem] leading-[1.05] font-extrabold tracking-tight text-slate-900">
+              Pay and get paid,
+              <br />
+              <span className="bg-gradient-to-r from-brand-600 to-brand-800 bg-clip-text text-transparent">
+                even offline.
+              </span>
+            </h1>
             <p className="mx-auto max-w-xs text-sm leading-relaxed text-slate-500">
-              Pay and get paid, even offline. No phone, internet data, or battery needed for
-              students and consumers.
+              No phone, mobile data, or battery needed at checkout. A static QR sticker is all a
+              consumer carries.
             </p>
-          </div>
 
-          {/* Action CTAs */}
-          <div className="space-y-4">
-            <Link
-              href="/register/merchant"
-              className="group flex w-full items-center justify-between rounded-2xl border border-blue-500 bg-blue-600 p-5 text-white shadow-sm transition-all duration-200 hover:bg-blue-700"
-            >
-              <div className="flex items-center gap-4 text-left">
-                <div className="rounded-xl bg-white/20 p-3 text-white">
-                  <Store className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-white">I&apos;m a merchant</h3>
-                  <p className="text-xs leading-tight text-blue-100">
-                    Scan stickers & accept payments with your mobile browser
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="h-5 w-5 text-blue-200 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
-            </Link>
-
-            <Link
-              href="/register/consumer"
-              className="group flex w-full items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 text-slate-700 shadow-xs transition-all duration-200 hover:bg-slate-50"
-            >
-              <div className="flex items-center gap-4 text-left">
-                <div className="rounded-xl bg-blue-50 p-3 text-blue-600">
-                  <User className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-bold text-slate-800">I&apos;m a customer</h3>
-                  <p className="text-xs leading-tight text-slate-500">
-                    Register and generate a static payment sticker for checkout
-                  </p>
-                </div>
-              </div>
-              <ChevronRight className="h-5 w-5 text-slate-400 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-600" />
-            </Link>
-          </div>
-
-          {/* How it works info */}
-          <div className="space-y-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-xs">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-              <Info className="h-4 w-4 text-blue-600" />
-              <span>How does PeraPin work?</span>
+            {/* Trust chips */}
+            <div className="flex items-center justify-center gap-4 pt-1 text-[11px] font-medium text-slate-500">
+              <span className="inline-flex items-center gap-1.5">
+                <WifiOff className="h-3.5 w-3.5 text-brand-500" /> Offline-first
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3.5 w-3.5 text-brand-500" /> PIN-secured
+              </span>
+              <span className="inline-flex items-center gap-1.5">
+                <Zap className="h-3.5 w-3.5 text-brand-500" /> Instant
+              </span>
             </div>
+          </div>
 
+          {/* Role CTAs */}
+          <div className="space-y-3.5">
+            <Link href="/register/merchant" className="group block">
+              <Card variant="money" padding="none" interactive className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-left">
+                    <div className="rounded-2xl bg-white/15 p-3 ring-1 ring-white/20">
+                      <Store className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold">I&apos;m a merchant</h3>
+                      <p className="text-xs leading-tight text-brand-100">
+                        Accept payments with just your phone browser
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-brand-200 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/register/consumer" className="group block">
+              <Card variant="surface" padding="none" interactive className="p-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4 text-left">
+                    <div className="rounded-2xl bg-brand-50 p-3 text-brand-600 ring-1 ring-brand-100">
+                      <User className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900">I&apos;m a customer</h3>
+                      <p className="text-xs leading-tight text-slate-500">
+                        Get a static QR sticker for checkout
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-5 w-5 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-slate-500" />
+                </div>
+              </Card>
+            </Link>
+          </div>
+
+          {/* How it works */}
+          <Card variant="surface" className="space-y-4">
+            <div className="text-center text-xs font-semibold tracking-wide text-slate-500 uppercase">
+              How PeraPin works
+            </div>
             <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="space-y-1">
-                <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-50 font-mono text-xs font-bold text-slate-600">
-                  1
+              {steps.map((s) => (
+                <div key={s.n} className="space-y-1.5">
+                  <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 font-mono text-xs font-bold text-brand-700 ring-1 ring-brand-100">
+                    {s.n}
+                  </div>
+                  <p className="text-[11px] font-bold text-slate-800">{s.title}</p>
+                  <p className="text-[9px] leading-normal text-slate-400">{s.copy}</p>
                 </div>
-                <p className="text-slate-850 text-[10px] font-bold">Get Pass</p>
-                <p className="text-[9px] leading-normal text-slate-400">
-                  Generate and print your QR sticker pass.
-                </p>
-              </div>
-              <div className="space-y-1">
-                <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-50 font-mono text-xs font-bold text-slate-600">
-                  2
-                </div>
-                <p className="text-slate-850 text-[10px] font-bold">Scan QR</p>
-                <p className="text-[9px] leading-normal text-slate-400">
-                  Merchant scans your sticker on their browser.
-                </p>
-              </div>
-              <div className="space-y-1">
-                <div className="mx-auto flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-slate-50 font-mono text-xs font-bold text-slate-600">
-                  3
-                </div>
-                <p className="text-slate-850 text-[10px] font-bold">Enter PIN</p>
-                <p className="text-[9px] leading-normal text-slate-400">
-                  Type PIN on merchant phone to settle on-chain.
-                </p>
-              </div>
+              ))}
             </div>
-          </div>
+          </Card>
         </motion.div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 text-center">
+      <footer className="border-t border-slate-200/70 py-6 text-center">
         <p className="mx-auto max-w-xs text-[10px] leading-normal text-slate-400">
           Built by Lance Kent Geoffrey B. Magollado <br />
           Need help? Submit our{" "}
-          <Link href="/feedback" className="font-semibold text-blue-600 hover:underline">
+          <Link href="/feedback" className="font-semibold text-brand-600 hover:underline">
             Feedback Form
           </Link>
           .
