@@ -1,7 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import {
+  QrCode,
+  Wallet,
+  ReceiptText,
+  KeyRound,
+  AlertTriangle,
+  Lock,
+  ArrowUpRight,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { useCachedFetch } from "@/lib/use-cached-fetch";
 
 interface Profile {
   user: { email: string; stellarPublicKey: string };
@@ -9,72 +19,109 @@ interface Profile {
   isLocked: boolean;
   pinSetupRequired: boolean;
 }
+
+const actions = [
+  { href: "/consumer/qr", label: "QR sticker", sub: "Show & download", icon: QrCode },
+  { href: "/consumer/topup", label: "Fund wallet", sub: "Add test XLM", icon: Wallet },
+  { href: "/consumer/history", label: "History", sub: "Past payments", icon: ReceiptText },
+  { href: "/consumer/settings", label: "Change PIN", sub: "Security", icon: KeyRound },
+] as const;
+
 export default function ConsumerDashboard() {
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [error, setError] = useState("");
-  useEffect(() => {
-    fetch("/api/user/me")
-      .then(async (r) => {
-        const data = await r.json();
-        if (!r.ok) throw new Error(data.error);
-        setProfile(data);
-      })
-      .catch((cause) =>
-        setError(cause instanceof Error ? cause.message : "Unable to load wallet."),
-      );
-  }, []);
-  if (error) return <p className="rounded-xl bg-red-50 p-3 text-red-700">{error}</p>;
-  if (!profile) return <p className="py-12 text-center text-slate-500">Loading wallet…</p>;
+  const { data: profile, error } = useCachedFetch<Profile>("me", async () => {
+    const r = await fetch("/api/user/me");
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Unable to load wallet.");
+    return data;
+  });
+
+  if (error && !profile)
+    return (
+      <p className="rounded-2xl border border-red-100 bg-red-50 p-4 text-sm font-medium text-red-700">
+        {error}
+      </p>
+    );
+
+  if (!profile)
+    return (
+      <div className="space-y-5">
+        <div className="h-8 w-40 animate-pulse rounded-lg bg-slate-200" />
+        <div className="h-40 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="grid grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-24 animate-pulse rounded-3xl bg-slate-200" />
+          ))}
+        </div>
+      </div>
+    );
+
   return (
-    <div className="space-y-5">
+    <div className="animate-fade-up space-y-5">
       <div>
-        <h1 className="text-2xl font-bold">Hello, {profile.user.email.split("@")[0]}</h1>
+        <h1 className="text-2xl font-bold text-slate-900">
+          Hello, {profile.user.email.split("@")[0]}
+        </h1>
         <p className="text-sm text-slate-500">Your Testnet PeraPin wallet</p>
       </div>
+
       {profile.pinSetupRequired && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-          Finish PIN setup before using your payment sticker.{" "}
-          <Link href="/register/consumer" className="font-bold underline">
-            Continue setup
-          </Link>
-        </div>
-      )}
-      <section className="rounded-3xl bg-blue-700 p-6 text-white">
-        <p className="text-sm text-blue-100">Available XLM</p>
-        <p className="mt-2 text-4xl font-bold">
-          {Number(profile.balanceXlm).toFixed(2)} <span className="text-lg">XLM</span>
-        </p>
-        {profile.isLocked && (
-          <p className="mt-3 rounded-xl bg-red-500/30 p-2 text-sm">
-            Wallet temporarily locked after failed PIN attempts.
+        <Card
+          variant="surface"
+          padding="sm"
+          className="flex items-start gap-3 border-amber-200 bg-amber-50"
+        >
+          <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600" aria-hidden="true" />
+          <p className="text-sm text-amber-900">
+            Finish PIN setup before using your sticker.{" "}
+            <Link href="/register/consumer" className="font-bold underline">
+              Continue setup
+            </Link>
           </p>
-        )}
-      </section>
+        </Card>
+      )}
+
+      {/* Money hero */}
+      <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden">
+        <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
+        <div className="relative">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium text-brand-100">Available balance</p>
+            <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-white ring-1 ring-white/20">
+              TESTNET
+            </span>
+          </div>
+          <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums">
+            {Number(profile.balanceXlm).toFixed(2)}
+            <span className="ml-2 text-xl font-semibold text-brand-200">XLM</span>
+          </p>
+          <p className="mt-3 truncate font-mono text-[11px] text-brand-200/80">
+            {profile.user.stellarPublicKey}
+          </p>
+          {profile.isLocked && (
+            <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-500/25 px-3 py-2 text-sm font-medium text-red-50 ring-1 ring-red-300/30">
+              <Lock className="h-4 w-4" aria-hidden="true" />
+              Wallet temporarily locked after failed PIN attempts
+            </p>
+          )}
+        </div>
+      </Card>
+
+      {/* Quick actions */}
       <section className="grid grid-cols-2 gap-3">
-        <Link
-          href="/consumer/qr"
-          className="min-h-24 rounded-2xl border bg-white p-4 font-semibold"
-        >
-          Your QR sticker
-        </Link>
-        <Link
-          href="/consumer/topup"
-          className="min-h-24 rounded-2xl border bg-white p-4 font-semibold"
-        >
-          Fund wallet
-        </Link>
-        <Link
-          href="/consumer/history"
-          className="min-h-24 rounded-2xl border bg-white p-4 font-semibold"
-        >
-          Payment history
-        </Link>
-        <Link
-          href="/consumer/settings"
-          className="min-h-24 rounded-2xl border bg-white p-4 font-semibold"
-        >
-          Change PIN
-        </Link>
+        {actions.map(({ href, label, sub, icon: Icon }) => (
+          <Link key={href} href={href} className="group">
+            <Card variant="surface" padding="sm" interactive className="h-full">
+              <div className="flex items-start justify-between">
+                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <ArrowUpRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+              </div>
+              <p className="mt-3 text-sm font-bold text-slate-900">{label}</p>
+              <p className="text-[11px] text-slate-400">{sub}</p>
+            </Card>
+          </Link>
+        ))}
       </section>
     </div>
   );
