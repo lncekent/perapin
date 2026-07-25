@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
-import { Camera, ScanLine, CircleAlert, KeyRound } from "lucide-react";
+import { Camera, CircleAlert, KeyRound } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import { cn } from "@/lib/utils";
 
 export default function MerchantScanPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function MerchantScanPage() {
   const controls = useRef<IScannerControls | null>(null);
   const [wallet, setWallet] = useState("");
   const [camera, setCamera] = useState(false);
+  const [starting, setStarting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -52,20 +54,38 @@ export default function MerchantScanPage() {
 
   async function startCamera() {
     setError("");
+    // getUserMedia is only available in a secure context (HTTPS or localhost).
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setError(
+        "Camera needs a secure (HTTPS) connection and a supported browser. Enter the sticker address manually below.",
+      );
+      return;
+    }
+    setStarting(true);
     try {
-      if (!video.current) return;
       reader.current = new BrowserQRCodeReader();
-      setCamera(true);
-      controls.current = await reader.current.decodeFromVideoDevice(
-        undefined,
-        video.current,
+      // Prefer the rear camera for scanning; the video element is always
+      // mounted, so its ref is available here.
+      controls.current = await reader.current.decodeFromConstraints(
+        { video: { facingMode: { ideal: "environment" } } },
+        video.current!,
         (result) => {
           if (result) void validate(result.getText());
         },
       );
-    } catch {
+      setCamera(true);
+    } catch (cause) {
       setCamera(false);
-      setError("Camera could not start. Enter the sticker address manually instead.");
+      const name = cause instanceof Error ? cause.name : "";
+      setError(
+        name === "NotAllowedError" || name === "SecurityError"
+          ? "Camera permission was denied. Allow camera access in your browser settings, or enter the address manually."
+          : name === "NotFoundError"
+            ? "No camera was found on this device. Enter the sticker address manually instead."
+            : "Camera could not start. Enter the sticker address manually instead.",
+      );
+    } finally {
+      setStarting(false);
     }
   }
 
@@ -86,21 +106,35 @@ export default function MerchantScanPage() {
         </Alert>
       )}
 
-      {/* Camera viewport */}
+      {/* Camera viewport — the <video> stays mounted so its ref is always valid. */}
       <div className="relative aspect-square overflow-hidden rounded-3xl bg-slate-950 shadow-card">
-        {camera ? (
-          <video ref={video} className="h-full w-full object-cover" muted playsInline />
-        ) : (
+        <video
+          ref={video}
+          className={cn("h-full w-full object-cover", !camera && "opacity-0")}
+          muted
+          playsInline
+        />
+
+        {!camera && (
           <button
             onClick={startCamera}
-            className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center text-white transition-colors hover:bg-slate-900"
+            disabled={starting}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center text-white transition-colors hover:bg-slate-900 disabled:opacity-80"
           >
             <span className="flex size-16 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
-              <Camera className="size-8" aria-hidden="true" />
+              {starting ? (
+                <Spinner className="size-8" />
+              ) : (
+                <Camera className="size-8" aria-hidden="true" />
+              )}
             </span>
-            <span className="text-base font-bold">Enable camera scanner</span>
+            <span className="text-base font-bold">
+              {starting ? "Starting camera…" : "Enable camera scanner"}
+            </span>
             <span className="max-w-[16rem] text-xs text-slate-400">
-              Point your camera at the customer&apos;s QR sticker to begin.
+              {starting
+                ? "Allow camera access when your browser asks."
+                : "Point your camera at the customer's QR sticker to begin."}
             </span>
           </button>
         )}
