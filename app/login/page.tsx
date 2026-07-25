@@ -3,6 +3,21 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from "@/components/ui/input-otp";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,8 +27,8 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function requestOtp(event: FormEvent) {
-    event.preventDefault();
+  async function requestOtp(event?: FormEvent) {
+    event?.preventDefault();
     setLoading(true);
     setError("");
     try {
@@ -32,8 +47,9 @@ export default function LoginPage() {
     }
   }
 
-  async function verifyOtp(event: FormEvent) {
-    event.preventDefault();
+  async function verifyOtp(event?: FormEvent) {
+    event?.preventDefault();
+    if (token.length !== 6 || loading) return;
     setLoading(true);
     setError("");
     try {
@@ -48,88 +64,164 @@ export default function LoginPage() {
       const profile = await profileResponse.json();
       if (!profileResponse.ok || !profile.user)
         throw new Error("No PeraPin account exists for this email. Register first.");
+      toast.add({
+        title: "Signed in",
+        description: "Welcome to PeraPin.",
+        type: "success",
+      });
       router.replace(
         profile.user.role === "merchant" ? "/merchant/dashboard" : "/consumer/dashboard",
       );
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to verify code.");
-    } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 py-12">
-      <section className="w-full max-w-md space-y-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-md">
-        <div>
-          <Link href="/" className="text-sm text-blue-700">
-            ← Back
-          </Link>
-          <h1 className="mt-4 text-3xl font-extrabold">Sign in to PeraPin</h1>
-          <p className="mt-2 text-sm text-slate-500">Use the one-time code sent to your email.</p>
-        </div>
-        {error && (
-          <p role="alert" className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-            {error}
+    <main className="bg-brand-wash flex min-h-screen items-center justify-center px-6 py-12">
+      <div className="w-full max-w-md space-y-6">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" /> Back
+        </Link>
+
+        <Card variant="raised" padding="lg" className="space-y-6">
+          {/* Brand mark */}
+          <div className="space-y-3">
+            <div className="bg-money-gradient shadow-money flex size-12 items-center justify-center rounded-2xl text-2xl font-bold text-white">
+              ₱
+            </div>
+            <div>
+              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                Sign in to PeraPin
+              </h1>
+              <p className="mt-1 text-sm text-slate-500">
+                {step === "email"
+                  ? "We’ll email you a one-time code — no password needed."
+                  : "Enter the 6-digit code we just emailed you."}
+              </p>
+            </div>
+          </div>
+
+          {error && (
+            <Alert variant="destructive">
+              <ShieldCheck aria-hidden="true" />
+              <AlertTitle>Couldn’t sign in</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
+          {step === "email" ? (
+            <form onSubmit={requestOtp}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="email">Email address</FieldLabel>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    spellCheck={false}
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    className="h-12"
+                  />
+                  <FieldDescription>Use the email linked to your PeraPin account.</FieldDescription>
+                </Field>
+                <Button type="submit" disabled={loading} block size="lg">
+                  {loading ? (
+                    <>
+                      <Spinner /> Sending…
+                    </>
+                  ) : (
+                    "Send verification code"
+                  )}
+                </Button>
+              </FieldGroup>
+            </form>
+          ) : (
+            <form onSubmit={verifyOtp}>
+              <FieldGroup>
+                <Field>
+                  <FieldLabel htmlFor="otp">Verification code</FieldLabel>
+                  <InputOTP
+                    id="otp"
+                    maxLength={6}
+                    pattern={REGEXP_ONLY_DIGITS}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    autoFocus
+                    value={token}
+                    onChange={setToken}
+                    onComplete={() => verifyOtp()}
+                    containerClassName="justify-center"
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} className="size-12 text-lg" />
+                      <InputOTPSlot index={1} className="size-12 text-lg" />
+                      <InputOTPSlot index={2} className="size-12 text-lg" />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} className="size-12 text-lg" />
+                      <InputOTPSlot index={4} className="size-12 text-lg" />
+                      <InputOTPSlot index={5} className="size-12 text-lg" />
+                    </InputOTPGroup>
+                  </InputOTP>
+                  <FieldDescription className="text-center">
+                    Code sent to <span className="font-semibold text-slate-700">{email}</span>
+                  </FieldDescription>
+                </Field>
+                <Button type="submit" disabled={loading || token.length !== 6} block size="lg">
+                  {loading ? (
+                    <>
+                      <Spinner /> Verifying…
+                    </>
+                  ) : (
+                    "Verify and sign in"
+                  )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  block
+                  size="sm"
+                  onClick={() => {
+                    setStep("email");
+                    setToken("");
+                    setError("");
+                  }}
+                >
+                  Use another email
+                </Button>
+              </FieldGroup>
+            </form>
+          )}
+
+          <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
+            <ShieldCheck className="text-brand-500 size-3.5" aria-hidden="true" />
+            Passwordless sign-in secured by email OTP
           </p>
-        )}
-        {step === "email" ? (
-          <form onSubmit={requestOtp} className="space-y-4">
-            <input
-              required
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full rounded-xl border p-3 text-base"
-            />
-            <button
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-600 p-3 font-bold text-white disabled:opacity-50"
-            >
-              {loading ? "Sending…" : "Send verification code"}
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={verifyOtp} className="space-y-4">
-            <p className="text-sm text-slate-500">Code sent to {email}</p>
-            <input
-              required
-              inputMode="numeric"
-              pattern="[0-9]{6}"
-              maxLength={6}
-              value={token}
-              onChange={(e) => setToken(e.target.value.replace(/\D/g, ""))}
-              placeholder="6-digit code"
-              className="w-full rounded-xl border p-3 text-center text-xl tracking-[0.3em]"
-            />
-            <button
-              disabled={loading}
-              className="w-full rounded-xl bg-blue-600 p-3 font-bold text-white disabled:opacity-50"
-            >
-              {loading ? "Verifying…" : "Verify and sign in"}
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep("email")}
-              className="w-full text-sm text-slate-600"
-            >
-              Use another email
-            </button>
-          </form>
-        )}
+        </Card>
+
         <p className="text-center text-sm text-slate-500">
           New here?{" "}
-          <Link className="font-semibold text-blue-700" href="/register/consumer">
+          <Link className="text-brand-700 font-semibold hover:underline" href="/register/consumer">
             Consumer
           </Link>{" "}
           or{" "}
-          <Link className="font-semibold text-blue-700" href="/register/merchant">
+          <Link className="text-brand-700 font-semibold hover:underline" href="/register/merchant">
             merchant
           </Link>
           .
         </p>
-      </section>
+      </div>
     </main>
   );
 }
