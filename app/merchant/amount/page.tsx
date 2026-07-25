@@ -2,7 +2,13 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { CircleAlert } from "lucide-react";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
+import { Button } from "@/components/ui/button";
+import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 
 interface PaymentContext {
   consumerPublicKey: string;
@@ -34,35 +40,56 @@ export default function MerchantAmountPage() {
     );
     router.push("/merchant/handoff");
   }
-  if (!paymentContext) return <p className="py-12 text-center text-slate-500">Loading scanned sticker…</p>;
+
+  if (!paymentContext)
+    return <p className="py-12 text-center text-slate-500">Loading scanned sticker…</p>;
 
   return (
-    <form onSubmit={submit} className="space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold">Enter sale amount</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Charging sticker {consumer ? `${consumer.slice(0, 8)}…${consumer.slice(-6)}` : "…"}
-        </p>
+    <form onSubmit={submit} className="animate-fade-up space-y-5">
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-slate-900">Enter sale amount</h1>
+        <div className="flex items-center gap-2 text-sm text-slate-500">
+          <span>Charging sticker</span>
+          <Badge variant="secondary" className="font-mono">
+            {consumer ? `${consumer.slice(0, 6)}…${consumer.slice(-4)}` : "…"}
+          </Badge>
+        </div>
       </div>
-      {error && <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>}
-      <label className="block text-sm font-semibold">
-        Amount in XLM
-        <input
-          required
-          autoFocus
-          inputMode="decimal"
-          type="number"
-          min="0.0000001"
-          step="0.0000001"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="0.00"
-          className="mt-1 w-full rounded-2xl border p-4 text-3xl font-bold"
-        />
-      </label>
-      <button className="w-full rounded-2xl bg-blue-600 p-4 font-bold text-white">
-        Hand phone to consumer
-      </button>
+
+      {error && (
+        <Alert variant="destructive">
+          <CircleAlert aria-hidden="true" />
+          <AlertTitle>Invalid amount</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      <FieldGroup>
+        <Field>
+          <FieldLabel htmlFor="amount">Amount in XLM</FieldLabel>
+          <Input
+            id="amount"
+            name="amount"
+            required
+            autoComplete="off"
+            inputMode="decimal"
+            type="number"
+            min="0.0000001"
+            step="0.0000001"
+            value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              if (error) setError("");
+            }}
+            placeholder="0.00"
+            className="h-16 text-3xl font-bold"
+          />
+          <FieldDescription>Testnet XLM · up to 7 decimal places.</FieldDescription>
+        </Field>
+        <Button type="submit" block size="lg">
+          Hand phone to consumer
+        </Button>
+      </FieldGroup>
     </form>
   );
 }
