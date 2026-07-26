@@ -10,11 +10,70 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://perapin.vercel.app";
+
+const siteName = "PeraPin";
+const siteTitle = "PeraPin — Zero-Connectivity Digital Payments";
+const siteDescription =
+  "Pay with a static QR sticker — even when your phone is dead, offline, or left at home. Merchant-pull micropayments for the Philippines, built on Stellar/Soroban.";
+
 export const metadata: Metadata = {
-  title: "PeraPin — Zero-Connectivity Digital Payments",
-  description:
-    "Offline-first payments system for the Philippines designed for zero-connectivity consumers and zero-hardware micro-merchants, built on Stellar/Soroban.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: siteTitle,
+    template: "%s — PeraPin",
+  },
+  description: siteDescription,
+  applicationName: siteName,
   manifest: "/manifest.json",
+  keywords: [
+    "PeraPin",
+    "Stellar",
+    "Soroban",
+    "micropayments",
+    "QR payments",
+    "offline payments",
+    "blockchain",
+    "Philippines",
+    "sari-sari store",
+    "digital wallet",
+    "XLM",
+  ],
+  authors: [{ name: "PeraPin" }],
+  creator: siteName,
+  publisher: siteName,
+  category: "finance",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName,
+    title: siteTitle,
+    description: siteDescription,
+    url: siteUrl,
+    locale: "en_PH",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: siteTitle,
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
