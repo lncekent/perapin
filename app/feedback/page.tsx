@@ -1,8 +1,8 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Star, CircleAlert, CircleCheckBig } from "lucide-react";
+import { ArrowLeft, Star, CircleAlert, CircleCheckBig, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,8 +21,26 @@ import { Spinner } from "@/components/ui/spinner";
 export default function FeedbackPage() {
   const [rating, setRating] = useState(0);
   const [comments, setComments] = useState("");
-  const [state, setState] = useState<"form" | "saving" | "done">("form");
+  const [state, setState] = useState<"checking" | "unauth" | "form" | "saving" | "done">(
+    "checking",
+  );
   const [error, setError] = useState("");
+
+  // Feedback is tied to the signed-in account (its role + id are recorded
+  // server-side). Confirm there is a session before showing the form so a
+  // logged-out visitor sees a clear prompt instead of a failed submission.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/user/me")
+      .then((response) => {
+        if (!active) return;
+        setState(response.ok ? "form" : "unauth");
+      })
+      .catch(() => active && setState("unauth"));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -35,7 +53,14 @@ export default function FeedbackPage() {
         body: JSON.stringify({ rating, comments }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error);
+      if (!response.ok) {
+        // Session expired between load and submit — send them to sign in.
+        if (response.status === 401 || data.error === "AUTH_REQUIRED") {
+          setState("unauth");
+          return;
+        }
+        throw new Error(data.error);
+      }
       setState("done");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Unable to save feedback.");
@@ -54,7 +79,28 @@ export default function FeedbackPage() {
         </Link>
 
         <Card variant="raised" padding="lg">
-          {state === "done" ? (
+          {state === "checking" ? (
+            <div className="flex flex-col items-center py-16 text-center">
+              <Spinner />
+              <p className="mt-3 text-sm text-slate-500">Loading…</p>
+            </div>
+          ) : state === "unauth" ? (
+            <div className="animate-fade-up flex flex-col items-center py-12 text-center">
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                <LogIn className="size-7" aria-hidden="true" />
+              </div>
+              <h1 className="mt-4 text-2xl font-bold text-slate-900">Sign in to share feedback</h1>
+              <p className="mt-1 max-w-xs text-sm text-slate-500">
+                Feedback is linked to your PeraPin account. Sign in as a consumer or merchant to
+                tell us about your payment experience.
+              </p>
+              <Link href="/login" className="mt-6 w-full max-w-xs">
+                <Button block size="lg">
+                  Sign in
+                </Button>
+              </Link>
+            </div>
+          ) : state === "done" ? (
             <div className="animate-fade-up flex flex-col items-center py-12 text-center">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
                 <CircleCheckBig className="size-7" aria-hidden="true" />
