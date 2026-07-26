@@ -19,7 +19,7 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 | **GitHub Repository** | [https://github.com/lncekent/perapin](https://github.com/lncekent/perapin) |
 | **Soroban Contract ID** | `CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D` |
 | **Stellar Expert Explorer** | [View Contract on Explorer](https://stellar.expert/explorer/testnet/contract/CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D) |
-| **Demo Video** | [Video Link]() |
+| **Demo Video** | [Video Link](https://drive.google.com/file/d/1D-hOJ1H41_HulvRj_8mHiMtPyyWSjUWC/view?usp=drive_link) |
 
 ---
 
@@ -49,18 +49,18 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 
 Once users test PeraPin, their on-chain testnet settlements are logged on the Stellar Explorer:
 
-| # | User Email / Identifier | Role | Stellar Public Key | On-Chain Tx Hash |
+| # | Role | Stellar Public Key | On-Chain Tx Hash |
 |---|---|---|---|---|
-| 1 | *[User 1]* | Consumer | `GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I` | `[Explorer Link](https://stellar.expert/explorer/testnet/account/GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I)` |
-| 2 | *[User 2]* | Consumer | `G...` | `[Explorer Link]` |
-| 3 | *[User 3]* | Consumer | `G...` | `[Explorer Link]` |
-| 4 | *[User 4]* | Consumer | `G...` | `[Explorer Link]` |
-| 5 | *[User 5]* | Consumer | `G...` | `[Explorer Link]` |
-| 6 | *[User 6]* | Consumer | `G...` | `[Explorer Link]` |
-| 7 | *[User 7]* | Consumer | `G...` | `[Explorer Link]` |
-| 8 | *[User 8]* | Consumer | `G...` | `[Explorer Link]` |
-| 9 | *[User 9]* | Merchant | `G...` | `[Explorer Link]` |
-| 10 | *[User 10]* | Merchant | `G...` | `[Explorer Link]` |
+| 1 | Consumer | `GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I` | [`885df6cf…8298c`](https://stellar.expert/explorer/testnet/tx/885df6cfd2a207bd4b9b08fbd2ef22878fffe72480a2b8d47b3fa8e09218298c) · [account](https://stellar.expert/explorer/testnet/account/GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I) |
+| 2 | Consumer | `GC5LOROOR2E4NK6NUS2XZWXOIONBJHEXPISOYBE4DJZBAYKJZFIVTAZ5` | [`32e68483…3198`](https://stellar.expert/explorer/testnet/tx/32e68483d7cd6296b231f51193ef65c6921c90e1cd9cbae76ea95cb2135a3198) · [account](https://stellar.expert/explorer/testnet/account/GC5LOROOR2E4NK6NUS2XZWXOIONBJHEXPISOYBE4DJZBAYKJZFIVTAZ5) |
+| 3 | Consumer | `GD3CWJXAG4A2BXJHWIKENQXST2BU3VBLLAFQMRM6QJEKRZY7Q2OFIHV7` | [`3cff9448…5ade`](https://stellar.expert/explorer/testnet/tx/3cff9448ec802f134808e9a9e68cd247c21f2e9bdcf9bbd0ebca8b18d1075ade) · [account](https://stellar.expert/explorer/testnet/account/GD3CWJXAG4A2BXJHWIKENQXST2BU3VBLLAFQMRM6QJEKRZY7Q2OFIHV7) |
+| 4 | Consumer | `GC5DZMKDYN6PCRLN3EKOSUZCVAXNV4Q6BGO4W6MJ4JFTOAXUKMN57IJ2` | [`9b78cfa4…5b51`](https://stellar.expert/explorer/testnet/tx/9b78cfa459e20191579e8ac61bbf69a0a5be3dc97f29d1ab48624ec2fb0e5b51) · [account](https://stellar.expert/explorer/testnet/account/GC5DZMKDYN6PCRLN3EKOSUZCVAXNV4Q6BGO4W6MJ4JFTOAXUKMN57IJ2) |
+| 5 | Consumer | `GD2BEHIYC2DXQNFE73KZOVHX4F6TJ7FPAH6F7XOBXZXYQOJIKV7GCPAT` | [`28488972…94cd`](https://stellar.expert/explorer/testnet/tx/28488972ede527f62a962f9634b2bbdae5706337e2b2a01122148e75f73994cd) · [account](https://stellar.expert/explorer/testnet/account/GD2BEHIYC2DXQNFE73KZOVHX4F6TJ7FPAH6F7XOBXZXYQOJIKV7GCPAT) |
+| 6 | Consumer | `GAQXBIPCNZLTEI5Z4UF4FJPQ3LRPNEYHJ4A2JBOIJN35HLBPMTEMBCGN` | [`0f8bcb51…1ace`](https://stellar.expert/explorer/testnet/tx/0f8bcb51781a21bfdd7a7bcc42cf6f32f5f904da90e85d36ac21089f2d2e1ace) · [account](https://stellar.expert/explorer/testnet/account/GAQXBIPCNZLTEI5Z4UF4FJPQ3LRPNEYHJ4A2JBOIJN35HLBPMTEMBCGN) |
+| 7 | Consumer | `GDO7DPZSNGCOXZLJCJCKLCVSVATADECRE4SU5SDFT2I7S7NXKU2OTEZD` | [`2edf15be…bb8e`](https://stellar.expert/explorer/testnet/tx/2edf15be6864f5f888e399a47db42e242930a5ae856bd084b8578d12995dbb8e) · [account](https://stellar.expert/explorer/testnet/account/GDO7DPZSNGCOXZLJCJCKLCVSVATADECRE4SU5SDFT2I7S7NXKU2OTEZD) |
+| 8 | Consumer | `GALJDMTUAND72HT4AUXZ65ZUCUR4ADOBPICMQFM4DQHXDRAWRWKHNHR7` | [`36af43ee…1338`](https://stellar.expert/explorer/testnet/tx/36af43ee682ded0f2f3661883b407afa6bafc542c26e9d67bddd303d8dac1338) · [account](https://stellar.expert/explorer/testnet/account/GALJDMTUAND72HT4AUXZ65ZUCUR4ADOBPICMQFM4DQHXDRAWRWKHNHR7) |
+| 9 | Consumer | `GCZ6EIBXFR37624DJYRGTEGV6LS6BE6R3RXIYYP374EAUN5BNYCPQ4EO` | [`438b1f1c…c949`](https://stellar.expert/explorer/testnet/tx/438b1f1c6150809b80c0196bff5f3cc6e20ea5feb43512df7e520d8e1778c949) · [account](https://stellar.expert/explorer/testnet/account/GCZ6EIBXFR37624DJYRGTEGV6LS6BE6R3RXIYYP374EAUN5BNYCPQ4EO) |
+| 10 | Merchant | `GCDNFZW6XJM2SCUZUAQ74F5OPB7RGPMQ7DN3EA3YR2QDNTMFHQYR66SQ` | [`1d4b0260…1933`](https://stellar.expert/explorer/testnet/tx/1d4b02600549009ae4ea78a977ecbd464cc6f2f29b0374e8e15821b7f9e11933) · [account](https://stellar.expert/explorer/testnet/account/GCDNFZW6XJM2SCUZUAQ74F5OPB7RGPMQ7DN3EA3YR2QDNTMFHQYR66SQ) |
 
 ---
 
@@ -70,9 +70,10 @@ Feedback collected securely via `/feedback` into Supabase:
 
 | User | Role | Rating | Comment / Feedback |
 |---|---|---|---|
-| *[User 1]* | Consumer | ⭐⭐⭐⭐⭐ | *"Nice, smooth sending money. The potential is great!"* |
-| *[User 2]* | Merchant | ⭐⭐⭐⭐⭐ | *"the concept is really nice, the transactions were smooth with no delays. though the UI is minimal and lacks some minor contents, the core functions are met and working."* |
-| *[User 3]* | Consumer | ⭐⭐⭐⭐☆ | *"PIN overlay felt safe and easy."* |
+| Student 1 | Consumer | ⭐⭐⭐⭐⭐ | *"Nice, smooth sending money. The potential is great!"* |
+| Student 2 | Consumer | ⭐⭐⭐⭐⭐ | *"the concept is really nice, the transactions were smooth with no delays. though the UI is minimal and lacks some minor contents, the core functions are met and working."* |
+| Merchant 1 | Merchant | ⭐⭐⭐☆☆ | *"Must reload fast, but overall good"* |
+| Student 3 | Consumer | ⭐⭐⭐⭐⭐ | *"Excellent!! Fast reload."* |
 
 ---
 
