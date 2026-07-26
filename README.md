@@ -41,7 +41,7 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 
 | Vercel Analytics Dashboard | Inspector Console |
 |:---:|:---:|
-| *[PLACEHOLDER: Add Screenshot]* | *[PLACEHOLDER: Add Screenshot]* |
+| ![Vercel Analytics Dashboard](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785040172/Screenshot_2026-07-26_122635_qnmfp2.png) | ![Inspector Console](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785040283/Screenshot_2026-07-26_123102_cbp4gz.png) |
 
 ---
 
@@ -51,7 +51,7 @@ Once users test PeraPin, their on-chain testnet settlements are logged on the St
 
 | # | User Email / Identifier | Role | Stellar Public Key | On-Chain Tx Hash |
 |---|---|---|---|---|
-| 1 | *[User 1]* | Consumer | `G...` | `[Explorer Link]` |
+| 1 | *[User 1]* | Consumer | `GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I` | `[Explorer Link](https://stellar.expert/explorer/testnet/account/GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I)` |
 | 2 | *[User 2]* | Consumer | `G...` | `[Explorer Link]` |
 | 3 | *[User 3]* | Consumer | `G...` | `[Explorer Link]` |
 | 4 | *[User 4]* | Consumer | `G...` | `[Explorer Link]` |
@@ -70,8 +70,8 @@ Feedback collected securely via `/feedback` into Supabase:
 
 | User | Role | Rating | Comment / Feedback |
 |---|---|---|---|
-| *[User 1]* | Consumer | ⭐⭐⭐⭐⭐ | *"Payment was fast even without signal!"* |
-| *[User 2]* | Merchant | ⭐⭐⭐⭐⭐ | *"Scanning QR was seamless on mobile."* |
+| *[User 1]* | Consumer | ⭐⭐⭐⭐⭐ | *"Nice, smooth sending money. The potential is great!"* |
+| *[User 2]* | Merchant | ⭐⭐⭐⭐⭐ | *"the concept is really nice, the transactions were smooth with no delays. though the UI is minimal and lacks some minor contents, the core functions are met and working."* |
 | *[User 3]* | Consumer | ⭐⭐⭐⭐☆ | *"PIN overlay felt safe and easy."* |
 
 ---
