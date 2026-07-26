@@ -137,9 +137,12 @@ export default function InspectorConsole() {
 
             {/* Network Info Footer */}
             <div className="flex items-center justify-between border-t border-slate-200 bg-slate-100 px-4 py-1.5 font-mono text-[10px] text-slate-500">
-              <span>Stellar Protocol: v21 (Soroban Mainnet)</span>
-              <span>Ledger Sequence: #6421096</span>
-              <span>Gas Limit: 100,000,000 CPU instructions</span>
+              <span>Network: Stellar Testnet (Soroban)</span>
+              <span>Passphrase: Test SDF Network ; September 2015</span>
+              <span className="truncate">
+                Contract:{" "}
+                {(process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID ?? "").slice(0, 8) || "CBEASRMF"}…
+              </span>
             </div>
           </motion.div>
         )}
