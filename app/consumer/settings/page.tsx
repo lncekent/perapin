@@ -1,7 +1,8 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { KeyRound, CircleAlert } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, CircleAlert, MessageSquareText, ChevronRight } from "lucide-react";
 import { computePinHash } from "@/lib/client-crypto";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -115,6 +116,21 @@ export default function ConsumerSettingsPage() {
           </FieldGroup>
         </form>
       </Card>
+
+      <Link href="/feedback" className="group block">
+        <Card variant="surface" padding="sm" interactive>
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+              <MessageSquareText className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-slate-900">Send feedback</p>
+              <p className="text-[11px] text-slate-400">Tell us about your payment experience</p>
+            </div>
+            <ChevronRight className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+          </div>
+        </Card>
+      </Link>
 
       <ConfirmDialog
         open={confirmOpen}
