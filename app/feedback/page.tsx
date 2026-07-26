@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Star, CircleAlert, CircleCheckBig, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -19,12 +20,24 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 
 export default function FeedbackPage() {
+  const router = useRouter();
   const [rating, setRating] = useState(0);
   const [comments, setComments] = useState("");
   const [state, setState] = useState<"checking" | "unauth" | "form" | "saving" | "done">(
     "checking",
   );
   const [error, setError] = useState("");
+
+  // Return to the previous page (e.g. the consumer/merchant dashboard the user
+  // came from) rather than always the landing page. Fall back to home when the
+  // feedback page was opened directly with no in-app history.
+  function goBack() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  }
 
   // Feedback is tied to the signed-in account (its role + id are recorded
   // server-side). Confirm there is a session before showing the form so a
@@ -71,12 +84,13 @@ export default function FeedbackPage() {
   return (
     <main className="bg-brand-wash flex min-h-screen items-center justify-center px-6 py-12">
       <div className="w-full max-w-md space-y-6">
-        <Link
-          href="/"
+        <button
+          type="button"
+          onClick={goBack}
           className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
         >
           <ArrowLeft className="size-4" aria-hidden="true" /> Back
-        </Link>
+        </button>
 
         <Card variant="raised" padding="lg">
           {state === "checking" ? (
@@ -107,11 +121,9 @@ export default function FeedbackPage() {
               </div>
               <h1 className="mt-4 text-2xl font-bold text-slate-900">Thank you!</h1>
               <p className="mt-1 text-sm text-slate-500">Your feedback was saved securely.</p>
-              <Link href="/" className="mt-6">
-                <Button variant="secondary" size="md">
-                  Back to home
-                </Button>
-              </Link>
+              <Button variant="secondary" size="md" className="mt-6" onClick={goBack}>
+                Go back
+              </Button>
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-6">
