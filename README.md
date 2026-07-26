@@ -43,6 +43,12 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 |:---:|:---:|
 | ![Vercel Analytics Dashboard](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785040172/Screenshot_2026-07-26_122635_qnmfp2.png) | ![Inspector Console](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785040283/Screenshot_2026-07-26_123102_cbp4gz.png) |
 
+### 4. Stellar Explorer
+
+|Contract ID Page |  
+| :---:|
+| ![stellar explorer](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785053216/Screenshot_2026-07-26_160614_umamnt.png) |
+
 ---
 
 ## 👥 Proof of 10+ Real User Wallet Interactions
@@ -50,7 +56,7 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 Once users test PeraPin, their on-chain testnet settlements are logged on the Stellar Explorer:
 
 | # | Role | Stellar Public Key | On-Chain Tx Hash |
-|---|---|---|---|---|
+|---|---|---|---|
 | 1 | Consumer | `GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I` | [`885df6cf…8298c`](https://stellar.expert/explorer/testnet/tx/885df6cfd2a207bd4b9b08fbd2ef22878fffe72480a2b8d47b3fa8e09218298c) · [account](https://stellar.expert/explorer/testnet/account/GBSLOBZ5AOSCF75M76W7NUZREMSJN3INYVORMP3OMA7DFJLMH3C6JM4I) |
 | 2 | Consumer | `GC5LOROOR2E4NK6NUS2XZWXOIONBJHEXPISOYBE4DJZBAYKJZFIVTAZ5` | [`32e68483…3198`](https://stellar.expert/explorer/testnet/tx/32e68483d7cd6296b231f51193ef65c6921c90e1cd9cbae76ea95cb2135a3198) · [account](https://stellar.expert/explorer/testnet/account/GC5LOROOR2E4NK6NUS2XZWXOIONBJHEXPISOYBE4DJZBAYKJZFIVTAZ5) |
 | 3 | Consumer | `GD3CWJXAG4A2BXJHWIKENQXST2BU3VBLLAFQMRM6QJEKRZY7Q2OFIHV7` | [`3cff9448…5ade`](https://stellar.expert/explorer/testnet/tx/3cff9448ec802f134808e9a9e68cd247c21f2e9bdcf9bbd0ebca8b18d1075ade) · [account](https://stellar.expert/explorer/testnet/account/GD3CWJXAG4A2BXJHWIKENQXST2BU3VBLLAFQMRM6QJEKRZY7Q2OFIHV7) |
