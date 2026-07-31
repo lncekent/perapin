@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Geist } from "next/font/google";
 import "./globals.css";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
@@ -10,8 +10,7 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://perapin.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://perapin.vercel.app";
 
 const siteName = "PeraPin";
 const siteTitle = "PeraPin — Zero-Connectivity Digital Payments";
@@ -96,7 +95,10 @@ import { cn } from "@/lib/utils";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={cn("antialiased", jetbrainsMono.variable, "font-sans", geist.variable)}>
+    <html
+      lang="en"
+      className={cn("antialiased", jetbrainsMono.variable, "font-sans", geist.variable)}
+    >
       <body suppressHydrationWarning className="min-h-screen bg-slate-50 font-sans text-slate-900">
         {children}
         <Toaster />

@@ -101,7 +101,10 @@ export async function POST(req: NextRequest) {
         const failedAttempts = await getFailedAttemptsOnChain(consumerPublicKey);
         if (failedAttempts >= 3) {
           return NextResponse.json(
-            { error: "WALLET_LOCKED", message: "Too many incorrect PIN attempts. This wallet is locked for 15 minutes." },
+            {
+              error: "WALLET_LOCKED",
+              message: "Too many incorrect PIN attempts. This wallet is locked for 15 minutes.",
+            },
             { status: 423 },
           );
         }

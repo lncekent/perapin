@@ -135,7 +135,7 @@ export default function ConsumerQrPage() {
               <div className="aspect-square w-full animate-pulse rounded bg-slate-200" />
             )}
           </div>
-          <p className="selectable rounded-xl bg-black/20 p-3 font-mono text-xs break-all text-brand-100">
+          <p className="selectable text-brand-100 rounded-xl bg-black/20 p-3 font-mono text-xs break-all">
             {wallet || "…"}
           </p>
         </div>
@@ -143,7 +143,7 @@ export default function ConsumerQrPage() {
 
       {/* Security note */}
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5 text-left">
-        <ShieldCheck className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+        <ShieldCheck className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <div>
           <p className="text-xs font-semibold text-slate-700">Safe to share publicly</p>
           <p className="mt-0.5 text-xs leading-relaxed text-slate-500">
@@ -162,13 +162,7 @@ export default function ConsumerQrPage() {
             </Button>
           </a>
         )}
-        <Button
-          variant="secondary"
-          size="lg"
-          block
-          onClick={copyPublicKey}
-          disabled={!wallet}
-        >
+        <Button variant="secondary" size="lg" block onClick={copyPublicKey} disabled={!wallet}>
           {copied ? (
             <>
               <Check className="size-5" aria-hidden="true" /> Copied!
@@ -184,14 +178,14 @@ export default function ConsumerQrPage() {
       {/* How to Use */}
       <div className="space-y-3 text-left">
         <h2 className="flex items-center gap-2 text-sm font-bold text-slate-900">
-          <Info className="size-4 text-brand-600" aria-hidden="true" />
+          <Info className="text-brand-600 size-4" aria-hidden="true" />
           How to use your sticker
         </h2>
         <div className="grid gap-2.5">
           {HOW_TO_USE_STEPS.map((step, i) => (
             <Card key={i} variant="ghost" padding="sm">
               <div className="flex items-start gap-3">
-                <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-8 flex-shrink-0 items-center justify-center rounded-lg ring-1">
                   <step.icon className="size-3.5" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">

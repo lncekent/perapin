@@ -98,17 +98,17 @@ export default function ConsumerTopupPage() {
         <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-brand-100">Current balance</p>
+            <p className="text-brand-100 text-sm font-medium">Current balance</p>
             <Badge className="bg-white/15 text-white ring-1 ring-white/20">TESTNET</Badge>
           </div>
           <p className="mt-3 text-4xl font-bold tracking-tight tabular-nums">
             {balance ? Number(balance).toFixed(2) : "…"}
-            <span className="ml-2 text-lg font-semibold text-brand-200">XLM</span>
+            <span className="text-brand-200 ml-2 text-lg font-semibold">XLM</span>
           </p>
           <button
             onClick={refresh}
             disabled={refreshing}
-            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-brand-100 transition-colors hover:text-white disabled:opacity-60"
+            className="text-brand-100 mt-3 inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:text-white disabled:opacity-60"
           >
             <RefreshCw
               className={refreshing ? "size-4 animate-spin" : "size-4"}
@@ -121,7 +121,7 @@ export default function ConsumerTopupPage() {
 
       {/* Estimated Time */}
       <Card variant="ghost" padding="sm" className="flex items-center gap-3">
-        <div className="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+        <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-9 items-center justify-center rounded-xl ring-1">
           <Clock className="size-4" aria-hidden="true" />
         </div>
         <div>
@@ -133,21 +133,24 @@ export default function ConsumerTopupPage() {
       {/* How to Fund Guide */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
-          <CircleHelp className="size-4 text-brand-600" aria-hidden="true" />
+          <CircleHelp className="text-brand-600 size-4" aria-hidden="true" />
           <h2 className="text-sm font-bold text-slate-900">How to fund your wallet</h2>
         </div>
         <div className="grid gap-2.5">
           {STEPS.map((step, i) => (
             <Card key={i} variant="ghost" padding="sm">
               <div className="flex items-start gap-3">
-                <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-8 flex-shrink-0 items-center justify-center rounded-lg ring-1">
                   <span className="text-xs font-bold">{i + 1}</span>
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-slate-800">{step.title}</p>
                   <p className="mt-0.5 text-xs text-slate-500">{step.description}</p>
                 </div>
-                <step.icon className="mt-0.5 size-4 flex-shrink-0 text-slate-300" aria-hidden="true" />
+                <step.icon
+                  className="mt-0.5 size-4 flex-shrink-0 text-slate-300"
+                  aria-hidden="true"
+                />
               </div>
             </Card>
           ))}
@@ -157,7 +160,7 @@ export default function ConsumerTopupPage() {
       {/* Address */}
       <Card variant="surface" padding="md" className="space-y-3">
         <div className="flex items-center gap-2">
-          <Wallet className="size-4 text-brand-600" aria-hidden="true" />
+          <Wallet className="text-brand-600 size-4" aria-hidden="true" />
           <p className="text-sm font-semibold text-slate-800">Your Stellar public key</p>
         </div>
         <p className="selectable rounded-xl bg-slate-50 p-3 font-mono text-xs break-all text-slate-600">
@@ -192,7 +195,7 @@ export default function ConsumerTopupPage() {
 
       {/* Info note */}
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
-        <Info className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+        <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
           Friendbot funds Testnet wallets for free with 10,000 XLM. After funding, tap Refresh to
           see your new balance. You can request funding multiple times.
@@ -208,7 +211,7 @@ export default function ConsumerTopupPage() {
       >
         <Card variant="ghost" padding="sm" interactive>
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 ring-1 ring-slate-200 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600 group-hover:ring-brand-100">
+            <div className="group-hover:bg-brand-50 group-hover:text-brand-600 group-hover:ring-brand-100 flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 ring-1 ring-slate-200 transition-colors">
               <BookOpen className="size-4" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
@@ -217,7 +220,10 @@ export default function ConsumerTopupPage() {
                 Learn more about Testnet, Friendbot, and Stellar networks
               </p>
             </div>
-            <ArrowRight className="size-4 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+            <ArrowRight
+              className="group-hover:text-brand-500 size-4 flex-shrink-0 text-slate-300 transition-colors"
+              aria-hidden="true"
+            />
           </div>
         </Card>
       </a>

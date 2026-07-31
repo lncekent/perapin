@@ -84,8 +84,7 @@ label {
 /* Subtle brand tint wash for light panels / hero backgrounds. */
 .bg-brand-wash {
   background:
-    radial-gradient(90% 60% at 50% -10%, rgb(37 99 235 / 0.08) 0%, transparent 60%),
-    #f8fafc;
+    radial-gradient(90% 60% at 50% -10%, rgb(37 99 235 / 0.08) 0%, transparent 60%), #f8fafc;
 }
 
 /* Faint dotted grid for empty/hero space — reads as "engineered/secure". */

@@ -691,9 +691,9 @@ export default function LandingPage() {
       {/* ===== FOOTER ===== */}
       <footer className="border-t border-slate-200/70 bg-slate-50 px-6 py-10">
         <div className="mx-auto max-w-md md:max-w-4xl">
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-3 md:items-start">
             {/* Brand */}
-            <div className="space-y-3">
+            <div className="flex flex-col items-center justify-center space-y-3 md:items-start">
               <div className="flex items-center gap-2">
                 <svg className="h-7 w-7 flex-shrink-0" viewBox="0 0 32 32" fill="none">
                   <defs>
@@ -717,13 +717,13 @@ export default function LandingPage() {
                 </svg>
                 <span className="text-sm font-bold text-slate-900">PeraPin</span>
               </div>
-              <p className="text-[11px] leading-relaxed text-slate-400">
+              <p className="text-center text-[11px] leading-relaxed text-slate-400 md:text-left">
                 Blockchain micropayments for informal economies. Built on Stellar/Soroban.
               </p>
             </div>
 
             {/* Links */}
-            <div className="space-y-2">
+            <div className="space-y-2 text-center md:text-left">
               <h4 className="text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
                 Product
               </h4>
@@ -744,7 +744,7 @@ export default function LandingPage() {
             </div>
 
             {/* Resources */}
-            <div className="space-y-2">
+            <div className="space-y-2 text-center md:text-left">
               <h4 className="text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
                 Resources
               </h4>

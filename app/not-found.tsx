@@ -10,11 +10,11 @@ export default function NotFound() {
   return (
     <main className="bg-brand-wash flex min-h-screen items-center justify-center px-6 py-12">
       <Card variant="raised" padding="lg" className="w-full max-w-md space-y-5 text-center">
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-money-gradient text-white shadow-money">
+        <div className="bg-money-gradient shadow-money mx-auto flex size-14 items-center justify-center rounded-2xl text-white">
           <Compass className="size-7" aria-hidden="true" />
         </div>
         <div>
-          <p className="font-mono text-sm font-bold text-brand-600">404</p>
+          <p className="text-brand-600 font-mono text-sm font-bold">404</p>
           <h1 className="mt-1 text-2xl font-extrabold tracking-tight text-slate-900">
             Page not found
           </h1>

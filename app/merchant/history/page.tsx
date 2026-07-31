@@ -58,7 +58,7 @@ export default function MerchantHistoryPage() {
             {transactions.map((tx) => (
               <Card key={tx.id} variant="surface" padding="sm">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                  <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-10 flex-shrink-0 items-center justify-center rounded-xl ring-1">
                     <ArrowDownLeft className="size-5" aria-hidden="true" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -72,13 +72,13 @@ export default function MerchantHistoryPage() {
                       href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-brand-600"
+                      className="hover:text-brand-600 mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400"
                     >
                       {tx.stellar_tx_hash.slice(0, 10)}…{tx.stellar_tx_hash.slice(-6)}
                       <ExternalLink className="size-3" aria-hidden="true" />
                     </a>
                   </div>
-                  <p className="flex-shrink-0 text-sm font-bold text-brand-700 tabular-nums">
+                  <p className="text-brand-700 flex-shrink-0 text-sm font-bold tabular-nums">
                     +{Number(tx.amount_xlm).toFixed(2)} XLM
                   </p>
                 </div>

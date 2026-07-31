@@ -148,16 +148,14 @@ export default function ConsumerRegisterPage() {
           {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-money-gradient text-3xl font-bold text-white shadow-money">
+              <div className="bg-money-gradient shadow-money flex size-14 items-center justify-center rounded-2xl text-3xl font-bold text-white">
                 ₱
               </div>
               <div>
                 <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
                   Create consumer account
                 </h1>
-                <p className="text-sm text-slate-500">
-                  Takes about 60 seconds
-                </p>
+                <p className="text-sm text-slate-500">Takes about 60 seconds</p>
               </div>
             </div>
           </div>
@@ -176,7 +174,7 @@ export default function ConsumerRegisterPage() {
                         className={cn(
                           "flex size-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all",
                           completed
-                            ? "bg-brand-600 text-white ring-brand-600"
+                            ? "bg-brand-600 ring-brand-600 text-white"
                             : active
                               ? "bg-brand-100 text-brand-700 ring-brand-300"
                               : "bg-white text-slate-400 ring-slate-200",
@@ -214,17 +212,17 @@ export default function ConsumerRegisterPage() {
           {/* What you'll get */}
           {step === "email" && (
             <div className="grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <QrCode className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">QR Sticker</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <QrCode className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">QR Sticker</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <WifiOff className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">Offline Pay</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <WifiOff className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">Offline Pay</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <Zap className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">Instant</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <Zap className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">Instant</span>
               </div>
             </div>
           )}
@@ -245,7 +243,7 @@ export default function ConsumerRegisterPage() {
                 <Field>
                   <FieldLabel htmlFor="email">Email address</FieldLabel>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       id="email"
                       name="email"
@@ -312,12 +310,7 @@ export default function ConsumerRegisterPage() {
                     <span className="font-semibold text-slate-700">{email}</span>
                   </FieldDescription>
                 </Field>
-                <Button
-                  type="submit"
-                  disabled={loading || token.length !== 6}
-                  block
-                  size="lg"
-                >
+                <Button type="submit" disabled={loading || token.length !== 6} block size="lg">
                   {loading ? (
                     <>
                       <Spinner /> Creating wallet…
@@ -347,8 +340,8 @@ export default function ConsumerRegisterPage() {
           {step === "pin" && (
             <form onSubmit={complete}>
               <FieldGroup>
-                <div className="rounded-xl bg-brand-50 p-3 text-center">
-                  <p className="text-xs font-medium text-brand-700">
+                <div className="bg-brand-50 rounded-xl p-3 text-center">
+                  <p className="text-brand-700 text-xs font-medium">
                     ✓ Stellar wallet created! Now secure it with a 4-digit PIN.
                   </p>
                 </div>
@@ -384,7 +377,8 @@ export default function ConsumerRegisterPage() {
                     className="h-12 text-center text-xl tracking-[0.4em]"
                   />
                   <FieldDescription>
-                    Your PIN is hashed client-side using SHA-256 — PeraPin servers never see the raw digits.
+                    Your PIN is hashed client-side using SHA-256 — PeraPin servers never see the raw
+                    digits.
                   </FieldDescription>
                 </Field>
                 <Button type="submit" disabled={loading} block size="lg">
@@ -402,7 +396,7 @@ export default function ConsumerRegisterPage() {
 
           {/* Trust footer */}
           <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5">
-            <ShieldCheck className="size-3.5 text-brand-500" aria-hidden="true" />
+            <ShieldCheck className="text-brand-500 size-3.5" aria-hidden="true" />
             <p className="text-[11px] font-medium text-slate-500">
               Custodial Testnet wallet · Client-side PIN hashing · AES-256 key encryption
             </p>
@@ -413,11 +407,13 @@ export default function ConsumerRegisterPage() {
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500">
             Already have an account?{" "}
-            <Link className="font-semibold text-brand-700 hover:underline" href="/login">
+            <Link className="text-brand-700 font-semibold hover:underline" href="/login">
               Sign in
             </Link>
           </p>
-          <Badge variant="outline" className="text-[10px]">Testnet</Badge>
+          <Badge variant="outline" className="text-[10px]">
+            Testnet
+          </Badge>
         </div>
       </div>
 

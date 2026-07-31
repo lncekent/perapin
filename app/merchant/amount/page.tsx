@@ -59,17 +59,17 @@ export default function MerchantAmountPage() {
       <Card variant="ghost" padding="sm">
         <div className="flex items-center justify-between text-center">
           <div className="flex flex-1 flex-col items-center gap-1">
-            <span className="flex size-7 items-center justify-center rounded-full bg-brand-100 text-brand-700 ring-1 ring-brand-200">
+            <span className="bg-brand-100 text-brand-700 ring-brand-200 flex size-7 items-center justify-center rounded-full ring-1">
               <CheckCircle2 className="size-3.5" />
             </span>
-            <span className="text-[10px] font-medium text-brand-700">Scan</span>
+            <span className="text-brand-700 text-[10px] font-medium">Scan</span>
           </div>
-          <div className="h-px flex-1 bg-brand-300" />
+          <div className="bg-brand-300 h-px flex-1" />
           <div className="flex flex-1 flex-col items-center gap-1">
-            <span className="flex size-7 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white ring-1 ring-brand-600">
+            <span className="bg-brand-600 ring-brand-600 flex size-7 items-center justify-center rounded-full text-[10px] font-bold text-white ring-1">
               2
             </span>
-            <span className="text-[10px] font-semibold text-brand-700">Amount</span>
+            <span className="text-brand-700 text-[10px] font-semibold">Amount</span>
           </div>
           <div className="h-px flex-1 bg-slate-200" />
           <div className="flex flex-1 flex-col items-center gap-1">
@@ -90,7 +90,7 @@ export default function MerchantAmountPage() {
 
       {/* Consumer sticker info */}
       <Card variant="surface" padding="sm" className="flex items-center gap-3">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+        <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-10 items-center justify-center rounded-xl ring-1">
           <CheckCircle2 className="size-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
@@ -99,7 +99,9 @@ export default function MerchantAmountPage() {
             {consumer ? `${consumer.slice(0, 8)}…${consumer.slice(-6)}` : "…"}
           </p>
         </div>
-        <Badge variant="secondary" className="text-[10px]">Active</Badge>
+        <Badge variant="secondary" className="text-[10px]">
+          Active
+        </Badge>
       </Card>
 
       {/* Error */}
@@ -135,7 +137,7 @@ export default function MerchantAmountPage() {
                   placeholder="0.00"
                   className="h-20 pr-16 text-4xl font-bold"
                 />
-                <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-semibold text-slate-400">
+                <span className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-lg font-semibold text-slate-400">
                   XLM
                 </span>
               </div>
@@ -154,7 +156,7 @@ export default function MerchantAmountPage() {
                     setAmount(val);
                     if (error) setError("");
                   }}
-                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700"
+                  className="hover:border-brand-300 hover:bg-brand-50 hover:text-brand-700 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition-colors"
                 >
                   {val} XLM
                 </button>
@@ -171,11 +173,11 @@ export default function MerchantAmountPage() {
 
       {/* Info note */}
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
-        <Info className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+        <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
-          <span className="font-semibold text-slate-700">Next step:</span> You&apos;ll hand your phone
-          to the consumer. They&apos;ll enter their 4-digit PIN to authorize this payment. The PIN
-          never leaves the browser.
+          <span className="font-semibold text-slate-700">Next step:</span> You&apos;ll hand your
+          phone to the consumer. They&apos;ll enter their 4-digit PIN to authorize this payment. The
+          PIN never leaves the browser.
         </p>
       </Card>
     </div>

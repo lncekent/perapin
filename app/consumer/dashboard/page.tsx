@@ -105,15 +105,12 @@ export default function ConsumerDashboard() {
     return data;
   });
 
-  const { data: txData } = useCachedFetch<{ transactions: Tx[] }>(
-    "consumer-txs",
-    async () => {
-      const r = await fetch("/api/transactions");
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "Unable to load transactions.");
-      return data;
-    }
-  );
+  const { data: txData } = useCachedFetch<{ transactions: Tx[] }>("consumer-txs", async () => {
+    const r = await fetch("/api/transactions");
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Unable to load transactions.");
+    return data;
+  });
 
   if (error && !profile)
     return (
@@ -141,11 +138,7 @@ export default function ConsumerDashboard() {
   const transactions = txData?.transactions ?? [];
   const recentTxs = transactions.slice(0, 3);
   const totalSpent = transactions
-    .filter(
-      (tx) =>
-        tx.from_public_key === profile.user.stellarPublicKey &&
-        tx.status === "success"
-    )
+    .filter((tx) => tx.from_public_key === profile.user.stellarPublicKey && tx.status === "success")
     .reduce((sum, tx) => sum + tx.amount_xlm, 0);
   const txCount = transactions.length;
   const memberSince = profile.user.email
@@ -183,28 +176,20 @@ export default function ConsumerDashboard() {
       )}
 
       {/* Money Hero Card */}
-      <Card
-        variant="money"
-        padding="lg"
-        className="animate-shimmer relative overflow-hidden"
-      >
+      <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden">
         <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-brand-100">
-              Available balance
-            </p>
+            <p className="text-brand-100 text-sm font-medium">Available balance</p>
             <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-white ring-1 ring-white/20">
               TESTNET
             </span>
           </div>
           <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums">
             {Number(profile.balanceXlm).toFixed(2)}
-            <span className="ml-2 text-xl font-semibold text-brand-200">
-              XLM
-            </span>
+            <span className="text-brand-200 ml-2 text-xl font-semibold">XLM</span>
           </p>
-          <p className="mt-3 truncate font-mono text-[11px] text-brand-200/80">
+          <p className="text-brand-200/80 mt-3 truncate font-mono text-[11px]">
             {profile.user.stellarPublicKey}
           </p>
           {profile.isLocked && (
@@ -218,38 +203,25 @@ export default function ConsumerDashboard() {
 
       {/* Quick Stats Row */}
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <h2 className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">
           Quick Stats
         </h2>
         <div className="grid grid-cols-3 gap-3">
           <Card variant="ghost" padding="sm" className="text-center">
-            <TrendingDown
-              className="mx-auto h-4 w-4 text-slate-400"
-              aria-hidden="true"
-            />
-            <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
+            <TrendingDown className="mx-auto h-4 w-4 text-slate-400" aria-hidden="true" />
+            <p className="mt-1.5 text-lg font-bold text-slate-900 tabular-nums">
               {totalSpent.toFixed(1)}
             </p>
             <p className="text-[10px] text-slate-500">XLM Spent</p>
           </Card>
           <Card variant="ghost" padding="sm" className="text-center">
-            <Hash
-              className="mx-auto h-4 w-4 text-slate-400"
-              aria-hidden="true"
-            />
-            <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
-              {txCount}
-            </p>
+            <Hash className="mx-auto h-4 w-4 text-slate-400" aria-hidden="true" />
+            <p className="mt-1.5 text-lg font-bold text-slate-900 tabular-nums">{txCount}</p>
             <p className="text-[10px] text-slate-500">Transactions</p>
           </Card>
           <Card variant="ghost" padding="sm" className="text-center">
-            <CalendarDays
-              className="mx-auto h-4 w-4 text-slate-400"
-              aria-hidden="true"
-            />
-            <p className="mt-1.5 text-sm font-bold text-slate-900">
-              {memberSince}
-            </p>
+            <CalendarDays className="mx-auto h-4 w-4 text-slate-400" aria-hidden="true" />
+            <p className="mt-1.5 text-sm font-bold text-slate-900">{memberSince}</p>
             <p className="text-[10px] text-slate-500">Member Since</p>
           </Card>
         </div>
@@ -258,13 +230,13 @@ export default function ConsumerDashboard() {
       {/* Recent Activity */}
       <section>
         <div className="mb-2 flex items-center justify-between">
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
             Recent Activity
           </h2>
           {transactions.length > 0 && (
             <Link
               href="/consumer/history"
-              className="text-xs font-medium text-brand-600 hover:underline"
+              className="text-brand-600 text-xs font-medium hover:underline"
             >
               View all
             </Link>
@@ -273,32 +245,19 @@ export default function ConsumerDashboard() {
         <Card variant="surface" padding="sm">
           {recentTxs.length === 0 ? (
             <div className="flex flex-col items-center py-6 text-center">
-              <Activity
-                className="h-8 w-8 text-slate-300"
-                aria-hidden="true"
-              />
-              <p className="mt-2 text-sm font-medium text-slate-500">
-                No transactions yet
-              </p>
-              <p className="text-xs text-slate-400">
-                Your payment history will appear here
-              </p>
+              <Activity className="h-8 w-8 text-slate-300" aria-hidden="true" />
+              <p className="mt-2 text-sm font-medium text-slate-500">No transactions yet</p>
+              <p className="text-xs text-slate-400">Your payment history will appear here</p>
             </div>
           ) : (
             <ul className="divide-y divide-slate-100">
               {recentTxs.map((tx) => {
-                const isSender =
-                  tx.from_public_key === profile.user.stellarPublicKey;
+                const isSender = tx.from_public_key === profile.user.stellarPublicKey;
                 return (
-                  <li
-                    key={tx.id}
-                    className="flex items-center gap-3 py-3 first:pt-1 last:pb-1"
-                  >
+                  <li key={tx.id} className="flex items-center gap-3 py-3 first:pt-1 last:pb-1">
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        isSender
-                          ? "bg-red-50 text-red-500"
-                          : "bg-green-50 text-green-500"
+                        isSender ? "bg-red-50 text-red-500" : "bg-green-50 text-green-500"
                       }`}
                     >
                       {isSender ? (
@@ -307,13 +266,11 @@ export default function ConsumerDashboard() {
                         <ArrowDownLeft className="h-4 w-4" aria-hidden="true" />
                       )}
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-slate-800">
                         {isSender ? "Sent to" : "Received from"}{" "}
                         <span className="font-mono text-xs text-slate-500">
-                          {truncateKey(
-                            isSender ? tx.to_public_key : tx.from_public_key
-                          )}
+                          {truncateKey(isSender ? tx.to_public_key : tx.from_public_key)}
                         </span>
                       </p>
                       <p className="text-[10px] text-slate-400">
@@ -330,9 +287,7 @@ export default function ConsumerDashboard() {
                         {tx.amount_xlm.toFixed(2)}
                       </p>
                       <Badge
-                        variant={
-                          tx.status === "success" ? "default" : "destructive"
-                        }
+                        variant={tx.status === "success" ? "default" : "destructive"}
                         className="mt-0.5 text-[9px]"
                       >
                         {tx.status}
@@ -348,7 +303,7 @@ export default function ConsumerDashboard() {
 
       {/* Quick Actions */}
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <h2 className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">
           Quick Actions
         </h2>
         <div className="grid grid-cols-2 gap-3">
@@ -356,20 +311,16 @@ export default function ConsumerDashboard() {
             <Link key={href} href={href} className="group">
               <Card variant="surface" padding="sm" interactive className="h-full">
                 <div className="flex items-start justify-between">
-                  <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                  <div className="bg-brand-50 text-brand-600 ring-brand-100 rounded-xl p-2 ring-1">
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </div>
                   <ArrowUpRight
-                    className="h-4 w-4 text-slate-300 transition-colors group-hover:text-brand-500"
+                    className="group-hover:text-brand-500 h-4 w-4 text-slate-300 transition-colors"
                     aria-hidden="true"
                   />
                 </div>
-                <p className="mt-3 text-sm font-bold text-slate-900">
-                  {label}
-                </p>
-                <p className="mt-0.5 text-[11px] leading-tight text-slate-400">
-                  {sub}
-                </p>
+                <p className="mt-3 text-sm font-bold text-slate-900">{label}</p>
+                <p className="mt-0.5 text-[11px] leading-tight text-slate-400">{sub}</p>
               </Card>
             </Link>
           ))}
@@ -378,7 +329,7 @@ export default function ConsumerDashboard() {
 
       {/* Security Status */}
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <h2 className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">
           Security Status
         </h2>
         <Card variant="surface" padding="sm">
@@ -386,25 +337,15 @@ export default function ConsumerDashboard() {
             {/* PIN Status */}
             <div className="flex items-center gap-2.5">
               {profile.pinSetupRequired ? (
-                <ShieldAlert
-                  className="h-5 w-5 text-amber-500"
-                  aria-hidden="true"
-                />
+                <ShieldAlert className="h-5 w-5 text-amber-500" aria-hidden="true" />
               ) : (
-                <ShieldCheck
-                  className="h-5 w-5 text-green-500"
-                  aria-hidden="true"
-                />
+                <ShieldCheck className="h-5 w-5 text-green-500" aria-hidden="true" />
               )}
               <div>
-                <p className="text-xs font-semibold text-slate-700">
-                  PIN Status
-                </p>
+                <p className="text-xs font-semibold text-slate-700">PIN Status</p>
                 <p
                   className={`text-[11px] font-medium ${
-                    profile.pinSetupRequired
-                      ? "text-amber-600"
-                      : "text-green-600"
+                    profile.pinSetupRequired ? "text-amber-600" : "text-green-600"
                   }`}
                 >
                   {profile.pinSetupRequired ? "Needs Setup" : "Active"}
@@ -415,20 +356,12 @@ export default function ConsumerDashboard() {
             {/* Lock Status */}
             <div className="flex items-center gap-2.5">
               {profile.isLocked ? (
-                <XCircle
-                  className="h-5 w-5 text-red-500"
-                  aria-hidden="true"
-                />
+                <XCircle className="h-5 w-5 text-red-500" aria-hidden="true" />
               ) : (
-                <CheckCircle2
-                  className="h-5 w-5 text-green-500"
-                  aria-hidden="true"
-                />
+                <CheckCircle2 className="h-5 w-5 text-green-500" aria-hidden="true" />
               )}
               <div>
-                <p className="text-xs font-semibold text-slate-700">
-                  Wallet Lock
-                </p>
+                <p className="text-xs font-semibold text-slate-700">Wallet Lock</p>
                 <p
                   className={`text-[11px] font-medium ${
                     profile.isLocked ? "text-red-600" : "text-green-600"
@@ -441,15 +374,10 @@ export default function ConsumerDashboard() {
 
             {/* Network Status */}
             <div className="flex items-center gap-2.5">
-              <Globe
-                className="h-5 w-5 text-blue-500"
-                aria-hidden="true"
-              />
+              <Globe className="h-5 w-5 text-blue-500" aria-hidden="true" />
               <div>
                 <p className="text-xs font-semibold text-slate-700">Network</p>
-                <p className="text-[11px] font-medium text-blue-600">
-                  Stellar Testnet
-                </p>
+                <p className="text-[11px] font-medium text-blue-600">Stellar Testnet</p>
               </div>
             </div>
           </div>
@@ -458,21 +386,15 @@ export default function ConsumerDashboard() {
 
       {/* Getting Started Tips */}
       <section>
-        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-          <Lightbulb
-            className="mr-1 inline-block h-3.5 w-3.5"
-            aria-hidden="true"
-          />
+        <h2 className="mb-2 text-xs font-semibold tracking-wider text-slate-400 uppercase">
+          <Lightbulb className="mr-1 inline-block h-3.5 w-3.5" aria-hidden="true" />
           Getting Started
         </h2>
         <Card variant="ghost" padding="sm">
           <ul className="space-y-2">
             {tips.map((tip, i) => (
-              <li
-                key={i}
-                className="flex items-start gap-2 text-xs text-slate-600"
-              >
-                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-100 text-[9px] font-bold text-brand-700">
+              <li key={i} className="flex items-start gap-2 text-xs text-slate-600">
+                <span className="bg-brand-100 text-brand-700 mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] font-bold">
                   {i + 1}
                 </span>
                 {tip}

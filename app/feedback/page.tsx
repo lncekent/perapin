@@ -100,7 +100,7 @@ export default function FeedbackPage() {
             </div>
           ) : state === "unauth" ? (
             <div className="animate-fade-up flex flex-col items-center py-12 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+              <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-14 items-center justify-center rounded-2xl ring-1">
                 <LogIn className="size-7" aria-hidden="true" />
               </div>
               <h1 className="mt-4 text-2xl font-bold text-slate-900">Sign in to share feedback</h1>
@@ -116,7 +116,7 @@ export default function FeedbackPage() {
             </div>
           ) : state === "done" ? (
             <div className="animate-fade-up flex flex-col items-center py-12 text-center">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+              <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-14 items-center justify-center rounded-2xl ring-1">
                 <CircleCheckBig className="size-7" aria-hidden="true" />
               </div>
               <h1 className="mt-4 text-2xl font-bold text-slate-900">Thank you!</h1>
@@ -158,7 +158,7 @@ export default function FeedbackPage() {
                           aria-label={`${star} star${star === 1 ? "" : "s"}`}
                           onClick={() => setRating(star)}
                           className={cn(
-                            "flex size-12 items-center justify-center rounded-xl border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500",
+                            "focus-visible:outline-brand-500 flex size-12 items-center justify-center rounded-xl border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2",
                             active
                               ? "border-brand-200 bg-brand-50 text-brand-600"
                               : "border-slate-200 bg-white text-slate-300 hover:bg-slate-50",

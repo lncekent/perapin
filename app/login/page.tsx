@@ -124,7 +124,7 @@ export default function LoginPage() {
               <span
                 className={`flex size-6 items-center justify-center rounded-full text-[11px] font-bold ring-1 ${
                   step === "email"
-                    ? "bg-brand-600 text-white ring-brand-600"
+                    ? "bg-brand-600 ring-brand-600 text-white"
                     : "bg-brand-100 text-brand-700 ring-brand-200"
                 }`}
               >
@@ -137,7 +137,7 @@ export default function LoginPage() {
               <span
                 className={`flex size-6 items-center justify-center rounded-full text-[11px] font-bold ring-1 ${
                   step === "token"
-                    ? "bg-brand-600 text-white ring-brand-600"
+                    ? "bg-brand-600 ring-brand-600 text-white"
                     : "bg-white text-slate-400 ring-slate-200"
                 }`}
               >
@@ -167,7 +167,7 @@ export default function LoginPage() {
                 <Field>
                   <FieldLabel htmlFor="email">Email address</FieldLabel>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       id="email"
                       name="email"
@@ -182,9 +182,7 @@ export default function LoginPage() {
                       className="h-12 pl-10"
                     />
                   </div>
-                  <FieldDescription>
-                    Use the email linked to your PeraPin account.
-                  </FieldDescription>
+                  <FieldDescription>Use the email linked to your PeraPin account.</FieldDescription>
                 </Field>
                 <Button type="submit" disabled={loading} block size="lg">
                   {loading ? (
@@ -227,16 +225,10 @@ export default function LoginPage() {
                     </InputOTPGroup>
                   </InputOTP>
                   <FieldDescription className="text-center">
-                    Code sent to{" "}
-                    <span className="font-semibold text-slate-700">{email}</span>
+                    Code sent to <span className="font-semibold text-slate-700">{email}</span>
                   </FieldDescription>
                 </Field>
-                <Button
-                  type="submit"
-                  disabled={loading || token.length !== 6}
-                  block
-                  size="lg"
-                >
+                <Button type="submit" disabled={loading || token.length !== 6} block size="lg">
                   {loading ? (
                     <>
                       <Spinner /> Verifying…
@@ -264,7 +256,7 @@ export default function LoginPage() {
 
           {/* Security badge */}
           <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5">
-            <Lock className="size-3.5 text-brand-500" aria-hidden="true" />
+            <Lock className="text-brand-500 size-3.5" aria-hidden="true" />
             <p className="text-[11px] font-medium text-slate-500">
               Passwordless sign-in secured by email OTP — no credentials stored
             </p>
@@ -273,9 +265,7 @@ export default function LoginPage() {
 
         {/* Registration CTAs */}
         <Card variant="surface" padding="md" className="space-y-3">
-          <p className="text-center text-sm font-semibold text-slate-700">
-            New to PeraPin?
-          </p>
+          <p className="text-center text-sm font-semibold text-slate-700">New to PeraPin?</p>
           <div className="grid grid-cols-2 gap-2">
             <Link href="/register/consumer">
               <Button variant="secondary" size="md" block>
@@ -293,15 +283,15 @@ export default function LoginPage() {
         {/* Trust indicators */}
         <div className="grid grid-cols-3 gap-2">
           <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-100 bg-white p-3 text-center">
-            <Zap className="size-4 text-brand-500" aria-hidden="true" />
+            <Zap className="text-brand-500 size-4" aria-hidden="true" />
             <span className="text-[10px] font-medium text-slate-500">Instant settle</span>
           </div>
           <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-100 bg-white p-3 text-center">
-            <WifiOff className="size-4 text-brand-500" aria-hidden="true" />
+            <WifiOff className="text-brand-500 size-4" aria-hidden="true" />
             <span className="text-[10px] font-medium text-slate-500">Offline-first</span>
           </div>
           <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-slate-100 bg-white p-3 text-center">
-            <Globe className="size-4 text-brand-500" aria-hidden="true" />
+            <Globe className="text-brand-500 size-4" aria-hidden="true" />
             <span className="text-[10px] font-medium text-slate-500">Stellar powered</span>
           </div>
         </div>

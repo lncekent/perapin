@@ -18,8 +18,7 @@ export const STELLAR_RPC_URL =
 
 export const HORIZON_URL = "https://horizon-testnet.stellar.org";
 
-export const CONTRACT_ID =
-  process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID || "";
+export const CONTRACT_ID = process.env.NEXT_PUBLIC_SOROBAN_CONTRACT_ID || "";
 
 const sorobanServer = new SorobanRpc.Server(STELLAR_RPC_URL);
 const horizonServer = new Horizon.Server(HORIZON_URL);
@@ -99,7 +98,9 @@ export async function checkIsLockedOnChain(walletAddress: string): Promise<boole
 export async function getFailedAttemptsOnChain(walletAddress: string): Promise<number> {
   try {
     const result = await sorobanServer.simulateTransaction(
-      await buildContractTx(walletAddress, "get_failed_attempts", [new Address(walletAddress).toScVal()]),
+      await buildContractTx(walletAddress, "get_failed_attempts", [
+        new Address(walletAddress).toScVal(),
+      ]),
     );
     if (SorobanRpc.Api.isSimulationSuccess(result) && result.result) {
       return Number(scValToNative(result.result.retval));
@@ -120,7 +121,9 @@ async function buildContractTx(
   args: xdr.ScVal[] = [],
 ) {
   if (!CONTRACT_ID) {
-    throw new Error("NEXT_PUBLIC_SOROBAN_CONTRACT_ID must be set to the newly deployed PeraPin contract.");
+    throw new Error(
+      "NEXT_PUBLIC_SOROBAN_CONTRACT_ID must be set to the newly deployed PeraPin contract.",
+    );
   }
   const account = await sorobanServer.getAccount(sourceAddress);
 

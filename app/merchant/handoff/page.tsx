@@ -28,10 +28,7 @@ export default function MerchantHandoffPage() {
   }, [paymentContext, router]);
 
   useEffect(() => {
-    const interval = window.setInterval(
-      () => setSeconds((value) => Math.max(0, value - 1)),
-      1000,
-    );
+    const interval = window.setInterval(() => setSeconds((value) => Math.max(0, value - 1)), 1000);
     return () => window.clearInterval(interval);
   }, []);
 
@@ -45,8 +42,7 @@ export default function MerchantHandoffPage() {
     try {
       const merchantResponse = await fetch("/api/user/me");
       const merchant = await merchantResponse.json();
-      if (!merchantResponse.ok)
-        throw new Error(merchant.error || "Merchant session expired.");
+      if (!merchantResponse.ok) throw new Error(merchant.error || "Merchant session expired.");
       const pinHash = await computePinHash(currentPin, consumer);
       const response = await fetch("/api/payment/initiate", {
         method: "POST",
@@ -66,9 +62,7 @@ export default function MerchantHandoffPage() {
           );
         }
         if (data.error === "WALLET_LOCKED") {
-          throw new Error(
-            "Too many incorrect attempts. Wallet locked for 15 minutes.",
-          );
+          throw new Error("Too many incorrect attempts. Wallet locked for 15 minutes.");
         }
         throw new Error(data.message || data.error || "Payment failed.");
       }
@@ -99,30 +93,29 @@ export default function MerchantHandoffPage() {
   if (!paymentContext) return null;
 
   return (
-    <main className="fixed inset-0 z-50 flex min-h-screen flex-col bg-slate-950 px-6 pb-6 pt-8 text-white">
+    <main className="fixed inset-0 z-50 flex min-h-screen flex-col bg-slate-950 px-6 pt-8 pb-6 text-white">
       {/* Top secure indicator */}
       <div className="flex items-center justify-center gap-2 pb-4">
-        <Lock className="size-3.5 text-brand-300" aria-hidden="true" />
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+        <Lock className="text-brand-300 size-3.5" aria-hidden="true" />
+        <p className="text-[11px] font-semibold tracking-[0.2em] text-slate-400 uppercase">
           Secure PIN Entry
         </p>
-        <Lock className="size-3.5 text-brand-300" aria-hidden="true" />
+        <Lock className="text-brand-300 size-3.5" aria-hidden="true" />
       </div>
 
       {/* Header */}
       <header className="text-center">
         <div className="mx-auto mb-3 flex items-center justify-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
-            <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
+            <span className="bg-brand-400 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" />
+            <span className="bg-brand-500 relative inline-flex size-2 rounded-full" />
           </span>
           Waiting for consumer PIN
         </div>
 
         <p className="text-sm text-slate-400">Amount to pay</p>
         <h1 className="mt-1 text-5xl font-extrabold tracking-tight">
-          {amount.toFixed(2)}{" "}
-          <span className="text-2xl font-semibold text-brand-300">XLM</span>
+          {amount.toFixed(2)} <span className="text-brand-300 text-2xl font-semibold">XLM</span>
         </h1>
 
         {/* Timer */}
@@ -139,9 +132,7 @@ export default function MerchantHandoffPage() {
           </div>
         </div>
 
-        <p className="mt-3 text-xs text-slate-500">
-          Enter your 4-digit PIN to authorize
-        </p>
+        <p className="mt-3 text-xs text-slate-500">Enter your 4-digit PIN to authorize</p>
       </header>
 
       {/* PIN display and keypad */}
@@ -198,7 +189,7 @@ export default function MerchantHandoffPage() {
                 className={`min-h-[4rem] rounded-2xl text-2xl font-bold transition-all active:scale-95 disabled:opacity-40 ${
                   isDelete
                     ? "bg-slate-800 text-sm font-semibold text-slate-300"
-                    : "border border-slate-700 bg-slate-900 hover:bg-slate-800 hover:border-slate-600"
+                    : "border border-slate-700 bg-slate-900 hover:border-slate-600 hover:bg-slate-800"
                 }`}
               >
                 {isDelete ? "Delete" : key}
@@ -211,9 +202,9 @@ export default function MerchantHandoffPage() {
         {loading && (
           <div className="mt-6 flex flex-col items-center gap-2 text-center">
             <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-800">
-              <div className="h-full w-full animate-pulse rounded-full bg-brand-500" />
+              <div className="bg-brand-500 h-full w-full animate-pulse rounded-full" />
             </div>
-            <p className="text-sm font-medium text-brand-200">
+            <p className="text-brand-200 text-sm font-medium">
               Verifying PIN & settling on Stellar…
             </p>
           </div>

@@ -3,15 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
-import {
-  Camera,
-  CircleAlert,
-  KeyRound,
-  ScanLine,
-  Info,
-  CheckCircle2,
-  Wifi,
-} from "lucide-react";
+import { Camera, CircleAlert, KeyRound, ScanLine, Info, CheckCircle2, Wifi } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -115,10 +107,10 @@ export default function MerchantScanPage() {
       <Card variant="ghost" padding="sm">
         <div className="flex items-center justify-between text-center">
           <div className="flex flex-1 flex-col items-center gap-1">
-            <span className="flex size-7 items-center justify-center rounded-full bg-brand-600 text-[10px] font-bold text-white ring-1 ring-brand-600">
+            <span className="bg-brand-600 ring-brand-600 flex size-7 items-center justify-center rounded-full text-[10px] font-bold text-white ring-1">
               1
             </span>
-            <span className="text-[10px] font-semibold text-brand-700">Scan</span>
+            <span className="text-brand-700 text-[10px] font-semibold">Scan</span>
           </div>
           <div className="h-px flex-1 bg-slate-200" />
           <div className="flex flex-1 flex-col items-center gap-1">
@@ -154,7 +146,7 @@ export default function MerchantScanPage() {
       )}
 
       {/* Camera viewport */}
-      <div className="relative aspect-square overflow-hidden rounded-3xl bg-slate-950 shadow-card">
+      <div className="shadow-card relative aspect-square overflow-hidden rounded-3xl bg-slate-950">
         <video
           ref={video}
           className={cn("h-full w-full object-cover", !camera && "opacity-0")}
@@ -207,7 +199,7 @@ export default function MerchantScanPage() {
             <span className="absolute bottom-0 left-0 size-8 rounded-bl-xl border-b-2 border-l-2 border-white/80" />
             <span className="absolute right-0 bottom-0 size-8 rounded-br-xl border-r-2 border-b-2 border-white/80" />
             {camera && (
-              <span className="animate-laser absolute inset-x-2 top-0 h-0.5 rounded-full bg-brand-400 shadow-[0_0_12px_2px_rgba(96,144,250,0.7)]" />
+              <span className="animate-laser bg-brand-400 absolute inset-x-2 top-0 h-0.5 rounded-full shadow-[0_0_12px_2px_rgba(96,144,250,0.7)]" />
             )}
           </div>
         </div>
@@ -267,13 +259,13 @@ export default function MerchantScanPage() {
       {/* Info cards */}
       <div className="grid grid-cols-2 gap-2">
         <Card variant="ghost" padding="sm" className="flex items-start gap-2">
-          <KeyRound className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+          <KeyRound className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
           <p className="text-[11px] leading-relaxed text-slate-500">
             Consumer enters their PIN on your phone — their device isn&apos;t needed.
           </p>
         </Card>
         <Card variant="ghost" padding="sm" className="flex items-start gap-2">
-          <CheckCircle2 className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+          <CheckCircle2 className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
           <p className="text-[11px] leading-relaxed text-slate-500">
             Settlement confirms on-chain in ~5 seconds via Soroban.
           </p>
@@ -281,10 +273,11 @@ export default function MerchantScanPage() {
       </div>
 
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
-        <Info className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+        <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
-          <span className="font-semibold text-slate-700">Payment flow:</span> Scan sticker → Enter amount →
-          Hand phone to consumer → They type PIN → Payment settles on Stellar Testnet → Both see confirmation.
+          <span className="font-semibold text-slate-700">Payment flow:</span> Scan sticker → Enter
+          amount → Hand phone to consumer → They type PIN → Payment settles on Stellar Testnet →
+          Both see confirmation.
         </p>
       </Card>
     </div>

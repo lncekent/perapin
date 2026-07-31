@@ -39,15 +39,12 @@ export default function MerchantDashboard() {
     return data;
   });
 
-  const { data: txData } = useCachedFetch<{ transactions: Tx[] }>(
-    "merchant-tx",
-    async () => {
-      const r = await fetch("/api/transactions");
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error || "Unable to load transactions.");
-      return data;
-    },
-  );
+  const { data: txData } = useCachedFetch<{ transactions: Tx[] }>("merchant-tx", async () => {
+    const r = await fetch("/api/transactions");
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || "Unable to load transactions.");
+    return data;
+  });
 
   const transactions = txData?.transactions ?? [];
 
@@ -103,7 +100,7 @@ export default function MerchantDashboard() {
             <p className="text-sm text-slate-500">Ready to accept payments</p>
           </div>
         </div>
-        <Badge variant="secondary" className="text-[10px] font-semibold uppercase tracking-wide">
+        <Badge variant="secondary" className="text-[10px] font-semibold tracking-wide uppercase">
           Merchant
         </Badge>
       </div>
@@ -113,14 +110,14 @@ export default function MerchantDashboard() {
         <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
         <div className="relative">
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-brand-100">Received balance</p>
+            <p className="text-brand-100 text-sm font-medium">Received balance</p>
             <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-white ring-1 ring-white/20">
               TESTNET
             </span>
           </div>
           <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums">
             {Number(profile.balanceXlm).toFixed(2)}
-            <span className="ml-2 text-xl font-semibold text-brand-200">XLM</span>
+            <span className="text-brand-200 ml-2 text-xl font-semibold">XLM</span>
           </p>
           {todayRevenue > 0 && (
             <div className="mt-2 flex items-center gap-1.5">
@@ -130,7 +127,7 @@ export default function MerchantDashboard() {
               </p>
             </div>
           )}
-          <p className="mt-3 truncate font-mono text-[11px] text-brand-200/80">
+          <p className="text-brand-200/80 mt-3 truncate font-mono text-[11px]">
             {profile.user.stellarPublicKey}
           </p>
         </div>
@@ -139,20 +136,20 @@ export default function MerchantDashboard() {
       {/* Stats row */}
       <section className="grid grid-cols-3 gap-3">
         <Card variant="ghost" padding="sm" className="text-center">
-          <TrendingUp className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
-          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
+          <TrendingUp className="text-brand-500 mx-auto h-4 w-4" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold text-slate-900 tabular-nums">
             {totalReceived.toFixed(1)}
           </p>
           <p className="text-[10px] font-medium text-slate-400">Total XLM</p>
         </Card>
         <Card variant="ghost" padding="sm" className="text-center">
-          <Users className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
-          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">{paymentCount}</p>
+          <Users className="text-brand-500 mx-auto h-4 w-4" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold text-slate-900 tabular-nums">{paymentCount}</p>
           <p className="text-[10px] font-medium text-slate-400">Payments</p>
         </Card>
         <Card variant="ghost" padding="sm" className="text-center">
-          <Clock className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
-          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
+          <Clock className="text-brand-500 mx-auto h-4 w-4" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold text-slate-900 tabular-nums">
             {averagePayment.toFixed(1)}
           </p>
           <p className="text-[10px] font-medium text-slate-400">Avg XLM</p>
@@ -165,10 +162,10 @@ export default function MerchantDashboard() {
           variant="surface"
           padding="md"
           interactive
-          className="border-brand-200 bg-brand-50/50 ring-1 ring-brand-100"
+          className="border-brand-200 bg-brand-50/50 ring-brand-100 ring-1"
         >
           <div className="flex items-center gap-4">
-            <div className="rounded-2xl bg-brand-600 p-3 text-white shadow-md">
+            <div className="bg-brand-600 rounded-2xl p-3 text-white shadow-md">
               <ScanLine className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
@@ -176,7 +173,7 @@ export default function MerchantDashboard() {
               <p className="text-xs text-slate-500">Scan consumer QR sticker to begin</p>
             </div>
             <ArrowUpRight
-              className="h-5 w-5 text-brand-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-600"
+              className="text-brand-400 group-hover:text-brand-600 h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               aria-hidden="true"
             />
           </div>
@@ -190,7 +187,7 @@ export default function MerchantDashboard() {
           {recentTx.length > 0 && (
             <Link
               href="/merchant/history"
-              className="flex items-center gap-0.5 text-xs font-medium text-brand-600 hover:text-brand-700"
+              className="text-brand-600 hover:text-brand-700 flex items-center gap-0.5 text-xs font-medium"
             >
               View all <ChevronRight className="h-3 w-3" aria-hidden="true" />
             </Link>
@@ -226,7 +223,7 @@ export default function MerchantDashboard() {
                   href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-slate-300 hover:text-brand-500"
+                  className="hover:text-brand-500 text-slate-300"
                   aria-label="View on Stellar Explorer"
                 >
                   <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -244,7 +241,7 @@ export default function MerchantDashboard() {
           <Link href="/merchant/history" className="group block">
             <Card variant="surface" padding="sm" interactive>
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                <div className="bg-brand-50 text-brand-600 ring-brand-100 rounded-xl p-2 ring-1">
                   <ReceiptText className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -252,7 +249,7 @@ export default function MerchantDashboard() {
                   <p className="text-[11px] text-slate-400">View all incoming payments</p>
                 </div>
                 <ChevronRight
-                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  className="group-hover:text-brand-500 h-5 w-5 flex-shrink-0 text-slate-300 transition-colors"
                   aria-hidden="true"
                 />
               </div>
@@ -262,7 +259,7 @@ export default function MerchantDashboard() {
           <Link href="/feedback" className="group block">
             <Card variant="surface" padding="sm" interactive>
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                <div className="bg-brand-50 text-brand-600 ring-brand-100 rounded-xl p-2 ring-1">
                   <MessageSquareText className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -270,7 +267,7 @@ export default function MerchantDashboard() {
                   <p className="text-[11px] text-slate-400">Tell us about your experience</p>
                 </div>
                 <ChevronRight
-                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  className="group-hover:text-brand-500 h-5 w-5 flex-shrink-0 text-slate-300 transition-colors"
                   aria-hidden="true"
                 />
               </div>
@@ -280,7 +277,7 @@ export default function MerchantDashboard() {
           <Link href="/merchant/scan" className="group block">
             <Card variant="surface" padding="sm" interactive>
               <div className="flex items-center gap-3">
-                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                <div className="bg-brand-50 text-brand-600 ring-brand-100 rounded-xl p-2 ring-1">
                   <ScanLine className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
@@ -288,7 +285,7 @@ export default function MerchantDashboard() {
                   <p className="text-[11px] text-slate-400">How to accept merchant-pull payments</p>
                 </div>
                 <ChevronRight
-                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  className="group-hover:text-brand-500 h-5 w-5 flex-shrink-0 text-slate-300 transition-colors"
                   aria-hidden="true"
                 />
               </div>

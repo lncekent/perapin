@@ -118,7 +118,7 @@ export default function ConsumerSettingsPage() {
       {/* Account Info Card */}
       <Card variant="surface" padding="lg" className="space-y-4">
         <div className="flex items-center gap-2">
-          <User className="size-4 text-brand-600" aria-hidden="true" />
+          <User className="text-brand-600 size-4" aria-hidden="true" />
           <h2 className="text-sm font-bold text-slate-900">Account Info</h2>
           <Badge variant="secondary" className="ml-auto capitalize">
             {role}
@@ -131,7 +131,7 @@ export default function ConsumerSettingsPage() {
               <Mail className="size-3.5" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+              <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                 Email
               </p>
               <p className="truncate text-sm font-medium text-slate-800">{email || "—"}</p>
@@ -143,7 +143,7 @@ export default function ConsumerSettingsPage() {
               <Wallet className="size-3.5" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+              <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                 Wallet Address
               </p>
               <p className="font-mono text-xs text-slate-600">
@@ -157,7 +157,7 @@ export default function ConsumerSettingsPage() {
               <Calendar className="size-3.5" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+              <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                 Member Since
               </p>
               <p className="text-sm font-medium text-slate-800">{memberSince}</p>
@@ -169,7 +169,7 @@ export default function ConsumerSettingsPage() {
       {/* Security Section */}
       <div className="space-y-3">
         <div className="flex items-center gap-2 px-1">
-          <Shield className="size-4 text-brand-600" aria-hidden="true" />
+          <Shield className="text-brand-600 size-4" aria-hidden="true" />
           <h2 className="text-sm font-bold text-slate-900">Security</h2>
         </div>
 
@@ -221,10 +221,10 @@ export default function ConsumerSettingsPage() {
 
         {/* Lockout Info */}
         <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
-          <ShieldCheck className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
+          <ShieldCheck className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
           <p className="text-xs leading-relaxed text-slate-500">
-            For your security, 3 incorrect PIN attempts triggers a <strong>15-minute lockout</strong>{" "}
-            enforced by the on-chain smart contract.
+            For your security, 3 incorrect PIN attempts triggers a{" "}
+            <strong>15-minute lockout</strong> enforced by the on-chain smart contract.
           </p>
         </Card>
       </div>
@@ -233,14 +233,17 @@ export default function ConsumerSettingsPage() {
       <Link href="/feedback" className="group block">
         <Card variant="surface" padding="sm" interactive>
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+            <div className="bg-brand-50 text-brand-600 ring-brand-100 rounded-xl p-2 ring-1">
               <MessageSquareText className="h-5 w-5" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold text-slate-900">Send feedback</p>
               <p className="text-[11px] text-slate-400">Tell us about your payment experience</p>
             </div>
-            <ChevronRight className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+            <ChevronRight
+              className="group-hover:text-brand-500 h-5 w-5 flex-shrink-0 text-slate-300 transition-colors"
+              aria-hidden="true"
+            />
           </div>
         </Card>
       </Link>

@@ -41,9 +41,7 @@ export default function MerchantResultPage() {
           <CheckCircle2 className="size-8" aria-hidden="true" />
         </div>
         <h1 className="mt-4 text-2xl font-bold text-slate-900">Payment Settled!</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Transaction confirmed on the Stellar Testnet.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">Transaction confirmed on the Stellar Testnet.</p>
       </div>
 
       <StatusDialog
@@ -84,9 +82,7 @@ export default function MerchantResultPage() {
               <span className="text-slate-500">Time</span>
               <span className="flex items-center gap-1 font-medium text-slate-700">
                 <Clock className="size-3" aria-hidden="true" />
-                {receipt.timestamp
-                  ? new Date(receipt.timestamp).toLocaleTimeString()
-                  : "Just now"}
+                {receipt.timestamp ? new Date(receipt.timestamp).toLocaleTimeString() : "Just now"}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
@@ -108,7 +104,7 @@ export default function MerchantResultPage() {
               target="_blank"
               rel="noreferrer"
               href={`https://stellar.expert/explorer/testnet/tx/${receipt.txHash}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-brand-700 hover:underline"
+              className="text-brand-700 inline-flex items-center gap-1 text-xs font-semibold hover:underline"
             >
               View in Stellar Explorer
               <ExternalLink className="size-3" aria-hidden="true" />

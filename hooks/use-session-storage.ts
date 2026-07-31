@@ -6,15 +6,18 @@ const cache = new Map<string, { raw: string | null; value: unknown }>();
 
 /** Reads JSON session state without synchronously copying it into component state. */
 export function useSessionStorageValue<T>(key: string): T | null {
-  const subscribe = useCallback((onStoreChange: () => void) => {
-    const eventName = `perapin-session-storage:${key}`;
-    window.addEventListener("storage", onStoreChange);
-    window.addEventListener(eventName, onStoreChange);
-    return () => {
-      window.removeEventListener("storage", onStoreChange);
-      window.removeEventListener(eventName, onStoreChange);
-    };
-  }, [key]);
+  const subscribe = useCallback(
+    (onStoreChange: () => void) => {
+      const eventName = `perapin-session-storage:${key}`;
+      window.addEventListener("storage", onStoreChange);
+      window.addEventListener(eventName, onStoreChange);
+      return () => {
+        window.removeEventListener("storage", onStoreChange);
+        window.removeEventListener(eventName, onStoreChange);
+      };
+    },
+    [key],
+  );
 
   const getSnapshot = useCallback((): T | null => {
     try {

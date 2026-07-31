@@ -133,10 +133,10 @@ export default function ConsumerHistoryPage() {
                 <TrendingDown className="size-3.5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                   Total Spent
                 </p>
-                <p className="text-sm font-bold tabular-nums text-slate-900">
+                <p className="text-sm font-bold text-slate-900 tabular-nums">
                   {stats.totalSent.toFixed(2)} XLM
                 </p>
               </div>
@@ -144,14 +144,14 @@ export default function ConsumerHistoryPage() {
           </Card>
           <Card variant="ghost" padding="sm">
             <div className="flex items-center gap-2">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+              <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-8 items-center justify-center rounded-lg ring-1">
                 <TrendingUp className="size-3.5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                   Total Received
                 </p>
-                <p className="text-sm font-bold tabular-nums text-brand-700">
+                <p className="text-brand-700 text-sm font-bold tabular-nums">
                   {stats.totalReceived.toFixed(2)} XLM
                 </p>
               </div>
@@ -170,7 +170,7 @@ export default function ConsumerHistoryPage() {
                 <Activity className="size-3.5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                   Net Change
                 </p>
                 <p
@@ -191,10 +191,10 @@ export default function ConsumerHistoryPage() {
                 <Hash className="size-3.5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
                   Transactions
                 </p>
-                <p className="text-sm font-bold tabular-nums text-slate-900">{stats.txCount}</p>
+                <p className="text-sm font-bold text-slate-900 tabular-nums">{stats.txCount}</p>
               </div>
             </div>
           </Card>
@@ -258,7 +258,7 @@ export default function ConsumerHistoryPage() {
             <div key={group.label} className="space-y-2.5">
               <div className="flex items-center gap-2 px-1">
                 <CalendarDays className="size-3.5 text-slate-400" aria-hidden="true" />
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
                   {group.label}
                 </p>
               </div>
@@ -294,7 +294,7 @@ export default function ConsumerHistoryPage() {
                           href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400 hover:text-brand-600"
+                          className="hover:text-brand-600 mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400"
                         >
                           {tx.stellar_tx_hash.slice(0, 10)}…{tx.stellar_tx_hash.slice(-6)}
                           <ExternalLink className="size-3" aria-hidden="true" />

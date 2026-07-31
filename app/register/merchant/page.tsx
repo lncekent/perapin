@@ -117,16 +117,14 @@ export default function MerchantRegisterPage() {
           {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="flex size-14 items-center justify-center rounded-2xl bg-money-gradient text-white shadow-money">
+              <div className="bg-money-gradient shadow-money flex size-14 items-center justify-center rounded-2xl text-white">
                 <Store className="size-7" aria-hidden="true" />
               </div>
               <div>
                 <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
                   Create merchant account
                 </h1>
-                <p className="text-sm text-slate-500">
-                  Start accepting payments in 2 minutes
-                </p>
+                <p className="text-sm text-slate-500">Start accepting payments in 2 minutes</p>
               </div>
             </div>
           </div>
@@ -145,7 +143,7 @@ export default function MerchantRegisterPage() {
                         className={cn(
                           "flex size-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all",
                           completed
-                            ? "bg-brand-600 text-white ring-brand-600"
+                            ? "bg-brand-600 ring-brand-600 text-white"
                             : active
                               ? "bg-brand-100 text-brand-700 ring-brand-300"
                               : "bg-white text-slate-400 ring-slate-200",
@@ -183,17 +181,17 @@ export default function MerchantRegisterPage() {
           {/* What you get - shown on first step */}
           {step === "form" && (
             <div className="grid grid-cols-3 gap-2">
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <ScanLine className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">QR Scanner</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <ScanLine className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">QR Scanner</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <CreditCard className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">No Hardware</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <CreditCard className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">No Hardware</span>
               </div>
-              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
-                <Clock className="size-4 text-brand-600" aria-hidden="true" />
-                <span className="text-[9px] font-medium text-brand-700">~5s Settle</span>
+              <div className="bg-brand-50 flex flex-col items-center gap-1 rounded-xl p-2.5 text-center">
+                <Clock className="text-brand-600 size-4" aria-hidden="true" />
+                <span className="text-brand-700 text-[9px] font-medium">~5s Settle</span>
               </div>
             </div>
           )}
@@ -214,7 +212,7 @@ export default function MerchantRegisterPage() {
                 <Field>
                   <FieldLabel htmlFor="business">Business name</FieldLabel>
                   <div className="relative">
-                    <Store className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Store className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       id="business"
                       name="organization"
@@ -233,7 +231,7 @@ export default function MerchantRegisterPage() {
                 <Field>
                   <FieldLabel htmlFor="email">Email address</FieldLabel>
                   <div className="relative">
-                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Mail className="pointer-events-none absolute top-1/2 left-3.5 size-4 -translate-y-1/2 text-slate-400" />
                     <Input
                       id="email"
                       name="email"
@@ -266,8 +264,8 @@ export default function MerchantRegisterPage() {
           ) : (
             <form onSubmit={verify}>
               <FieldGroup>
-                <div className="rounded-xl bg-brand-50 p-3 text-center">
-                  <p className="text-xs font-medium text-brand-700">
+                <div className="bg-brand-50 rounded-xl p-3 text-center">
+                  <p className="text-brand-700 text-xs font-medium">
                     ✓ Business: <span className="font-bold">{businessName}</span>
                   </p>
                 </div>
@@ -302,12 +300,7 @@ export default function MerchantRegisterPage() {
                     <span className="font-semibold text-slate-700">{email}</span>
                   </FieldDescription>
                 </Field>
-                <Button
-                  type="submit"
-                  disabled={loading || token.length !== 6}
-                  block
-                  size="lg"
-                >
+                <Button type="submit" disabled={loading || token.length !== 6} block size="lg">
                   {loading ? (
                     <>
                       <Spinner /> Creating wallet…
@@ -335,7 +328,7 @@ export default function MerchantRegisterPage() {
 
           {/* Trust footer */}
           <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5">
-            <ShieldCheck className="size-3.5 text-brand-500" aria-hidden="true" />
+            <ShieldCheck className="text-brand-500 size-3.5" aria-hidden="true" />
             <p className="text-[11px] font-medium text-slate-500">
               Custodial Testnet receiving wallet — no card network or hardware required
             </p>
@@ -346,11 +339,13 @@ export default function MerchantRegisterPage() {
         <div className="flex items-center justify-between">
           <p className="text-sm text-slate-500">
             Already registered?{" "}
-            <Link className="font-semibold text-brand-700 hover:underline" href="/login">
+            <Link className="text-brand-700 font-semibold hover:underline" href="/login">
               Sign in
             </Link>
           </p>
-          <Badge variant="outline" className="text-[10px]">Testnet</Badge>
+          <Badge variant="outline" className="text-[10px]">
+            Testnet
+          </Badge>
         </div>
       </div>
 
