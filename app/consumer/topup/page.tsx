@@ -1,17 +1,56 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, RefreshCw, ExternalLink, Info } from "lucide-react";
+import Link from "next/link";
+import {
+  Copy,
+  Check,
+  RefreshCw,
+  ExternalLink,
+  Info,
+  Clock,
+  Wallet,
+  Globe,
+  Zap,
+  CircleHelp,
+  BookOpen,
+  ArrowRight,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 
 interface Profile {
   user: { stellarPublicKey: string };
   balanceXlm: string;
 }
+
+const STEPS = [
+  {
+    icon: Copy,
+    title: "Copy your address",
+    description: "Tap the copy button below to get your Stellar public key.",
+  },
+  {
+    icon: Globe,
+    title: "Open Friendbot",
+    description: "Click the Friendbot button to open the Stellar faucet page.",
+  },
+  {
+    icon: Zap,
+    title: "Receive 10,000 XLM",
+    description: "Friendbot instantly funds your Testnet wallet for free.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Refresh balance",
+    description: "Come back here and tap Refresh to see your updated balance.",
+  },
+];
 
 export default function ConsumerTopupPage() {
   const { data, refetch } = useCachedFetch<Profile>("me", async () => {
@@ -46,7 +85,7 @@ export default function ConsumerTopupPage() {
   }
 
   return (
-    <div className="animate-fade-up space-y-5">
+    <div className="animate-fade-up space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Fund your wallet</h1>
         <p className="mt-1 text-sm text-slate-500">
@@ -80,9 +119,47 @@ export default function ConsumerTopupPage() {
         </div>
       </Card>
 
+      {/* Estimated Time */}
+      <Card variant="ghost" padding="sm" className="flex items-center gap-3">
+        <div className="flex size-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+          <Clock className="size-4" aria-hidden="true" />
+        </div>
+        <div>
+          <p className="text-sm font-semibold text-slate-800">Estimated time</p>
+          <p className="text-xs text-slate-500">~5 seconds — Testnet funding is instant</p>
+        </div>
+      </Card>
+
+      {/* How to Fund Guide */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <CircleHelp className="size-4 text-brand-600" aria-hidden="true" />
+          <h2 className="text-sm font-bold text-slate-900">How to fund your wallet</h2>
+        </div>
+        <div className="grid gap-2.5">
+          {STEPS.map((step, i) => (
+            <Card key={i} variant="ghost" padding="sm">
+              <div className="flex items-start gap-3">
+                <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 ring-1 ring-brand-100">
+                  <span className="text-xs font-bold">{i + 1}</span>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-800">{step.title}</p>
+                  <p className="mt-0.5 text-xs text-slate-500">{step.description}</p>
+                </div>
+                <step.icon className="mt-0.5 size-4 flex-shrink-0 text-slate-300" aria-hidden="true" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
       {/* Address */}
       <Card variant="surface" padding="md" className="space-y-3">
-        <p className="text-sm font-semibold text-slate-800">Your Stellar public key</p>
+        <div className="flex items-center gap-2">
+          <Wallet className="size-4 text-brand-600" aria-hidden="true" />
+          <p className="text-sm font-semibold text-slate-800">Your Stellar public key</p>
+        </div>
         <p className="selectable rounded-xl bg-slate-50 p-3 font-mono text-xs break-all text-slate-600">
           {wallet || "…"}
         </p>
@@ -113,13 +190,37 @@ export default function ConsumerTopupPage() {
         </a>
       )}
 
+      {/* Info note */}
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
         <Info className="mt-0.5 size-4 flex-shrink-0 text-brand-500" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
-          Friendbot funds Testnet wallets for free. After funding, tap Refresh to see your new
-          balance.
+          Friendbot funds Testnet wallets for free with 10,000 XLM. After funding, tap Refresh to
+          see your new balance. You can request funding multiple times.
         </p>
       </Card>
+
+      {/* Stellar Docs Link */}
+      <a
+        href="https://developers.stellar.org/docs/learn/networks"
+        target="_blank"
+        rel="noreferrer"
+        className="group block"
+      >
+        <Card variant="ghost" padding="sm" interactive>
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 ring-1 ring-slate-200 transition-colors group-hover:bg-brand-50 group-hover:text-brand-600 group-hover:ring-brand-100">
+              <BookOpen className="size-4" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-slate-800">Stellar Documentation</p>
+              <p className="text-[11px] text-slate-400">
+                Learn more about Testnet, Friendbot, and Stellar networks
+              </p>
+            </div>
+            <ArrowRight className="size-4 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+          </div>
+        </Card>
+      </a>
     </div>
   );
 }

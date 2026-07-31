@@ -4,18 +4,37 @@ import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { ArrowLeft, ShieldCheck, CircleAlert, Store } from "lucide-react";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  CircleAlert,
+  Store,
+  Mail,
+  CheckCircle2,
+  ScanLine,
+  CreditCard,
+  Clock,
+} from "lucide-react";
 import { StatusDialog } from "@/components/shared/StatusDialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from "@/components/ui/input-otp";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const stepList = ["Business", "Verify"] as const;
+const stepList = [
+  { label: "Business", icon: Store },
+  { label: "Verify", icon: Mail },
+] as const;
 
 export default function MerchantRegisterPage() {
   const router = useRouter();
@@ -85,55 +104,101 @@ export default function MerchantRegisterPage() {
   }
 
   return (
-    <main className="bg-brand-wash flex min-h-screen items-center justify-center px-6 py-12">
+    <main className="bg-brand-wash flex min-h-screen flex-col items-center justify-center px-6 py-12">
       <div className="w-full max-w-md space-y-6">
         <Link
           href="/"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
         >
-          <ArrowLeft className="size-4" aria-hidden="true" /> Back
+          <ArrowLeft className="size-4" aria-hidden="true" /> Back to home
         </Link>
 
         <Card variant="raised" padding="lg" className="space-y-6">
+          {/* Header */}
           <div className="space-y-3">
-            <div className="flex size-12 items-center justify-center rounded-2xl bg-money-gradient text-white shadow-money">
-              <Store className="size-6" aria-hidden="true" />
+            <div className="flex items-center gap-3">
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-money-gradient text-white shadow-money">
+                <Store className="size-7" aria-hidden="true" />
+              </div>
+              <div>
+                <h1 className="text-xl font-extrabold tracking-tight text-slate-900">
+                  Create merchant account
+                </h1>
+                <p className="text-sm text-slate-500">
+                  Start accepting payments in 2 minutes
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-                Create merchant account
-              </h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Accept payments with just your phone browser — no card reader, no hardware.
-              </p>
-            </div>
+          </div>
 
-            <ol className="flex items-center gap-2 pt-1">
-              {stepList.map((label, i) => (
-                <li key={label} className="flex flex-1 items-center gap-2">
-                  <span
-                    className={cn(
-                      "flex size-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold ring-1 transition-colors",
-                      i <= stepIndex
-                        ? "bg-brand-600 text-white ring-brand-600"
-                        : "bg-white text-slate-400 ring-slate-200",
+          {/* Step progress */}
+          <div className="rounded-2xl border border-slate-100 bg-slate-50 p-3">
+            <ol className="flex items-center justify-between">
+              {stepList.map((s, i) => {
+                const Icon = s.icon;
+                const completed = i < stepIndex;
+                const active = i === stepIndex;
+                return (
+                  <li key={s.label} className="flex flex-1 items-center">
+                    <div className="flex flex-col items-center gap-1">
+                      <span
+                        className={cn(
+                          "flex size-8 items-center justify-center rounded-full text-xs font-bold ring-1 transition-all",
+                          completed
+                            ? "bg-brand-600 text-white ring-brand-600"
+                            : active
+                              ? "bg-brand-100 text-brand-700 ring-brand-300"
+                              : "bg-white text-slate-400 ring-slate-200",
+                        )}
+                      >
+                        {completed ? (
+                          <CheckCircle2 className="size-4" />
+                        ) : (
+                          <Icon className="size-3.5" />
+                        )}
+                      </span>
+                      <span
+                        className={cn(
+                          "text-[10px] font-medium",
+                          active || completed ? "text-slate-700" : "text-slate-400",
+                        )}
+                      >
+                        {s.label}
+                      </span>
+                    </div>
+                    {i < stepList.length - 1 && (
+                      <div
+                        className={cn(
+                          "mx-4 h-px flex-1",
+                          i < stepIndex ? "bg-brand-400" : "bg-slate-200",
+                        )}
+                      />
                     )}
-                  >
-                    {i + 1}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-[11px] font-medium",
-                      i <= stepIndex ? "text-slate-700" : "text-slate-400",
-                    )}
-                  >
-                    {label}
-                  </span>
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ol>
           </div>
 
+          {/* What you get - shown on first step */}
+          {step === "form" && (
+            <div className="grid grid-cols-3 gap-2">
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
+                <ScanLine className="size-4 text-brand-600" aria-hidden="true" />
+                <span className="text-[9px] font-medium text-brand-700">QR Scanner</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
+                <CreditCard className="size-4 text-brand-600" aria-hidden="true" />
+                <span className="text-[9px] font-medium text-brand-700">No Hardware</span>
+              </div>
+              <div className="flex flex-col items-center gap-1 rounded-xl bg-brand-50 p-2.5 text-center">
+                <Clock className="size-4 text-brand-600" aria-hidden="true" />
+                <span className="text-[9px] font-medium text-brand-700">~5s Settle</span>
+              </div>
+            </div>
+          )}
+
+          {/* Error */}
           {error && (
             <Alert variant="destructive">
               <CircleAlert aria-hidden="true" />
@@ -142,38 +207,50 @@ export default function MerchantRegisterPage() {
             </Alert>
           )}
 
+          {/* Step: Business form */}
           {step === "form" ? (
             <form onSubmit={send}>
               <FieldGroup>
                 <Field>
                   <FieldLabel htmlFor="business">Business name</FieldLabel>
-                  <Input
-                    id="business"
-                    name="organization"
-                    autoComplete="organization"
-                    required
-                    value={businessName}
-                    onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="e.g. Aling Nena's Store"
-                    className="h-12"
-                  />
-                  <FieldDescription>Shown to customers on their payment confirmation.</FieldDescription>
+                  <div className="relative">
+                    <Store className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Input
+                      id="business"
+                      name="organization"
+                      autoComplete="organization"
+                      required
+                      value={businessName}
+                      onChange={(e) => setBusinessName(e.target.value)}
+                      placeholder="e.g. Aling Nena's Store"
+                      className="h-12 pl-10"
+                    />
+                  </div>
+                  <FieldDescription>
+                    Shown to customers on their payment confirmation screen.
+                  </FieldDescription>
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="email">Email address</FieldLabel>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    spellCheck={false}
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="h-12"
-                  />
+                  <div className="relative">
+                    <Mail className="pointer-events-none absolute left-3.5 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      spellCheck={false}
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="h-12 pl-10"
+                    />
+                  </div>
+                  <FieldDescription>
+                    We&apos;ll send a one-time code to verify ownership.
+                  </FieldDescription>
                 </Field>
                 <Button type="submit" disabled={loading} block size="lg">
                   {loading ? (
@@ -189,6 +266,11 @@ export default function MerchantRegisterPage() {
           ) : (
             <form onSubmit={verify}>
               <FieldGroup>
+                <div className="rounded-xl bg-brand-50 p-3 text-center">
+                  <p className="text-xs font-medium text-brand-700">
+                    ✓ Business: <span className="font-bold">{businessName}</span>
+                  </p>
+                </div>
                 <Field>
                   <FieldLabel htmlFor="otp">Verification code</FieldLabel>
                   <InputOTP
@@ -216,34 +298,60 @@ export default function MerchantRegisterPage() {
                     </InputOTPGroup>
                   </InputOTP>
                   <FieldDescription className="text-center">
-                    Code sent to <span className="font-semibold text-slate-700">{email}</span>
+                    Check your inbox at{" "}
+                    <span className="font-semibold text-slate-700">{email}</span>
                   </FieldDescription>
                 </Field>
-                <Button type="submit" disabled={loading || token.length !== 6} block size="lg">
+                <Button
+                  type="submit"
+                  disabled={loading || token.length !== 6}
+                  block
+                  size="lg"
+                >
                   {loading ? (
                     <>
                       <Spinner /> Creating wallet…
                     </>
                   ) : (
-                    "Verify & create wallet"
+                    "Verify & create receiving wallet"
                   )}
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  block
+                  size="sm"
+                  onClick={() => {
+                    setStep("form");
+                    setToken("");
+                    setError("");
+                  }}
+                >
+                  ← Go back
                 </Button>
               </FieldGroup>
             </form>
           )}
 
-          <p className="flex items-center justify-center gap-1.5 text-center text-[11px] text-slate-400">
+          {/* Trust footer */}
+          <div className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 px-3 py-2.5">
             <ShieldCheck className="size-3.5 text-brand-500" aria-hidden="true" />
-            Custodial Testnet receiving wallet — no card network required
-          </p>
+            <p className="text-[11px] font-medium text-slate-500">
+              Custodial Testnet receiving wallet — no card network or hardware required
+            </p>
+          </div>
         </Card>
 
-        <p className="text-center text-sm text-slate-500">
-          Already have an account?{" "}
-          <Link className="font-semibold text-brand-700 hover:underline" href="/login">
-            Sign in
-          </Link>
-        </p>
+        {/* Bottom */}
+        <div className="flex items-center justify-between">
+          <p className="text-sm text-slate-500">
+            Already registered?{" "}
+            <Link className="font-semibold text-brand-700 hover:underline" href="/login">
+              Sign in
+            </Link>
+          </p>
+          <Badge variant="outline" className="text-[10px]">Testnet</Badge>
+        </div>
       </div>
 
       <StatusDialog
@@ -251,8 +359,8 @@ export default function MerchantRegisterPage() {
         onOpenChange={setSignupDone}
         status="success"
         successTitle="Merchant account ready!"
-        successDescription="Your PeraPin receiving wallet is set up. You can start accepting payments now."
-        successActionLabel="Go to my dashboard"
+        successDescription="Your receiving wallet is set up. You can start accepting QR payments from consumers right away."
+        successActionLabel="Go to dashboard"
         onSuccessAction={() => router.replace("/merchant/dashboard")}
       />
     </main>

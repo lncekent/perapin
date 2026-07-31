@@ -1,8 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { ScanLine, ReceiptText, ArrowUpRight, MessageSquareText, ChevronRight } from "lucide-react";
+import {
+  ScanLine,
+  ReceiptText,
+  ArrowUpRight,
+  MessageSquareText,
+  ChevronRight,
+  TrendingUp,
+  Users,
+  Clock,
+  Wifi,
+  ArrowDownLeft,
+  ExternalLink,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 
 interface Profile {
@@ -10,15 +24,12 @@ interface Profile {
   balanceXlm: string;
 }
 
-const actions = [
-  { href: "/merchant/scan", label: "Accept payment", sub: "Scan a sticker", icon: ScanLine },
-  {
-    href: "/merchant/history",
-    label: "Payment history",
-    sub: "Incoming payments",
-    icon: ReceiptText,
-  },
-] as const;
+interface Tx {
+  id: string;
+  stellar_tx_hash: string;
+  amount_xlm: number;
+  created_at: string;
+}
 
 export default function MerchantDashboard() {
   const { data: profile, error } = useCachedFetch<Profile>("me", async () => {
@@ -27,6 +38,32 @@ export default function MerchantDashboard() {
     if (!r.ok) throw new Error(data.error || "Unable to load wallet.");
     return data;
   });
+
+  const { data: txData } = useCachedFetch<{ transactions: Tx[] }>(
+    "merchant-tx",
+    async () => {
+      const r = await fetch("/api/transactions");
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.error || "Unable to load transactions.");
+      return data;
+    },
+  );
+
+  const transactions = txData?.transactions ?? [];
+
+  // Compute stats
+  const totalReceived = transactions.reduce((sum, tx) => sum + tx.amount_xlm, 0);
+  const paymentCount = transactions.length;
+  const averagePayment = paymentCount > 0 ? totalReceived / paymentCount : 0;
+
+  // Today's revenue
+  const today = new Date().toISOString().slice(0, 10);
+  const todayRevenue = transactions
+    .filter((tx) => tx.created_at.slice(0, 10) === today)
+    .reduce((sum, tx) => sum + tx.amount_xlm, 0);
+
+  // Recent 5 transactions
+  const recentTx = transactions.slice(0, 5);
 
   if (error && !profile)
     return (
@@ -38,26 +75,40 @@ export default function MerchantDashboard() {
   if (!profile)
     return (
       <div className="space-y-5">
-        <div className="h-8 w-40 animate-pulse rounded-lg bg-slate-200" />
-        <div className="h-40 animate-pulse rounded-3xl bg-slate-200" />
-        <div className="grid grid-cols-2 gap-3">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-slate-200" />
+        <div className="h-44 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="grid grid-cols-3 gap-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-20 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
+        <div className="h-14 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="h-48 animate-pulse rounded-3xl bg-slate-200" />
       </div>
     );
 
   return (
     <div className="animate-fade-up space-y-5">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">
-          {profile.user.businessName || "Merchant dashboard"}
-        </h1>
-        <p className="text-sm text-slate-500">Ready to accept merchant-pull payments.</p>
+      {/* Header with status indicator */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {profile.user.businessName || "Merchant dashboard"}
+          </h1>
+          <div className="mt-1 flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+            </span>
+            <p className="text-sm text-slate-500">Ready to accept payments</p>
+          </div>
+        </div>
+        <Badge variant="secondary" className="text-[10px] font-semibold uppercase tracking-wide">
+          Merchant
+        </Badge>
       </div>
 
-      {/* Money hero */}
+      {/* Money hero card */}
       <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden">
         <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
         <div className="relative">
@@ -71,44 +122,194 @@ export default function MerchantDashboard() {
             {Number(profile.balanceXlm).toFixed(2)}
             <span className="ml-2 text-xl font-semibold text-brand-200">XLM</span>
           </p>
+          {todayRevenue > 0 && (
+            <div className="mt-2 flex items-center gap-1.5">
+              <TrendingUp className="h-3.5 w-3.5 text-green-300" aria-hidden="true" />
+              <p className="text-xs font-medium text-green-200">
+                +{todayRevenue.toFixed(2)} XLM today
+              </p>
+            </div>
+          )}
           <p className="mt-3 truncate font-mono text-[11px] text-brand-200/80">
             {profile.user.stellarPublicKey}
           </p>
         </div>
       </Card>
 
-      {/* Quick actions */}
-      <section className="grid grid-cols-2 gap-3">
-        {actions.map(({ href, label, sub, icon: Icon }) => (
-          <Link key={href} href={href} className="group">
-            <Card variant="surface" padding="sm" interactive className="h-full">
-              <div className="flex items-start justify-between">
-                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </div>
-                <ArrowUpRight className="h-4 w-4 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
-              </div>
-              <p className="mt-3 text-sm font-bold text-slate-900">{label}</p>
-              <p className="text-[11px] text-slate-400">{sub}</p>
-            </Card>
-          </Link>
-        ))}
+      {/* Stats row */}
+      <section className="grid grid-cols-3 gap-3">
+        <Card variant="ghost" padding="sm" className="text-center">
+          <TrendingUp className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
+            {totalReceived.toFixed(1)}
+          </p>
+          <p className="text-[10px] font-medium text-slate-400">Total XLM</p>
+        </Card>
+        <Card variant="ghost" padding="sm" className="text-center">
+          <Users className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">{paymentCount}</p>
+          <p className="text-[10px] font-medium text-slate-400">Payments</p>
+        </Card>
+        <Card variant="ghost" padding="sm" className="text-center">
+          <Clock className="mx-auto h-4 w-4 text-brand-500" aria-hidden="true" />
+          <p className="mt-1.5 text-lg font-bold tabular-nums text-slate-900">
+            {averagePayment.toFixed(1)}
+          </p>
+          <p className="text-[10px] font-medium text-slate-400">Avg XLM</p>
+        </Card>
       </section>
 
-      <Link href="/feedback" className="group block">
-        <Card variant="surface" padding="sm" interactive>
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
-              <MessageSquareText className="h-5 w-5" aria-hidden="true" />
+      {/* Primary CTA — Accept Payment */}
+      <Link href="/merchant/scan" className="group block">
+        <Card
+          variant="surface"
+          padding="md"
+          interactive
+          className="border-brand-200 bg-brand-50/50 ring-1 ring-brand-100"
+        >
+          <div className="flex items-center gap-4">
+            <div className="rounded-2xl bg-brand-600 p-3 text-white shadow-md">
+              <ScanLine className="h-6 w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-900">Send feedback</p>
-              <p className="text-[11px] text-slate-400">Tell us about your payment experience</p>
+              <p className="text-base font-bold text-slate-900">Accept Payment</p>
+              <p className="text-xs text-slate-500">Scan consumer QR sticker to begin</p>
             </div>
-            <ChevronRight className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500" aria-hidden="true" />
+            <ArrowUpRight
+              className="h-5 w-5 text-brand-400 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-brand-600"
+              aria-hidden="true"
+            />
           </div>
         </Card>
       </Link>
+
+      {/* Recent Payments */}
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-slate-700">Recent Payments</h2>
+          {recentTx.length > 0 && (
+            <Link
+              href="/merchant/history"
+              className="flex items-center gap-0.5 text-xs font-medium text-brand-600 hover:text-brand-700"
+            >
+              View all <ChevronRight className="h-3 w-3" aria-hidden="true" />
+            </Link>
+          )}
+        </div>
+        {recentTx.length === 0 ? (
+          <Card variant="ghost" padding="md">
+            <p className="text-center text-sm text-slate-400">
+              No payments yet. Accept your first payment!
+            </p>
+          </Card>
+        ) : (
+          <Card variant="surface" padding="none" className="divide-y divide-slate-100">
+            {recentTx.map((tx) => (
+              <div key={tx.id} className="flex items-center gap-3 px-4 py-3">
+                <div className="rounded-xl bg-green-50 p-2 text-green-600 ring-1 ring-green-100">
+                  <ArrowDownLeft className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-slate-900">
+                    +{tx.amount_xlm.toFixed(2)} XLM
+                  </p>
+                  <p className="truncate text-[11px] text-slate-400">
+                    {new Date(tx.created_at).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
+                <a
+                  href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-slate-300 hover:text-brand-500"
+                  aria-label="View on Stellar Explorer"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              </div>
+            ))}
+          </Card>
+        )}
+      </section>
+
+      {/* Business Tools */}
+      <section>
+        <h2 className="mb-3 text-sm font-semibold text-slate-700">Business Tools</h2>
+        <div className="space-y-2">
+          <Link href="/merchant/history" className="group block">
+            <Card variant="surface" padding="sm" interactive>
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                  <ReceiptText className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-slate-900">Payment History</p>
+                  <p className="text-[11px] text-slate-400">View all incoming payments</p>
+                </div>
+                <ChevronRight
+                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  aria-hidden="true"
+                />
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/feedback" className="group block">
+            <Card variant="surface" padding="sm" interactive>
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                  <MessageSquareText className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-slate-900">Send Feedback</p>
+                  <p className="text-[11px] text-slate-400">Tell us about your experience</p>
+                </div>
+                <ChevronRight
+                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  aria-hidden="true"
+                />
+              </div>
+            </Card>
+          </Link>
+
+          <Link href="/merchant/scan" className="group block">
+            <Card variant="surface" padding="sm" interactive>
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-brand-50 p-2 text-brand-600 ring-1 ring-brand-100">
+                  <ScanLine className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-slate-900">Help / Guide</p>
+                  <p className="text-[11px] text-slate-400">How to accept merchant-pull payments</p>
+                </div>
+                <ChevronRight
+                  className="h-5 w-5 flex-shrink-0 text-slate-300 transition-colors group-hover:text-brand-500"
+                  aria-hidden="true"
+                />
+              </div>
+            </Card>
+          </Link>
+        </div>
+      </section>
+
+      {/* Network Status */}
+      <Card variant="ghost" padding="sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Wifi className="h-4 w-4 text-green-500" aria-hidden="true" />
+            <p className="text-xs font-medium text-slate-600">Stellar Testnet</p>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
+            <p className="text-[10px] font-medium text-green-600">Connected</p>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

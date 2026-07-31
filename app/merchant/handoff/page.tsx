@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { computePinHash } from "@/lib/client-crypto";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
+import { ShieldCheck, Lock } from "lucide-react";
 
 const PIN_LENGTH = 4;
 const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
@@ -27,7 +28,10 @@ export default function MerchantHandoffPage() {
   }, [paymentContext, router]);
 
   useEffect(() => {
-    const interval = window.setInterval(() => setSeconds((value) => Math.max(0, value - 1)), 1000);
+    const interval = window.setInterval(
+      () => setSeconds((value) => Math.max(0, value - 1)),
+      1000,
+    );
     return () => window.clearInterval(interval);
   }, []);
 
@@ -41,7 +45,8 @@ export default function MerchantHandoffPage() {
     try {
       const merchantResponse = await fetch("/api/user/me");
       const merchant = await merchantResponse.json();
-      if (!merchantResponse.ok) throw new Error(merchant.error || "Merchant session expired.");
+      if (!merchantResponse.ok)
+        throw new Error(merchant.error || "Merchant session expired.");
       const pinHash = await computePinHash(currentPin, consumer);
       const response = await fetch("/api/payment/initiate", {
         method: "POST",
@@ -56,10 +61,14 @@ export default function MerchantHandoffPage() {
       const data = await response.json();
       if (!response.ok) {
         if (data.error === "INVALID_PIN") {
-          throw new Error(`Incorrect PIN. ${data.remainingAttempts} attempt${data.remainingAttempts === 1 ? "" : "s"} remaining.`);
+          throw new Error(
+            `Incorrect PIN. ${data.remainingAttempts} attempt${data.remainingAttempts === 1 ? "" : "s"} remaining.`,
+          );
         }
         if (data.error === "WALLET_LOCKED") {
-          throw new Error("Too many incorrect attempts. Wallet locked for 15 minutes.");
+          throw new Error(
+            "Too many incorrect attempts. Wallet locked for 15 minutes.",
+          );
         }
         throw new Error(data.message || data.error || "Payment failed.");
       }
@@ -90,29 +99,91 @@ export default function MerchantHandoffPage() {
   if (!paymentContext) return null;
 
   return (
-    <main className="fixed inset-0 z-50 flex min-h-screen flex-col bg-slate-950 px-6 pb-7 pt-10 text-white">
+    <main className="fixed inset-0 z-50 flex min-h-screen flex-col bg-slate-950 px-6 pb-6 pt-8 text-white">
+      {/* Top secure indicator */}
+      <div className="flex items-center justify-center gap-2 pb-4">
+        <Lock className="size-3.5 text-brand-300" aria-hidden="true" />
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+          Secure PIN Entry
+        </p>
+        <Lock className="size-3.5 text-brand-300" aria-hidden="true" />
+      </div>
+
+      {/* Header */}
       <header className="text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">PeraPin secure handoff</p>
-        <p className="mt-4 text-sm text-slate-400">Hand this phone to the consumer</p>
-        <h1 className="mt-1 text-4xl font-extrabold tracking-tight">{amount.toFixed(2)} XLM</h1>
-        <p className={`mt-3 text-sm font-medium ${seconds <= 10 ? "text-amber-300" : "text-slate-400"}`}>
-          Enter your 4-digit PIN · {seconds}s
+        <div className="mx-auto mb-3 flex items-center justify-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-slate-300 ring-1 ring-white/10">
+          <span className="relative flex size-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-brand-500" />
+          </span>
+          Waiting for consumer PIN
+        </div>
+
+        <p className="text-sm text-slate-400">Amount to pay</p>
+        <h1 className="mt-1 text-5xl font-extrabold tracking-tight">
+          {amount.toFixed(2)}{" "}
+          <span className="text-2xl font-semibold text-brand-300">XLM</span>
+        </h1>
+
+        {/* Timer */}
+        <div className="mt-4 flex items-center justify-center gap-3">
+          <div
+            className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold ${
+              seconds <= 10
+                ? "bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30"
+                : "bg-white/10 text-slate-300 ring-1 ring-white/10"
+            }`}
+          >
+            <span className="font-mono tabular-nums">{seconds}s</span>
+            <span className="text-xs font-normal opacity-70">remaining</span>
+          </div>
+        </div>
+
+        <p className="mt-3 text-xs text-slate-500">
+          Enter your 4-digit PIN to authorize
         </p>
       </header>
 
-      <section className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center">
-        <div aria-label={`${pin.length} of ${PIN_LENGTH} PIN digits entered`} className="mb-8 flex justify-center gap-5">
+      {/* PIN display and keypad */}
+      <section className="mx-auto flex w-full max-w-xs flex-1 flex-col justify-center">
+        {/* PIN dots */}
+        <div
+          aria-label={`${pin.length} of ${PIN_LENGTH} PIN digits entered`}
+          className="mb-8 flex justify-center gap-6"
+        >
           {Array.from({ length: PIN_LENGTH }, (_, index) => (
             <span
               key={index}
-              className={`h-4 w-4 rounded-full transition-all ${index < pin.length ? "scale-110 bg-white" : "border-2 border-slate-600 bg-transparent"}`}
+              className={`flex size-5 items-center justify-center rounded-full transition-all duration-150 ${
+                index < pin.length
+                  ? "scale-110 bg-white shadow-[0_0_12px_2px_rgba(255,255,255,0.3)]"
+                  : "border-2 border-slate-600 bg-transparent"
+              }`}
             />
           ))}
         </div>
 
-        {error && <p role="alert" className="mb-5 rounded-2xl border border-red-800 bg-red-950/70 px-4 py-3 text-center text-sm text-red-100">{error}</p>}
-        {seconds === 0 && <p role="alert" className="mb-5 rounded-2xl border border-amber-800 bg-amber-950/70 px-4 py-3 text-center text-sm text-amber-100">PIN entry timed out. Ask the merchant to start again.</p>}
+        {/* Error */}
+        {error && (
+          <p
+            role="alert"
+            className="mb-5 rounded-2xl border border-red-800 bg-red-950/70 px-4 py-3 text-center text-sm font-medium text-red-100"
+          >
+            {error}
+          </p>
+        )}
 
+        {/* Timeout */}
+        {seconds === 0 && (
+          <p
+            role="alert"
+            className="mb-5 rounded-2xl border border-amber-800 bg-amber-950/70 px-4 py-3 text-center text-sm text-amber-100"
+          >
+            PIN entry timed out. Ask the merchant to start again.
+          </p>
+        )}
+
+        {/* Keypad */}
         <div className="grid grid-cols-3 gap-3" aria-label="PIN keypad">
           {keypad.map((key, index) => {
             if (!key) return <div key={`spacer-${index}`} aria-hidden="true" />;
@@ -124,19 +195,46 @@ export default function MerchantHandoffPage() {
                 aria-label={isDelete ? "Delete last PIN digit" : key}
                 disabled={loading || seconds === 0}
                 onClick={() => pressKey(key)}
-                className={`min-h-16 rounded-2xl text-2xl font-bold transition active:scale-95 disabled:opacity-40 ${isDelete ? "bg-slate-800 text-slate-200 text-base" : "border border-slate-700 bg-slate-900 hover:bg-slate-800"}`}
+                className={`min-h-[4rem] rounded-2xl text-2xl font-bold transition-all active:scale-95 disabled:opacity-40 ${
+                  isDelete
+                    ? "bg-slate-800 text-sm font-semibold text-slate-300"
+                    : "border border-slate-700 bg-slate-900 hover:bg-slate-800 hover:border-slate-600"
+                }`}
               >
                 {isDelete ? "Delete" : key}
               </button>
             );
           })}
         </div>
-        {loading && <p className="mt-6 text-center text-sm text-blue-200">Processing payment securely…</p>}
+
+        {/* Loading */}
+        {loading && (
+          <div className="mt-6 flex flex-col items-center gap-2 text-center">
+            <div className="h-1 w-32 overflow-hidden rounded-full bg-slate-800">
+              <div className="h-full w-full animate-pulse rounded-full bg-brand-500" />
+            </div>
+            <p className="text-sm font-medium text-brand-200">
+              Verifying PIN & settling on Stellar…
+            </p>
+          </div>
+        )}
       </section>
 
-      <button type="button" onClick={() => router.replace("/merchant/scan")} disabled={loading} className="mx-auto min-h-11 px-5 text-sm font-semibold text-slate-400 hover:text-white disabled:opacity-40">
-        Cancel and return phone to merchant
-      </button>
+      {/* Footer */}
+      <div className="space-y-3 pt-4">
+        <div className="flex items-center justify-center gap-2 text-[10px] text-slate-500">
+          <ShieldCheck className="size-3.5" aria-hidden="true" />
+          <span>PIN hashed client-side · never transmitted raw · on-chain verification</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => router.replace("/merchant/scan")}
+          disabled={loading}
+          className="mx-auto block min-h-11 px-5 text-sm font-semibold text-slate-400 transition-colors hover:text-white disabled:opacity-40"
+        >
+          Cancel and return phone to merchant
+        </button>
+      </div>
     </main>
   );
 }
