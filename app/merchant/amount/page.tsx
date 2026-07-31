@@ -164,7 +164,7 @@ export default function MerchantAmountPage() {
             </div>
 
             <Button type="submit" block size="lg">
-              Continue — hand phone to consumer
+              Continue
               <ArrowRight className="ml-1 size-4" aria-hidden="true" />
             </Button>
           </FieldGroup>
@@ -175,7 +175,7 @@ export default function MerchantAmountPage() {
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
         <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
-          <span className="font-semibold text-slate-700">Next step:</span> You&apos;ll hand your
+          <span className="font-semibold text-slate-700">Next step: </span> You&apos;ll hand your
           phone to the consumer. They&apos;ll enter their 4-digit PIN to authorize this payment. The
           PIN never leaves the browser.
         </p>
