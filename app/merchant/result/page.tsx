@@ -8,6 +8,7 @@ import { StatusDialog } from "@/components/shared/StatusDialog";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, Clock, Shield } from "lucide-react";
+import { formatBalance } from "@/lib/utils";
 
 interface Receipt {
   txHash: string;
@@ -61,7 +62,7 @@ export default function MerchantResultPage() {
           <div className="text-center">
             <p className="text-xs font-medium text-slate-500">Amount received</p>
             <p className="mt-1 text-4xl font-bold text-slate-900 tabular-nums">
-              {Number(receipt.amountXlm).toFixed(2)}{" "}
+              {formatBalance(receipt.amountXlm)}{" "}
               <span className="text-lg font-semibold text-slate-500">XLM</span>
             </p>
           </div>
