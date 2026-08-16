@@ -4,6 +4,7 @@ export interface UserRecord {
   id: string;
   email: string;
   role: "consumer" | "merchant";
+  full_name?: string | null;
   business_name?: string | null;
   stellar_public_key: string;
   stellar_private_key_enc: string;
