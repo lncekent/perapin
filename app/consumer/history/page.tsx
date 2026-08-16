@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -46,14 +46,15 @@ function getDateGroup(dateStr: string): string {
 
 export default function ConsumerHistoryPage() {
   const [filter, setFilter] = useState<FilterType>("all");
-  const [archivedIds, setArchivedIds] = useState<string[]>([]);
-
-  useEffect(() => {
+  const [archivedIds, setArchivedIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
       const stored = localStorage.getItem("perapin_consumer_archived_txs");
-      if (stored) setArchivedIds(JSON.parse(stored));
-    } catch {}
-  }, []);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const { data: profile } = useCachedFetch<{ user: { stellarPublicKey: string } }>(
     "me",

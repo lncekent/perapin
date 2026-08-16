@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   QrCode,
@@ -106,11 +106,10 @@ function truncateKey(key: string): string {
 
 export default function ConsumerDashboard() {
   const [walletCopied, setWalletCopied] = useState(false);
-  const [balanceHidden, setBalanceHidden] = useState(false);
-
-  useEffect(() => {
-    setBalanceHidden(localStorage.getItem('perapin_hide_balance') === 'true');
-  }, []);
+  const [balanceHidden, setBalanceHidden] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("perapin_hide_balance") === "true";
+  });
 
   const { data: profile, error } = useCachedFetch<Profile>("me", async () => {
     const r = await fetch("/api/user/me");

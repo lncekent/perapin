@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowDownLeft, ReceiptText, ExternalLink, Archive, ArchiveRestore } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,11 +42,7 @@ export default function MerchantHistoryPage() {
   const loading = !txData;
 
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [archivedIds, setArchivedIdsState] = useState<string[]>([]);
-
-  useEffect(() => {
-    setArchivedIdsState(getArchivedIds());
-  }, []);
+  const [archivedIds, setArchivedIdsState] = useState<string[]>(() => getArchivedIds());
 
   function archiveTx(txId: string) {
     const updated = [...archivedIds, txId];

@@ -19,55 +19,38 @@ interface OnboardingOverlayProps {
 
 const INACTIVITY_DAYS = 7;
 
-/**
- * Shows onboarding overlay when:
- * 1. First time login (storageKey not set), OR
- * 2. User hasn't been active for 7+ days (based on last_seen timestamp)
- *
- * Rendered via a portal to document.body so `position: fixed` is relative to
- * the viewport, not any transformed ancestor (e.g. animate-fade-up containers).
- */
+function shouldShowOnboarding(storageKey: string): boolean {
+  if (typeof window === "undefined") return false;
+  const completed = localStorage.getItem(storageKey);
+  if (completed !== "true") return true;
+  const lastSeen = localStorage.getItem(`${storageKey}_last_seen`);
+  if (lastSeen) {
+    const daysSince = (Date.now() - parseInt(lastSeen, 10)) / (1000 * 60 * 60 * 24);
+    if (daysSince >= INACTIVITY_DAYS) return true;
+  }
+  return false;
+}
+
 export function OnboardingOverlay({ steps, storageKey, onComplete }: OnboardingOverlayProps) {
-  const [mounted, setMounted] = useState(false);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => shouldShowOnboarding(storageKey));
   const [currentStep, setCurrentStep] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
+  // Portal requires DOM — only render after mount
   useEffect(() => {
-    setMounted(true);
+    setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
+  }, []);
 
-    const lastSeen = localStorage.getItem(`${storageKey}_last_seen`);
-    const completed = localStorage.getItem(storageKey);
-
-    // Show if never completed
-    if (completed !== "true") {
-      setVisible(true);
-      return;
-    }
-
-    // Show if inactive for 7+ days
-    if (lastSeen) {
-      const daysSinceLastSeen = (Date.now() - parseInt(lastSeen, 10)) / (1000 * 60 * 60 * 24);
-      if (daysSinceLastSeen >= INACTIVITY_DAYS) {
-        setCurrentStep(0);
-        setVisible(true);
-        return;
-      }
-    }
-
-    // Update last seen on every mount (active session)
-    localStorage.setItem(`${storageKey}_last_seen`, String(Date.now()));
-  }, [storageKey]);
-
-  // Lock body scroll while the modal is open
+  // Lock body scroll while visible
   useEffect(() => {
-    if (visible) {
+    if (visible && mounted) {
       const original = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = original;
       };
     }
-  }, [visible]);
+  }, [visible, mounted]);
 
   function dismiss() {
     localStorage.setItem(storageKey, "true");
