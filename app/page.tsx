@@ -21,6 +21,7 @@ import {
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Footer } from "@/components/shared/Footer";
 
 const features = [
   {
@@ -689,107 +690,7 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FOOTER ===== */}
-      <footer className="border-t border-slate-200/70 bg-slate-50 px-6 py-10">
-        <div className="mx-auto max-w-md md:max-w-4xl">
-          <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-3 md:items-start">
-            {/* Brand */}
-            <div className="flex flex-col items-center justify-center space-y-3 md:items-start">
-              <div className="flex items-center gap-2">
-                <svg className="h-7 w-7 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-                  <defs>
-                    <linearGradient id="footer-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#3b6af5" />
-                      <stop offset="100%" stopColor="#1e40af" />
-                    </linearGradient>
-                  </defs>
-                  <rect width="32" height="32" rx="9" fill="url(#footer-logo-grad)" />
-                  <text
-                    x="50%"
-                    y="50%"
-                    dominantBaseline="central"
-                    textAnchor="middle"
-                    fill="white"
-                    fontSize="18"
-                    fontWeight="bold"
-                  >
-                    ₱
-                  </text>
-                </svg>
-                <span className="text-sm font-bold text-slate-900">PeraPin</span>
-              </div>
-              <p className="text-center text-[11px] leading-relaxed text-slate-400 md:text-left">
-                Blockchain micropayments for informal economies. Built on Stellar/Soroban.
-              </p>
-            </div>
-
-            {/* Links */}
-            <div className="space-y-2 text-center md:text-left">
-              <h4 className="text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                Product
-              </h4>
-              <nav className="flex flex-col gap-1.5 text-xs text-slate-500">
-                <a href="#how-it-works" className="hover:text-brand-600 transition-colors">
-                  How it Works
-                </a>
-                <a href="#features" className="hover:text-brand-600 transition-colors">
-                  Features
-                </a>
-                <a href="#security" className="hover:text-brand-600 transition-colors">
-                  Security
-                </a>
-                <Link href="/feedback" className="hover:text-brand-600 transition-colors">
-                  Submit Feedback
-                </Link>
-              </nav>
-            </div>
-
-            {/* Resources */}
-            <div className="space-y-2 text-center md:text-left">
-              <h4 className="text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                Resources
-              </h4>
-              <nav className="flex flex-col gap-1.5 text-xs text-slate-500">
-                <a
-                  href="https://github.com/lncekent/perapin"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-brand-600 transition-colors"
-                >
-                  GitHub Repository
-                </a>
-                <a
-                  href="https://stellar.expert/explorer/testnet/contract/CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-brand-600 transition-colors"
-                >
-                  Stellar Explorer
-                </a>
-                <a
-                  href="https://soroban.stellar.org/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-brand-600 transition-colors"
-                >
-                  Soroban Docs
-                </a>
-              </nav>
-            </div>
-          </div>
-
-          {/* Bottom bar */}
-          <div className="mt-8 border-t border-slate-200/70 pt-6 text-center">
-            <p className="text-[10px] leading-relaxed text-slate-400">
-              Built by{" "}
-              <span className="font-semibold text-slate-600">Lance Kent Geoffrey B. Magollado</span>{" "}
-              · MIT License · 2026
-            </p>
-            <p className="mt-1 text-[10px] text-slate-300">
-              Stellar Testnet · Contract: CBEAS...V5P3D
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
