@@ -48,6 +48,7 @@ export default function ConsumerRegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [signupDone, setSignupDone] = useState(false);
+  const [agreed, setAgreed] = useState(false);
   const stepIndex = step === "email" ? 0 : step === "token" ? 1 : 2;
 
   async function send(event?: FormEvent) {
@@ -262,7 +263,27 @@ export default function ConsumerRegisterPage() {
                     We&apos;ll email you a 6-digit verification code. No password needed.
                   </FieldDescription>
                 </Field>
-                <Button type="submit" disabled={loading} block size="lg">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="agree"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    className="mt-1 size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                    required
+                  />
+                  <label htmlFor="agree" className="text-xs leading-relaxed text-slate-600">
+                    I agree to the{" "}
+                    <Link href="/privacy" target="_blank" className="text-brand-700 font-medium hover:underline">
+                      Privacy Policy
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/terms" target="_blank" className="text-brand-700 font-medium hover:underline">
+                      Terms of Service
+                    </Link>
+                  </label>
+                </div>
+                <Button type="submit" disabled={loading || !agreed} block size="lg">
                   {loading ? (
                     <>
                       <Spinner /> Sending…
