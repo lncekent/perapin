@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   QrCode,
@@ -21,13 +22,19 @@ import {
   XCircle,
   ArrowDownLeft,
   ArrowUpLeft,
+  Eye,
+  EyeOff,
+  Copy,
+  Check,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
+import { formatBalance, copyToClipboard } from "@/lib/utils";
+import { OnboardingOverlay } from "@/components/shared/OnboardingOverlay";
 
 interface Profile {
-  user: { email: string; stellarPublicKey: string };
+  user: { email: string; stellarPublicKey: string; createdAt?: string };
   balanceXlm: string;
   isLocked: boolean;
   pinSetupRequired: boolean;
@@ -98,6 +105,13 @@ function truncateKey(key: string): string {
 }
 
 export default function ConsumerDashboard() {
+  const [walletCopied, setWalletCopied] = useState(false);
+  const [balanceHidden, setBalanceHidden] = useState(false);
+
+  useEffect(() => {
+    setBalanceHidden(localStorage.getItem('perapin_hide_balance') === 'true');
+  }, []);
+
   const { data: profile, error } = useCachedFetch<Profile>("me", async () => {
     const r = await fetch("/api/user/me");
     const data = await r.json();
@@ -141,8 +155,8 @@ export default function ConsumerDashboard() {
     .filter((tx) => tx.from_public_key === profile.user.stellarPublicKey && tx.status === "success")
     .reduce((sum, tx) => sum + tx.amount_xlm, 0);
   const txCount = transactions.length;
-  const memberSince = profile.user.email
-    ? new Date().toLocaleDateString("en-US", { month: "short", year: "numeric" })
+  const memberSince = profile.user.createdAt
+    ? new Date(profile.user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
     : "—";
 
   return (
@@ -176,30 +190,65 @@ export default function ConsumerDashboard() {
       )}
 
       {/* Money Hero Card */}
-      <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden">
-        <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
-        <div className="relative">
-          <div className="flex items-center justify-between">
-            <p className="text-brand-100 text-sm font-medium">Available balance</p>
-            <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-white ring-1 ring-white/20">
-              TESTNET
-            </span>
-          </div>
-          <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums">
-            {Number(profile.balanceXlm).toFixed(2)}
-            <span className="text-brand-200 ml-2 text-xl font-semibold">XLM</span>
-          </p>
-          <p className="text-brand-200/80 mt-3 truncate font-mono text-[11px]">
-            {profile.user.stellarPublicKey}
-          </p>
-          {profile.isLocked && (
-            <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-500/25 px-3 py-2 text-sm font-medium text-red-50 ring-1 ring-red-300/30">
-              <Lock className="h-4 w-4" aria-hidden="true" />
-              Wallet temporarily locked after failed PIN attempts
+      <Link href="/consumer/history" className="block group">
+        <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden cursor-pointer group-hover:ring-2 group-hover:ring-white/30 transition-all">
+          <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <p className="text-brand-100 text-sm font-medium">Available balance</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    const next = !balanceHidden;
+                    setBalanceHidden(next);
+                    localStorage.setItem('perapin_hide_balance', String(next));
+                  }}
+                  className="text-brand-200 hover:text-white transition-colors p-1 rounded-lg"
+                  aria-label={balanceHidden ? "Show balance" : "Hide balance"}
+                >
+                  {balanceHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                </button>
+              </div>
+              <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide text-white ring-1 ring-white/20">
+                TESTNET
+              </span>
+            </div>
+            <p className="mt-3 text-5xl font-bold tracking-tight tabular-nums">
+              {balanceHidden ? "••••••" : formatBalance(profile.balanceXlm)}
+              <span className="text-brand-200 ml-2 text-xl font-semibold">XLM</span>
             </p>
-          )}
-        </div>
-      </Card>
+            <div className="mt-3 flex items-center gap-2">
+              <p className="text-brand-200/80 font-mono text-[11px]">
+                {profile.user.stellarPublicKey.slice(0, 6)}····{profile.user.stellarPublicKey.slice(-6)}
+              </p>
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  await copyToClipboard(profile.user.stellarPublicKey);
+                  setWalletCopied(true);
+                  setTimeout(() => setWalletCopied(false), 2000);
+                }}
+                className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-[10px] font-medium text-brand-100 hover:bg-white/20 transition-colors"
+                aria-label="Copy wallet address"
+              >
+                {walletCopied ? <Check className="size-3" /> : <Copy className="size-3" />}
+                {walletCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            {profile.isLocked && (
+              <p className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-red-500/25 px-3 py-2 text-sm font-medium text-red-50 ring-1 ring-red-300/30">
+                <Lock className="h-4 w-4" aria-hidden="true" />
+                Wallet temporarily locked after failed PIN attempts
+              </p>
+            )}
+          </div>
+        </Card>
+      </Link>
 
       {/* Quick Stats Row */}
       <section>
@@ -403,6 +452,33 @@ export default function ConsumerDashboard() {
           </ul>
         </Card>
       </section>
+
+      {/* Onboarding Tour */}
+      <OnboardingOverlay
+        storageKey="perapin_onboarding_consumer_done"
+        steps={[
+          {
+            title: "Welcome to PeraPin!",
+            description: "Your offline payment wallet is ready. Here's a quick tour of how everything works.",
+            icon: <Wallet className="size-7" />,
+          },
+          {
+            title: "Your QR Payment Sticker",
+            description: "Print your QR sticker and attach it to your ID, wallet, or phone case. Merchants scan it to charge you.",
+            icon: <QrCode className="size-7" />,
+          },
+          {
+            title: "PIN-Protected Payments",
+            description: "When paying, you'll enter your 4-digit PIN on the merchant's phone. It's hashed locally and never transmitted raw.",
+            icon: <KeyRound className="size-7" />,
+          },
+          {
+            title: "Fund Your Wallet",
+            description: "Use the Testnet Friendbot to add XLM to your wallet. Tap 'Fund Wallet' in Quick Actions to get started.",
+            icon: <Wallet className="size-7" />,
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -21,7 +21,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "@/components/ui/toast";
-import { cn } from "@/lib/utils";
+import { cn, formatBalance, copyToClipboard } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 
 interface Profile {
@@ -74,14 +74,22 @@ export default function ConsumerTopupPage() {
   }
 
   async function copy() {
-    await navigator.clipboard.writeText(wallet);
-    setCopied(true);
-    toast.add({
-      title: "Address copied",
-      description: "Your public key is on the clipboard.",
-      type: "success",
-    });
-    setTimeout(() => setCopied(false), 2000);
+    const success = await copyToClipboard(wallet);
+    if (success) {
+      setCopied(true);
+      toast.add({
+        title: "Address copied",
+        description: "Your public key is on the clipboard.",
+        type: "success",
+      });
+      setTimeout(() => setCopied(false), 2000);
+    } else {
+      toast.add({
+        title: "Copy failed",
+        description: "Please manually select and copy the address.",
+        type: "error",
+      });
+    }
   }
 
   return (
@@ -102,7 +110,7 @@ export default function ConsumerTopupPage() {
             <Badge className="bg-white/15 text-white ring-1 ring-white/20">TESTNET</Badge>
           </div>
           <p className="mt-3 text-4xl font-bold tracking-tight tabular-nums">
-            {balance ? Number(balance).toFixed(2) : "…"}
+            {balance ? formatBalance(balance) : "…"}
             <span className="text-brand-200 ml-2 text-lg font-semibold">XLM</span>
           </p>
           <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -12,11 +12,14 @@ import {
   Activity,
   Hash,
   CalendarDays,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { cn, formatBalance } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
+import { toast } from "@/components/ui/toast";
 
 interface Tx {
   id: string;
@@ -28,7 +31,7 @@ interface Tx {
   created_at: string;
 }
 
-type FilterType = "all" | "sent" | "received";
+type FilterType = "all" | "sent" | "received" | "archived";
 
 function getDateGroup(dateStr: string): string {
   const date = new Date(dateStr);
@@ -43,6 +46,14 @@ function getDateGroup(dateStr: string): string {
 
 export default function ConsumerHistoryPage() {
   const [filter, setFilter] = useState<FilterType>("all");
+  const [archivedIds, setArchivedIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("perapin_consumer_archived_txs");
+      if (stored) setArchivedIds(JSON.parse(stored));
+    } catch {}
+  }, []);
 
   const { data: profile } = useCachedFetch<{ user: { stellarPublicKey: string } }>(
     "me",
@@ -59,6 +70,21 @@ export default function ConsumerHistoryPage() {
   const wallet = profile?.user.stellarPublicKey ?? "";
   const transactions = txData?.transactions ?? [];
   const loading = !txData;
+
+  // Archive / Restore functions
+  function archiveTx(txId: string) {
+    const updated = [...archivedIds, txId];
+    setArchivedIds(updated);
+    localStorage.setItem("perapin_consumer_archived_txs", JSON.stringify(updated));
+    toast.add({ title: "Archived", description: "Transaction moved to archive.", type: "success" });
+  }
+
+  function restoreTx(txId: string) {
+    const updated = archivedIds.filter((id) => id !== txId);
+    setArchivedIds(updated);
+    localStorage.setItem("perapin_consumer_archived_txs", JSON.stringify(updated));
+    toast.add({ title: "Restored", description: "Transaction restored to history.", type: "success" });
+  }
 
   // Compute stats
   const stats = useMemo(() => {
@@ -89,10 +115,12 @@ export default function ConsumerHistoryPage() {
 
   // Filter transactions
   const filteredTransactions = useMemo(() => {
-    if (filter === "all") return transactions;
-    if (filter === "sent") return transactions.filter((tx) => tx.from_public_key === wallet);
-    return transactions.filter((tx) => tx.from_public_key !== wallet);
-  }, [transactions, wallet, filter]);
+    if (filter === "archived") return transactions.filter((tx) => archivedIds.includes(tx.id));
+    const nonArchived = transactions.filter((tx) => !archivedIds.includes(tx.id));
+    if (filter === "all") return nonArchived;
+    if (filter === "sent") return nonArchived.filter((tx) => tx.from_public_key === wallet);
+    return nonArchived.filter((tx) => tx.from_public_key !== wallet);
+  }, [transactions, wallet, filter, archivedIds]);
 
   // Group by date
   const groupedTransactions = useMemo(() => {
@@ -111,10 +139,12 @@ export default function ConsumerHistoryPage() {
     return groups;
   }, [filteredTransactions]);
 
+  const archivedCount = transactions.filter((tx) => archivedIds.includes(tx.id)).length;
   const filters: { key: FilterType; label: string; count: number }[] = [
-    { key: "all", label: "All", count: stats.txCount },
+    { key: "all", label: "All", count: stats.txCount - archivedCount },
     { key: "sent", label: "Sent", count: stats.sentCount },
     { key: "received", label: "Received", count: stats.receivedCount },
+    { key: "archived", label: "Archived", count: archivedCount },
   ];
 
   return (
@@ -137,7 +167,7 @@ export default function ConsumerHistoryPage() {
                   Total Spent
                 </p>
                 <p className="text-sm font-bold text-slate-900 tabular-nums">
-                  {stats.totalSent.toFixed(2)} XLM
+                  {formatBalance(stats.totalSent)} XLM
                 </p>
               </div>
             </div>
@@ -152,7 +182,7 @@ export default function ConsumerHistoryPage() {
                   Total Received
                 </p>
                 <p className="text-brand-700 text-sm font-bold tabular-nums">
-                  {stats.totalReceived.toFixed(2)} XLM
+                  {formatBalance(stats.totalReceived)} XLM
                 </p>
               </div>
             </div>
@@ -180,7 +210,7 @@ export default function ConsumerHistoryPage() {
                   )}
                 >
                   {stats.netChange >= 0 ? "+" : ""}
-                  {stats.netChange.toFixed(2)} XLM
+                  {formatBalance(stats.netChange)} XLM
                 </p>
               </div>
             </div>
@@ -203,7 +233,7 @@ export default function ConsumerHistoryPage() {
 
       {/* Filter Badges */}
       {!loading && transactions.length > 0 && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {filters.map((f) => (
             <button
               key={f.key}
@@ -247,11 +277,19 @@ export default function ConsumerHistoryPage() {
           </p>
         </Card>
       ) : filteredTransactions.length === 0 ? (
-        <Card variant="ghost" padding="lg" className="flex flex-col items-center py-8 text-center">
-          <p className="text-sm font-medium text-slate-500">
-            No {filter === "sent" ? "sent" : "received"} transactions found.
-          </p>
-        </Card>
+        filter === "archived" ? (
+          <Card variant="ghost" padding="lg" className="flex flex-col items-center py-8 text-center">
+            <Archive className="size-8 text-slate-300" aria-hidden="true" />
+            <p className="mt-3 text-sm font-medium text-slate-500">No archived transactions</p>
+            <p className="mt-1 text-xs text-slate-400">Transactions you archive will appear here.</p>
+          </Card>
+        ) : (
+          <Card variant="ghost" padding="lg" className="flex flex-col items-center py-8 text-center">
+            <p className="text-sm font-medium text-slate-500">
+              No {filter === "sent" ? "sent" : "received"} transactions found.
+            </p>
+          </Card>
+        )
       ) : (
         <div className="space-y-4">
           {groupedTransactions.map((group) => (
@@ -307,8 +345,25 @@ export default function ConsumerHistoryPage() {
                         )}
                       >
                         {sent ? "−" : "+"}
-                        {Number(tx.amount_xlm).toFixed(2)} XLM
+                        {formatBalance(tx.amount_xlm)} XLM
                       </p>
+                      {filter === "archived" ? (
+                        <button
+                          onClick={() => restoreTx(tx.id)}
+                          className="ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                          aria-label="Restore transaction"
+                        >
+                          <ArchiveRestore className="size-4" />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => archiveTx(tx.id)}
+                          className="ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                          aria-label="Archive transaction"
+                        >
+                          <Archive className="size-4" />
+                        </button>
+                      )}
                     </div>
                   </Card>
                 );

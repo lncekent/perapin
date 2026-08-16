@@ -13,25 +13,29 @@ import {
   ShieldCheck,
   Mail,
   Shield,
+  Check,
+  X,
 } from "lucide-react";
 import { computePinHash } from "@/lib/client-crypto";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { StatusDialog, type OperationStatus } from "@/components/shared/StatusDialog";
 import { cn } from "@/lib/utils";
-import { useCachedFetch } from "@/lib/use-cached-fetch";
+import { useCachedFetch, setCachedValue } from "@/lib/use-cached-fetch";
+import { toast } from "@/components/ui/toast";
 
 interface Profile {
   user: {
     email: string;
     stellarPublicKey: string;
-    created_at?: string;
+    createdAt?: string;
     role?: string;
+    fullName?: string | null;
   };
   balanceXlm: string;
   isLocked: boolean;
@@ -39,7 +43,7 @@ interface Profile {
 }
 
 export default function ConsumerSettingsPage() {
-  const { data: profile } = useCachedFetch<Profile>("me", async () => {
+  const { data: profile, refetch } = useCachedFetch<Profile>("me", async () => {
     const r = await fetch("/api/user/me");
     const d = await r.json();
     if (!r.ok) throw new Error(d.error || "Unable to load profile.");
@@ -49,13 +53,16 @@ export default function ConsumerSettingsPage() {
   const wallet = profile?.user.stellarPublicKey ?? "";
   const email = profile?.user.email ?? "";
   const role = profile?.user.role ?? "consumer";
-  const memberSince = profile?.user.created_at
-    ? new Date(profile.user.created_at).toLocaleDateString("en-US", {
+  const fullName = profile?.user.fullName ?? "";
+  const memberSince = profile?.user.createdAt
+    ? new Date(profile.user.createdAt).toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
       })
     : "—";
 
+  const [editFullName, setEditFullName] = useState<string | null>(null);
+  const [savingName, setSavingName] = useState(false);
   const [oldPin, setOldPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -64,6 +71,48 @@ export default function ConsumerSettingsPage() {
   const [statusOpen, setStatusOpen] = useState(false);
   const [status, setStatus] = useState<OperationStatus>("idle");
   const [statusError, setStatusError] = useState("");
+
+  const nameValue = editFullName ?? fullName;
+
+  async function saveFullName() {
+    const trimmed = nameValue.trim();
+    if (trimmed === fullName) {
+      setEditFullName(null);
+      return;
+    }
+    if (trimmed.length > 100) {
+      toast.add({
+        title: "Too long",
+        description: "Full name must be 100 characters or less.",
+        type: "error",
+      });
+      return;
+    }
+    setSavingName(true);
+    try {
+      const res = await fetch("/api/user/full-name", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fullName: trimmed }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to update.");
+      if (profile) {
+        setCachedValue("me", { ...profile, user: { ...profile.user, fullName: data.fullName } });
+      }
+      await refetch();
+      setEditFullName(null);
+      toast.add({
+        title: "Name updated",
+        description: "Your full name has been saved.",
+        type: "success",
+      });
+    } catch (err: any) {
+      toast.add({ title: "Update failed", description: err.message, type: "error" });
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   // Step 1: validate locally, then ask for confirmation.
   function review(e: FormEvent) {
@@ -126,6 +175,61 @@ export default function ConsumerSettingsPage() {
         </div>
 
         <div className="space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 ring-1 ring-slate-200">
+              <User className="size-3.5" aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-medium tracking-wider text-slate-400 uppercase">
+                Full Name
+              </p>
+              {editFullName !== null ? (
+                <div className="mt-1 flex items-center gap-1.5">
+                  <input
+                    type="text"
+                    value={editFullName}
+                    onChange={(e) => setEditFullName(e.target.value)}
+                    maxLength={100}
+                    autoFocus
+                    placeholder="Enter your full name"
+                    className="focus:border-brand-400 focus:ring-brand-200 h-8 min-w-0 flex-1 rounded-lg border border-slate-200 px-2.5 text-sm text-slate-800 outline-none focus:ring-1"
+                  />
+                  <button
+                    onClick={saveFullName}
+                    disabled={savingName}
+                    className="bg-brand-600 hover:bg-brand-700 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-white transition-colors disabled:opacity-50"
+                    aria-label="Save name"
+                  >
+                    {savingName ? (
+                      <span className="size-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                    ) : (
+                      <Check className="size-4" />
+                    )}
+                  </button>
+                  <button
+                    onClick={() => setEditFullName(null)}
+                    className="flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
+                    aria-label="Cancel"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <p className="truncate text-sm font-medium text-slate-800">
+                    {fullName || <span className="text-slate-400 italic">Not set</span>}
+                  </p>
+                  <button
+                    onClick={() => setEditFullName(fullName)}
+                    className="text-brand-600 flex-shrink-0 text-[11px] font-medium hover:underline"
+                  >
+                    Edit
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center gap-3">
             <div className="flex size-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 ring-1 ring-slate-200">
               <Mail className="size-3.5" aria-hidden="true" />
@@ -194,22 +298,25 @@ export default function ConsumerSettingsPage() {
               {fields.map((f) => (
                 <Field key={f.id}>
                   <FieldLabel htmlFor={f.id}>{f.label}</FieldLabel>
-                  <Input
-                    id={f.id}
-                    name={f.id}
-                    type="password"
-                    inputMode="numeric"
-                    autoComplete="off"
-                    maxLength={4}
-                    required
-                    value={f.value}
-                    onChange={(e) => {
-                      f.set(e.target.value.replace(/\D/g, ""));
-                      if (error) setError("");
-                    }}
-                    placeholder="••••"
-                    className="h-12 text-center text-xl tracking-[0.4em]"
-                  />
+                  <div className="flex justify-center">
+                    <InputOTP
+                      maxLength={4}
+                      value={f.value}
+                      onChange={(val: string) => {
+                        f.set(val.replace(/\D/g, ""));
+                        if (error) setError("");
+                      }}
+                      inputMode="numeric"
+                      containerClassName="gap-3"
+                    >
+                      <InputOTPGroup className="gap-3">
+                        <InputOTPSlot index={0} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
+                        <InputOTPSlot index={1} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
+                        <InputOTPSlot index={2} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
+                        <InputOTPSlot index={3} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
                 </Field>
               ))}
               <Button type="submit" block size="lg" disabled={!wallet}>

@@ -22,7 +22,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
+import { cn, copyToClipboard } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { toast } from "@/components/ui/toast";
 
@@ -87,13 +87,21 @@ export default function ConsumerQrPage() {
   }, [wallet]);
 
   async function copyPublicKey() {
-    await navigator.clipboard.writeText(wallet);
-    setCopied(true);
-    toast.add({
-      title: "Public key copied",
-      description: "Share it with anyone who needs to send you XLM.",
-      type: "success",
-    });
+    const success = await copyToClipboard(wallet);
+    if (success) {
+      setCopied(true);
+      toast.add({
+        title: "Public key copied",
+        description: "Share it with anyone who needs to send you XLM.",
+        type: "success",
+      });
+    } else {
+      toast.add({
+        title: "Copy failed",
+        description: "Please manually select and copy the address above.",
+        type: "error",
+      });
+    }
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -124,8 +132,8 @@ export default function ConsumerQrPage() {
               </span>
               <span className="text-sm font-bold">PeraPin</span>
             </div>
-            <span className="rounded-full bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold tracking-wide ring-1 ring-white/20">
-              SCAN TO PAY
+            <span className="text-brand-200/80 text-[10px] font-medium tracking-wider uppercase">
+              Scan to Pay
             </span>
           </div>
           <div className="mx-auto w-full max-w-[260px] rounded-2xl bg-white p-3 shadow-lg">
