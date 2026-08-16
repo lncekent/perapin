@@ -25,6 +25,7 @@ export async function GET(req: NextRequest) {
         id: user.id,
         email: user.email,
         role: user.role,
+        fullName: user.full_name || null,
         businessName: user.business_name,
         stellarPublicKey: user.stellar_public_key,
         createdAt: user.created_at,
