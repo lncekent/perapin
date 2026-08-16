@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { computePinHash } from "@/lib/client-crypto";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
 import { ShieldCheck, Lock } from "lucide-react";
+import { formatBalance } from "@/lib/utils";
 
 const PIN_LENGTH = 4;
 const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
@@ -115,7 +116,7 @@ export default function MerchantHandoffPage() {
 
         <p className="text-sm text-slate-400">Amount to pay</p>
         <h1 className="mt-1 text-5xl font-extrabold tracking-tight">
-          {amount.toFixed(2)} <span className="text-brand-300 text-2xl font-semibold">XLM</span>
+          {formatBalance(amount)} <span className="text-brand-300 text-2xl font-semibold">XLM</span>
         </h1>
 
         {/* Timer */}
