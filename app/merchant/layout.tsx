@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, ScanLine, ReceiptText, LogOut } from "lucide-react";
+import { Home, ScanLine, ReceiptText, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { toast } from "@/components/ui/toast";
@@ -13,6 +13,7 @@ const links = [
   { href: "/merchant/dashboard", label: "Home", icon: Home },
   { href: "/merchant/scan", label: "Accept", icon: ScanLine },
   { href: "/merchant/history", label: "History", icon: ReceiptText },
+  { href: "/merchant/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export default function MerchantLayout({ children }: { children: ReactNode }) {
@@ -76,7 +77,7 @@ export default function MerchantLayout({ children }: { children: ReactNode }) {
       </header>
       <main className="mx-auto max-w-md px-5 py-5 pb-24">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200/70 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto grid max-w-md grid-cols-3">
+        <div className="mx-auto grid max-w-md grid-cols-4">
           {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
