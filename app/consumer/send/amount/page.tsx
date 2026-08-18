@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CircleAlert, Info, ArrowRight, Wallet, UserCheck } from "lucide-react";
+import { CircleAlert, Info, ArrowRight, Wallet, UserCheck, ArrowLeft } from "lucide-react";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { formatBalance } from "@/lib/utils";
 import { SendFlowSteps } from "@/components/shared/SendFlowSteps";
+import Link from "next/link";
 
 interface SendContext {
   recipientPublicKey: string;
@@ -69,6 +70,15 @@ export default function ConsumerSendAmountPage() {
 
   return (
     <div className="animate-fade-up space-y-5">
+      {/* Back button */}
+      <Link
+        href="/consumer/send"
+        className="mt-3 flex items-center gap-2 text-slate-500 hover:text-slate-900"
+      >
+        <ArrowLeft className="size-5" aria-hidden="true" />
+        <span>Back to dashboard</span>
+      </Link>
+      
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">How much to send?</h1>

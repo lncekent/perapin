@@ -33,6 +33,7 @@ export async function GET(req: NextRequest) {
       balanceXlm,
       isLocked,
       pinSetupRequired: user.role === "consumer" && !user.pin_registered_at,
+      onboardingCompleted: !!user.onboarding_completed_at,
     });
   } catch (error: any) {
     return NextResponse.json(

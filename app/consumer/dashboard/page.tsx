@@ -40,6 +40,7 @@ interface Profile {
   balanceXlm: string;
   isLocked: boolean;
   pinSetupRequired: boolean;
+  onboardingCompleted: boolean;
 }
 
 interface Tx {
@@ -501,6 +502,7 @@ export default function ConsumerDashboard() {
       {/* Onboarding Tour */}
       <OnboardingOverlay
         storageKey="perapin_onboarding_consumer_done"
+        onboardingCompleted={profile.onboardingCompleted}
         steps={[
           {
             title: "Welcome to PeraPin!",

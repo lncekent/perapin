@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   ExternalLink,
   Clock,
+  ArrowLeft,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -125,6 +126,15 @@ export default function ConsumerSendConfirmPage() {
 
   return (
     <div className="animate-fade-up space-y-5">
+      {/* Back button */}
+      <Link
+        href="/consumer/send/amount"
+        className="mt-3 flex items-center gap-2 text-slate-500 hover:text-slate-900"
+      >
+        <ArrowLeft className="size-5" aria-hidden="true" />
+        <span>Back to amount</span>
+      </Link>
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Confirm transfer</h1>

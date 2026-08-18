@@ -14,25 +14,29 @@ interface OnboardingStep {
 interface OnboardingOverlayProps {
   steps: OnboardingStep[];
   storageKey: string;
+  /** Server-side flag indicating onboarding was already completed. When true, never show. */
+  onboardingCompleted?: boolean;
   onComplete?: () => void;
 }
 
-const INACTIVITY_DAYS = 7;
-
-function shouldShowOnboarding(storageKey: string): boolean {
+/**
+ * Determines if the onboarding overlay should be shown.
+ * Priority: if the server says onboarding is already done → never show.
+ * Otherwise, use localStorage as a quick cache for the current session.
+ */
+function shouldShowOnboarding(storageKey: string, onboardingCompleted?: boolean): boolean {
+  // Server already confirmed onboarding is done — skip entirely
+  if (onboardingCompleted) return false;
   if (typeof window === "undefined") return false;
+  // localStorage acts as a fast cache (prevents flash before server responds)
   const completed = localStorage.getItem(storageKey);
-  if (completed !== "true") return true;
-  const lastSeen = localStorage.getItem(`${storageKey}_last_seen`);
-  if (lastSeen) {
-    const daysSince = (Date.now() - parseInt(lastSeen, 10)) / (1000 * 60 * 60 * 24);
-    if (daysSince >= INACTIVITY_DAYS) return true;
-  }
-  return false;
+  if (completed === "true") return false;
+  // New user: show onboarding
+  return true;
 }
 
-export function OnboardingOverlay({ steps, storageKey, onComplete }: OnboardingOverlayProps) {
-  const [visible, setVisible] = useState(() => shouldShowOnboarding(storageKey));
+export function OnboardingOverlay({ steps, storageKey, onboardingCompleted, onComplete }: OnboardingOverlayProps) {
+  const [visible, setVisible] = useState(() => shouldShowOnboarding(storageKey, onboardingCompleted));
   const [currentStep, setCurrentStep] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -40,6 +44,15 @@ export function OnboardingOverlay({ steps, storageKey, onComplete }: OnboardingO
   useEffect(() => {
     setMounted(true); // eslint-disable-line react-hooks/set-state-in-effect
   }, []);
+
+  // If server data arrives after initial render and says onboarding is done, hide immediately
+  useEffect(() => {
+    if (onboardingCompleted) {
+      setVisible(false);
+      // Also sync localStorage so future renders are instant
+      localStorage.setItem(storageKey, "true");
+    }
+  }, [onboardingCompleted, storageKey]);
 
   // Lock body scroll while visible
   useEffect(() => {
@@ -53,8 +66,12 @@ export function OnboardingOverlay({ steps, storageKey, onComplete }: OnboardingO
   }, [visible, mounted]);
 
   function dismiss() {
+    // 1. Persist in localStorage for instant next-render check
     localStorage.setItem(storageKey, "true");
-    localStorage.setItem(`${storageKey}_last_seen`, String(Date.now()));
+    // 2. Persist server-side so it survives across devices/browsers
+    fetch("/api/user/onboarding", { method: "POST" }).catch(() => {
+      // Non-critical — localStorage already prevents re-show on this device
+    });
     setVisible(false);
     onComplete?.();
   }

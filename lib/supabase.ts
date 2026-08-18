@@ -11,6 +11,7 @@ export interface UserRecord {
   created_at: string;
   last_login?: string;
   pin_registered_at?: string | null;
+  onboarding_completed_at?: string | null;
 }
 
 export interface TransactionRecord {
@@ -146,6 +147,21 @@ export async function dbMarkPinRegistered(userId: string): Promise<void> {
   const user = memoryStore.users.get(userId);
   if (!user) throw new Error("User not found");
   user.pin_registered_at = timestamp;
+}
+
+export async function dbMarkOnboardingCompleted(userId: string): Promise<void> {
+  const timestamp = new Date().toISOString();
+  if (supabaseClient) {
+    const { error } = await supabaseClient
+      .from("users")
+      .update({ onboarding_completed_at: timestamp })
+      .eq("id", userId);
+    if (error) throw new Error(`Supabase onboarding update error: ${error.message}`);
+    return;
+  }
+  const user = memoryStore.users.get(userId);
+  if (!user) throw new Error("User not found");
+  user.onboarding_completed_at = timestamp;
 }
 
 export async function dbUpdateLastLogin(userId: string): Promise<void> {
