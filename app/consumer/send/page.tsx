@@ -3,7 +3,16 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
-import { Camera, CircleAlert, ScanLine, Send, ShieldCheck, Users, Info } from "lucide-react";
+import {
+  Camera,
+  CircleAlert,
+  ScanLine,
+  Send,
+  ShieldCheck,
+  Users,
+  Info,
+  ArrowLeft,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +22,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { SendFlowSteps } from "@/components/shared/SendFlowSteps";
+import Link from "next/link";
 
 export default function ConsumerSendPage() {
   const router = useRouter();
@@ -106,6 +116,15 @@ export default function ConsumerSendPage() {
 
   return (
     <div className="animate-fade-up space-y-5">
+      {/* Back button */}
+      <Link
+        href="/consumer/dashboard"
+        className="mt-3 flex items-center gap-2 text-slate-500 hover:text-slate-900"
+      >
+        <ArrowLeft className="size-5" aria-hidden="true" />
+        <span>Back to dashboard</span>
+      </Link>
+
       {/* Page header */}
       <div className="flex items-start justify-between">
         <div>

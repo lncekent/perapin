@@ -157,7 +157,10 @@ export default function ConsumerDashboard() {
     .reduce((sum, tx) => sum + tx.amount_xlm, 0);
   const txCount = transactions.length;
   const memberSince = profile.user.createdAt
-    ? new Date(profile.user.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" })
+    ? new Date(profile.user.createdAt).toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+      })
     : "—";
 
   return (
@@ -191,8 +194,12 @@ export default function ConsumerDashboard() {
       )}
 
       {/* Money Hero Card */}
-      <Link href="/consumer/history" className="block group">
-        <Card variant="money" padding="lg" className="animate-shimmer relative overflow-hidden cursor-pointer group-hover:ring-2 group-hover:ring-white/30 transition-all">
+      <Link href="/consumer/history" className="group block">
+        <Card
+          variant="money"
+          padding="lg"
+          className="animate-shimmer relative cursor-pointer overflow-hidden transition-all group-hover:ring-2 group-hover:ring-white/30"
+        >
           <div className="bg-dot-grid pointer-events-none absolute inset-0 opacity-[0.15]" />
           <div className="relative">
             <div className="flex items-center justify-between">
@@ -205,9 +212,9 @@ export default function ConsumerDashboard() {
                     e.preventDefault();
                     const next = !balanceHidden;
                     setBalanceHidden(next);
-                    localStorage.setItem('perapin_hide_balance', String(next));
+                    localStorage.setItem("perapin_hide_balance", String(next));
                   }}
-                  className="text-brand-200 hover:text-white transition-colors p-1 rounded-lg"
+                  className="text-brand-200 rounded-lg p-1 transition-colors hover:text-white"
                   aria-label={balanceHidden ? "Show balance" : "Hide balance"}
                 >
                   {balanceHidden ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
@@ -223,7 +230,8 @@ export default function ConsumerDashboard() {
             </p>
             <div className="mt-3 flex items-center gap-2">
               <p className="text-brand-200/80 font-mono text-[11px]">
-                {profile.user.stellarPublicKey.slice(0, 6)}····{profile.user.stellarPublicKey.slice(-6)}
+                {profile.user.stellarPublicKey.slice(0, 6)}····
+                {profile.user.stellarPublicKey.slice(-6)}
               </p>
               <button
                 type="button"
@@ -234,7 +242,7 @@ export default function ConsumerDashboard() {
                   setWalletCopied(true);
                   setTimeout(() => setWalletCopied(false), 2000);
                 }}
-                className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-[10px] font-medium text-brand-100 hover:bg-white/20 transition-colors"
+                className="text-brand-100 inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-[10px] font-medium transition-colors hover:bg-white/20"
                 aria-label="Copy wallet address"
               >
                 {walletCopied ? <Check className="size-3" /> : <Copy className="size-3" />}
@@ -264,8 +272,8 @@ export default function ConsumerDashboard() {
               <Send className="size-5" aria-hidden="true" />
             </div>
             <div>
-              <p className="text-sm font-bold text-slate-900">Send Money</p>
-              <p className="text-[11px] text-slate-400">To another PeraPin user</p>
+              <p className="text-sm font-bold text-slate-900">Send</p>
+              <p className="hidden text-[11px] text-slate-400 lg:block">To another PeraPin user</p>
             </div>
           </Card>
         </Link>
@@ -281,7 +289,7 @@ export default function ConsumerDashboard() {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900">Receive</p>
-              <p className="text-[11px] text-slate-400">Show your QR sticker</p>
+              <p className="text-[11px] hidden lg:block text-slate-400">Show your QR sticker</p>
             </div>
           </Card>
         </Link>
@@ -496,22 +504,26 @@ export default function ConsumerDashboard() {
         steps={[
           {
             title: "Welcome to PeraPin!",
-            description: "Your offline payment wallet is ready. Here's a quick tour of how everything works.",
+            description:
+              "Your offline payment wallet is ready. Here's a quick tour of how everything works.",
             icon: <Wallet className="size-7" />,
           },
           {
             title: "Your QR Payment Sticker",
-            description: "Print your QR sticker and attach it to your ID, wallet, or phone case. Merchants scan it to charge you.",
+            description:
+              "Print your QR sticker and attach it to your ID, wallet, or phone case. Merchants scan it to charge you.",
             icon: <QrCode className="size-7" />,
           },
           {
             title: "PIN-Protected Payments",
-            description: "When paying, you'll enter your 4-digit PIN on the merchant's phone. It's hashed locally and never transmitted raw.",
+            description:
+              "When paying, you'll enter your 4-digit PIN on the merchant's phone. It's hashed locally and never transmitted raw.",
             icon: <KeyRound className="size-7" />,
           },
           {
             title: "Fund Your Wallet",
-            description: "Use the Testnet Friendbot to add XLM to your wallet. Tap 'Fund Wallet' in Quick Actions to get started.",
+            description:
+              "Use the Testnet Friendbot to add XLM to your wallet. Tap 'Fund Wallet' in Quick Actions to get started.",
             icon: <Wallet className="size-7" />,
           },
         ]}
