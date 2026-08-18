@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, QrCode, ReceiptText, Settings, LogOut, Send } from "lucide-react";
+import { Home, QrCode, ReceiptText, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { toast } from "@/components/ui/toast";
@@ -11,9 +11,8 @@ import { setCachedValue, clearCachedValues } from "@/lib/use-cached-fetch";
 
 const links = [
   { href: "/consumer/dashboard", label: "Home", icon: Home },
-  { href: "/consumer/send", label: "Send", icon: Send },
   { href: "/consumer/qr", label: "Sticker", icon: QrCode },
-  { href: "/consumer/history", label: "History", icon: ReceiptText },
+  { href: "/consumer/history", label: "Transactions", icon: ReceiptText },
   { href: "/consumer/settings", label: "Settings", icon: Settings },
 ] as const;
 
@@ -78,7 +77,7 @@ export default function ConsumerLayout({ children }: { children: ReactNode }) {
       </header>
       <main className="mx-auto max-w-md px-5 py-5 pb-24">{children}</main>
       <nav className="fixed inset-x-0 bottom-0 z-20 border-t border-slate-200/70 bg-white/90 backdrop-blur-md">
-        <div className="mx-auto grid max-w-md grid-cols-5">
+        <div className="mx-auto grid max-w-md grid-cols-4">
           {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
