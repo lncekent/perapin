@@ -46,24 +46,26 @@ export function OnboardingOverlay({ steps, storageKey, onboardingCompleted, onCo
   }, []);
 
   // If server data arrives after initial render and says onboarding is done, hide immediately
+  // We sync localStorage here so subsequent navigations don't flash the modal.
   useEffect(() => {
     if (onboardingCompleted) {
-      setVisible(false);
-      // Also sync localStorage so future renders are instant
       localStorage.setItem(storageKey, "true");
     }
   }, [onboardingCompleted, storageKey]);
 
+  // Derive visibility: if server confirms completed, override state
+  const isVisible = visible && !onboardingCompleted;
+
   // Lock body scroll while visible
   useEffect(() => {
-    if (visible && mounted) {
+    if (isVisible && mounted) {
       const original = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = original;
       };
     }
-  }, [visible, mounted]);
+  }, [isVisible, mounted]);
 
   function dismiss() {
     // 1. Persist in localStorage for instant next-render check
@@ -90,7 +92,7 @@ export function OnboardingOverlay({ steps, storageKey, onboardingCompleted, onCo
     }
   }
 
-  if (!mounted || !visible) return null;
+  if (!mounted || !isVisible) return null;
 
   const step = steps[currentStep];
   const isLast = currentStep === steps.length - 1;
