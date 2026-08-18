@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
 import { StatusDialog } from "@/components/shared/StatusDialog";
-import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ExternalLink, Clock, Shield } from "lucide-react";
 import { formatBalance } from "@/lib/utils";
@@ -35,6 +34,13 @@ export default function MerchantResultPage() {
     router.replace("/merchant/scan");
   }
 
+  const truncatedHash = receipt.txHash
+    ? `${receipt.txHash.slice(0, 8)}…${receipt.txHash.slice(-8)}`
+    : "";
+  const truncatedWallet = receipt.consumerPublicKey
+    ? `${receipt.consumerPublicKey.slice(0, 6)}…${receipt.consumerPublicKey.slice(-6)}`
+    : "";
+
   return (
     <>
       <div className="animate-fade-up flex flex-col items-center py-16 text-center">
@@ -56,9 +62,9 @@ export default function MerchantResultPage() {
         successActionLabel="Accept another payment"
         onSuccessAction={finish}
       >
-        {/* Receipt card */}
-        <Card variant="surface" padding="md" className="space-y-4">
-          {/* Amount */}
+        {/* Compact receipt */}
+        <div className="space-y-4">
+          {/* Amount — hero element */}
           <div className="text-center">
             <p className="text-xs font-medium text-slate-500">Amount received</p>
             <p className="mt-1 text-4xl font-bold text-slate-900 tabular-nums">
@@ -67,7 +73,7 @@ export default function MerchantResultPage() {
             </p>
           </div>
 
-          {/* Details grid */}
+          {/* Compact details */}
           <div className="space-y-2 rounded-xl bg-slate-50 p-3">
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500">Status</span>
@@ -76,14 +82,16 @@ export default function MerchantResultPage() {
               </Badge>
             </div>
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-500">Network</span>
-              <span className="font-medium text-slate-700">Stellar Testnet</span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500">Time</span>
               <span className="flex items-center gap-1 font-medium text-slate-700">
                 <Clock className="size-3" aria-hidden="true" />
                 {receipt.timestamp ? new Date(receipt.timestamp).toLocaleTimeString() : "Just now"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-500">Consumer</span>
+              <span className="font-mono text-[11px] font-medium text-slate-700">
+                {truncatedWallet}
               </span>
             </div>
             <div className="flex items-center justify-between text-xs">
@@ -95,31 +103,17 @@ export default function MerchantResultPage() {
             </div>
           </div>
 
-          {/* Tx hash */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-medium text-slate-500">Transaction hash</p>
-            <p className="selectable rounded-lg bg-slate-50 p-2 font-mono text-[10px] break-all text-slate-600">
-              {receipt.txHash}
-            </p>
-            <a
-              target="_blank"
-              rel="noreferrer"
-              href={`https://stellar.expert/explorer/testnet/tx/${receipt.txHash}`}
-              className="text-brand-700 inline-flex items-center gap-1 text-xs font-semibold hover:underline"
-            >
-              View in Stellar Explorer
-              <ExternalLink className="size-3" aria-hidden="true" />
-            </a>
-          </div>
-
-          {/* Consumer */}
-          <div className="space-y-1.5">
-            <p className="text-xs font-medium text-slate-500">Consumer wallet</p>
-            <p className="selectable rounded-lg bg-slate-50 p-2 font-mono text-[10px] break-all text-slate-600">
-              {receipt.consumerPublicKey}
-            </p>
-          </div>
-        </Card>
+          {/* Explorer link — compact inline */}
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href={`https://stellar.expert/explorer/testnet/tx/${receipt.txHash}`}
+            className="text-brand-700 flex items-center justify-center gap-1.5 text-xs font-semibold hover:underline"
+          >
+            View on Stellar Explorer
+            <ExternalLink className="size-3" aria-hidden="true" />
+          </a>
+        </div>
 
         {/* Back to dashboard */}
         <Link

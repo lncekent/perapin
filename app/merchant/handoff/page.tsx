@@ -141,7 +141,7 @@ export default function MerchantHandoffPage() {
         {/* PIN dots */}
         <div
           aria-label={`${pin.length} of ${PIN_LENGTH} PIN digits entered`}
-          className="mb-8 flex justify-center gap-6"
+          className="mt-4 mb-8 flex justify-center gap-6"
         >
           {Array.from({ length: PIN_LENGTH }, (_, index) => (
             <span

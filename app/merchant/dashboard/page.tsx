@@ -31,6 +31,7 @@ import { toast } from "@/components/ui/toast";
 interface Profile {
   user: { businessName?: string; stellarPublicKey: string };
   balanceXlm: string;
+  onboardingCompleted: boolean;
 }
 
 interface Tx {
@@ -358,6 +359,7 @@ export default function MerchantDashboard() {
       {/* Onboarding Tour */}
       <OnboardingOverlay
         storageKey="perapin_onboarding_merchant_done"
+        onboardingCompleted={profile.onboardingCompleted}
         steps={[
           {
             title: "Welcome, Merchant!",

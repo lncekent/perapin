@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CircleAlert, Info, ArrowRight, CheckCircle2 } from "lucide-react";
+import { CircleAlert, Info, ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import Link from "next/link";
 
 interface PaymentContext {
   consumerPublicKey: string;
@@ -47,6 +48,14 @@ export default function MerchantAmountPage() {
 
   return (
     <div className="animate-fade-up space-y-5">
+      {/* Back */}
+      <Link
+        href="/merchant/scan"
+        className="mt-3 flex items-center gap-2 text-slate-500 hover:text-slate-900"
+      >
+        <ArrowLeft className="size-5" aria-hidden="true" />
+        <span>Back to scan</span>
+      </Link>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Enter sale amount</h1>
