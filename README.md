@@ -103,9 +103,9 @@ All users registered through the app have on-chain Stellar Testnet wallet activi
 
 ### 2. Mobile Responsive Design (375px Viewport)
 
-|                                                      Mobile Navigation                                                      |                                                           Merchant Payment Confirmation                                                           |
-| :-------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------: |
-| ![Mobile Navigation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785485973/Screenshot_2026-07-31_161803_yb6bqs.png) | ![Merchant Payment Confirmation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785487459/c1b4f578-784e-4c6f-b475-60ab8c71f1d8_1_aidbmh.png) |
+|                                                      Mobile Navigation                                                      |                                           Merchant Payment Confirmation                                            |
+| :-------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
+| ![Mobile Navigation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785485973/Screenshot_2026-07-31_161803_yb6bqs.png) | ![Merchant Payment Confirmation](https://res.cloudinary.com/dxatb3m2q/image/upload/v1787026688/image_4_mnksri.png) |
 
 ### 3. Analytics & Monitoring Setup
 
