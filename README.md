@@ -20,11 +20,11 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 | **GitHub Repository**        | [https://github.com/lncekent/perapin](https://github.com/lncekent/perapin)                                                             |
 | **Soroban Contract ID**      | `CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D`                                                                             |
 | **Stellar Expert Explorer**  | [View Contract on Explorer](https://stellar.expert/explorer/testnet/contract/CBEASRMFLJOTK6PVM6276THY26GVNYUXKDWF3JVPKGYEC63MUSQV5P3D) |
-| **Demo Video (Level 5)**     | [Full Product Walkthrough](https://drive.google.com/file/d/1r5L6b_jnhkwfCFQYWWhPHIVLqUQz5o8c/view?usp=sharing)                      |
-| **Pitch Deck / PPT**         | [PeraPin Pitch Deck](https://gamma.app/docs/PeraPin--2oy6znbc29jvq2a)                                       |
-| **User Onboarding Form**     | [Google Form — PeraPin User Form](https://forms.gle6XNfVAJjc8FEoGkNA)                                                              |
-| **User Data Export (Excel)** | [Download Excel Sheet](https://docs.google.com/spreadsheets/d/1xBl1il0xdkalw9VcqGwTQqdcfsF3NTfeuNrZIALtdQ8/edit?usp=sharing)                                          |
-| **Total Commits**            | 90+ meaningful commits                                                                                                                 |
+| **Demo Video (Level 5)**     | [Full Product Walkthrough](https://drive.google.com/file/d/1pLqzgYiWu2NxPXB8lxYQpVZZkGE_wpSJ/view?usp=drive_link)                      |
+| **Pitch Deck / PPT**         | [PeraPin Pitch Deck](https://gamma.app/docs/PeraPin--2oy6znbc29jvq2a)                                                                  |
+| **User Onboarding Form**     | [Google Form — PeraPin User Form](https://forms.gle6XNfVAJjc8FEoGkNA)                                                                  |
+| **User Data Export (Excel)** | [Download Excel Sheet](https://docs.google.com/spreadsheets/d/1xBl1il0xdkalw9VcqGwTQqdcfsF3NTfeuNrZIALtdQ8/edit?usp=sharing)           |
+| **Total Commits**            | 100+ meaningful commits                                                                                                                |
 
 ---
 
@@ -34,14 +34,14 @@ PeraPin enables consumers in informal micro-economies (sari-sari stores, school 
 
 We created a Google Form to systematically collect user details for onboarding:
 
-| Field                     | Type                           | Required |
-| ------------------------- | ------------------------------ | -------- |
-| Full Name                 | Short text                     | ✅       |
-| Email Address             | Email validation               | ✅       |
-| Role                      | Dropdown (Consumer / Merchant) | ✅       |
-| Stellar Wallet Address    | Short text                     | ✅       |
-| Rate the Product (1-5)    | Linear scale                   | ✅       |
-| Feedback / Comments       | Long text                      | Optional |
+| Field                  | Type                           | Required |
+| ---------------------- | ------------------------------ | -------- |
+| Full Name              | Short text                     | ✅       |
+| Email Address          | Email validation               | ✅       |
+| Role                   | Dropdown (Consumer / Merchant) | ✅       |
+| Stellar Wallet Address | Short text                     | ✅       |
+| Rate the Product (1-5) | Linear scale                   | ✅       |
+| Feedback / Comments    | Long text                      | Optional |
 
 📎 **Form Link:** [Click Here For Google Form Link](https://forms.gle/2GXmTu5GckQqVvVN9)
 
@@ -97,9 +97,9 @@ All users registered through the app have on-chain Stellar Testnet wallet activi
 
 ### 1. Product Screenshots
 
-|                                                      Consumer Dashboard                                                       |                                                       Merchant QR Scan                                                        |                                                           PIN Handoff Pad                                                           |
-| :---------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------: |
-| ![Consumer Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785486399/Screenshot_2026-07-31_162625_fvetbf.png) | ![Merchant Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785486686/Screenshot_2026-07-31_163109_xmjaoc.png) | ![PIN Handoff Pad](https://res.cloudinary.com/dxatb3m2q/image/upload/v1785487459/c1de0000-420a-4434-83a4-d17a472f99a6_1_ph2l00.png) |
+|                                                      Consumer Dashboard                                                       |                                                       Merchant QR Scan                                                        |                                           PIN Handoff Pad                                            |
+| :---------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------: |
+| ![Consumer Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1787026478/Screenshot_2026-08-18_121114_l23ko9.png) | ![Merchant Screenshot](https://res.cloudinary.com/dxatb3m2q/image/upload/v1787026477/Screenshot_2026-08-18_121007_msoyre.png) | ![PIN Handoff Pad](https://res.cloudinary.com/dxatb3m2q/image/upload/v1787026688/image_5_hs4dqt.png) |
 
 ### 2. Mobile Responsive Design (375px Viewport)
 
@@ -125,15 +125,15 @@ All users registered through the app have on-chain Stellar Testnet wallet activi
 
 Newly Feedback collected securely via `/feedback` into Supabase:
 
-| User       | Role     | Rating     | Comment / Feedback                                                                                                                                                           |
-| ---------- | -------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Student 1  | Consumer | ⭐⭐⭐⭐⭐ | _"Nice, smooth sending money. The potential is great!"_                                                                                                                      |
-| Student 2  | Consumer | ⭐⭐⭐⭐⭐ | _"Easy to use, suggestion for improvement like other bank apps maybe use MFA and additional personal details not just email."_ |
-| Merchant 1 | Merchant | ⭐⭐⭐☆☆   | _"The system is good but it need more navigation so the user can't get lose when going back to the main dashboard."_                                                                                                                                       |
-| Student 3  | Consumer | ⭐⭐⭐⭐⭐ | _"Nice, smooth sending money. The potential is great!"_                                                                                                                                                 |
+| User       | Role     | Rating     | Comment / Feedback                                                                                                                                                                                     |
+| ---------- | -------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Student 1  | Consumer | ⭐⭐⭐⭐⭐ | _"Nice, smooth sending money. The potential is great!"_                                                                                                                                                |
+| Student 2  | Consumer | ⭐⭐⭐⭐⭐ | _"Easy to use, suggestion for improvement like other bank apps maybe use MFA and additional personal details not just email."_                                                                         |
+| Merchant 1 | Merchant | ⭐⭐⭐☆☆   | _"The system is good but it need more navigation so the user can't get lose when going back to the main dashboard."_                                                                                   |
+| Student 3  | Consumer | ⭐⭐⭐⭐⭐ | _"Nice, smooth sending money. The potential is great!"_                                                                                                                                                |
 | Student 4  | Consumer | ⭐⭐⭐⭐⭐ | _"PeraPin has a clean, fast, and user-friendly interface. One area that could be improved is customer support — adding a Help Center, FAQ, or Contact Support section would improve user confidence."_ |
-| Student 5  | Consumer | ⭐⭐⭐⭐⭐ | _"Great app! The UI looks super clean. Try adding comma separators to the balance so it will be easier to read for regular users."_ |
-| Student 6  | Consumer | ⭐⭐⭐⭐☆ | _"All goods yung UI and UX, simple lang and ganda ng color combination. Yung balance kala ko clickable, and yung PIN textbox d bagay. Maangas sana kung pwede i-hide yung balance mo."_ |
+| Student 5  | Consumer | ⭐⭐⭐⭐⭐ | _"Great app! The UI looks super clean. Try adding comma separators to the balance so it will be easier to read for regular users."_                                                                    |
+| Student 6  | Consumer | ⭐⭐⭐⭐☆  | _"All goods yung UI and UX, simple lang and ganda ng color combination. Yung balance kala ko clickable, and yung PIN textbox d bagay. Maangas sana kung pwede i-hide yung balance mo."_                |
 
 ---
 
@@ -203,56 +203,56 @@ Below are the specific product improvements made in direct response to user feed
 **Source:** Student 5 (Consumer, 5★)
 **Action Taken:** Added `formatBalance()` utility with `Intl.NumberFormat` for comma-separated display across all balance views (dashboards, topup, handoff, result, history). Also added hide/show balance toggle with eye icon (persists in localStorage).
 
-| Commit                                                                                                                                           | Description                                                                  |
-| ------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
-| [`feat(dashboard): eye toggle implemented with money format`](https://github.com/lncekent/perapin/commit/e31cfe8)                                | Balance hide/show toggle + comma formatting on consumer & merchant dashboard |
-| [`feat(consumer): consumer page updated with eye toggle, archive, account info and topup`](https://github.com/lncekent/perapin/commit/4413fd8)   | Consumer pages fully updated with formatted balances                         |
-| [`feat(result): format balance`](https://github.com/lncekent/perapin/commit/8bb703c)                                                            | Merchant result page amount now comma-formatted                              |
+| Commit                                                                                                                                         | Description                                                                  |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [`feat(dashboard): eye toggle implemented with money format`](https://github.com/lncekent/perapin/commit/e31cfe8)                              | Balance hide/show toggle + comma formatting on consumer & merchant dashboard |
+| [`feat(consumer): consumer page updated with eye toggle, archive, account info and topup`](https://github.com/lncekent/perapin/commit/4413fd8) | Consumer pages fully updated with formatted balances                         |
+| [`feat(result): format balance`](https://github.com/lncekent/perapin/commit/8bb703c)                                                           | Merchant result page amount now comma-formatted                              |
 
 ### Issue #7: PIN input feels wrong + balance looks clickable + "Scan to Pay" confusion
 
 **Source:** Student 6 (Consumer, 4★)
 **Action Taken:** Replaced standard textbox PIN inputs with OTP-style individual square boxes. Made balance card clickable (navigates to history). Restyled "Scan to Pay" from pill-button to plain label. Member Since bug fixed (was showing current date instead of actual registration date).
 
-| Commit                                                                                                                                         | Description                                                              |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Commit                                                                                                                                         | Description                                                                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | [`feat(consumer): consumer page updated with eye toggle, archive, account info and topup`](https://github.com/lncekent/perapin/commit/4413fd8) | OTP-style PIN boxes, clickable balance, QR label restyle, member-since fix |
-| [`feat(handoff): implemented handoff spacing fix`](https://github.com/lncekent/perapin/commit/e86dbee)                                        | Handoff page PIN pad spacing improvement                                 |
+| [`feat(handoff): implemented handoff spacing fix`](https://github.com/lncekent/perapin/commit/e86dbee)                                         | Handoff page PIN pad spacing improvement                                   |
 
 ### Issue #8: Missing Help Center / FAQ / Support pages
 
 **Source:** Student 4 (Consumer, 5★)
 **Action Taken:** Created dedicated FAQ/Help, About PeraPin, Privacy Policy, and Terms of Service pages. Added footer navigation across all public pages with links to each. Added Privacy/Terms consent checkbox on registration.
 
-| Commit                                                                                                                        | Description                                                         |
-| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| [`feat(faq): adding faq page for perapins frequent questions and help`](https://github.com/lncekent/perapin/commit/5a7db55)   | FAQ page with 10 expandable Q&A items                               |
-| [`feat(about): adding about page for perapin core functionality`](https://github.com/lncekent/perapin/commit/9f26b9b)         | About page with mission, tech stack, how-it-works                   |
-| [`feat(privacy): added privacy page for users consent`](https://github.com/lncekent/perapin/commit/a93576c)                   | Privacy Policy page                                                 |
-| [`feat(terms): adding terms page for perapins terms and conditions`](https://github.com/lncekent/perapin/commit/2833ec9)      | Terms of Service page                                               |
-| [`feat(register): added terms and condition checkbox in register`](https://github.com/lncekent/perapin/commit/6f57416)        | Consent checkbox on consumer & merchant registration                |
-| [`refr(footer): footer refactored to reusable`](https://github.com/lncekent/perapin/commit/cc5f1e5)                          | Shared footer component with navigation to all pages                |
+| Commit                                                                                                                      | Description                                          |
+| --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| [`feat(faq): adding faq page for perapins frequent questions and help`](https://github.com/lncekent/perapin/commit/5a7db55) | FAQ page with 10 expandable Q&A items                |
+| [`feat(about): adding about page for perapin core functionality`](https://github.com/lncekent/perapin/commit/9f26b9b)       | About page with mission, tech stack, how-it-works    |
+| [`feat(privacy): added privacy page for users consent`](https://github.com/lncekent/perapin/commit/a93576c)                 | Privacy Policy page                                  |
+| [`feat(terms): adding terms page for perapins terms and conditions`](https://github.com/lncekent/perapin/commit/2833ec9)    | Terms of Service page                                |
+| [`feat(register): added terms and condition checkbox in register`](https://github.com/lncekent/perapin/commit/6f57416)      | Consent checkbox on consumer & merchant registration |
+| [`refr(footer): footer refactored to reusable`](https://github.com/lncekent/perapin/commit/cc5f1e5)                         | Shared footer component with navigation to all pages |
 
 ### Issue #9: Merchant missing settings and account info
 
 **Source:** Internal testing + Student 6 feedback
 **Action Taken:** Added merchant Settings page with account info display, wallet copy button, editable full name, and business name rename. Added Settings to merchant bottom navigation (4 tabs).
 
-| Commit                                                                                                                              | Description                                                    |
-| ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [`feat(layout): settings added`](https://github.com/lncekent/perapin/commit/3fd9d4a)                                               | Settings tab added to merchant bottom nav                      |
-| [`feat(settings): account info added with controls`](https://github.com/lncekent/perapin/commit/1401bce)                            | Merchant settings page with account info + rename business     |
-| [`feat(api): business name and fullname updated with control`](https://github.com/lncekent/perapin/commit/557e52b)                  | API routes for updating business name and full name            |
+| Commit                                                                                                             | Description                                                |
+| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| [`feat(layout): settings added`](https://github.com/lncekent/perapin/commit/3fd9d4a)                               | Settings tab added to merchant bottom nav                  |
+| [`feat(settings): account info added with controls`](https://github.com/lncekent/perapin/commit/1401bce)           | Merchant settings page with account info + rename business |
+| [`feat(api): business name and fullname updated with control`](https://github.com/lncekent/perapin/commit/557e52b) | API routes for updating business name and full name        |
 
 ### Issue #10: Transaction history needs archive/filter
 
 **Source:** Internal testing during usability review
 **Action Taken:** Added archive functionality to both consumer and merchant history. Users can archive transactions to keep their active history clean, and restore them anytime. Added filter tabs (All/Sent/Received/Archived for consumer, All/Received/Archived for merchant).
 
-| Commit                                                                                                                                         | Description                                                           |
-| ---------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| [`feat(history): archive implemented with filter`](https://github.com/lncekent/perapin/commit/be4b31d)                                        | Merchant history with archive/restore + filter tabs                   |
-| [`feat(consumer): consumer page updated with eye toggle, archive, account info and topup`](https://github.com/lncekent/perapin/commit/4413fd8) | Consumer history archive with All/Sent/Received/Archived filter tabs  |
+| Commit                                                                                                                                         | Description                                                          |
+| ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| [`feat(history): archive implemented with filter`](https://github.com/lncekent/perapin/commit/be4b31d)                                         | Merchant history with archive/restore + filter tabs                  |
+| [`feat(consumer): consumer page updated with eye toggle, archive, account info and topup`](https://github.com/lncekent/perapin/commit/4413fd8) | Consumer history archive with All/Sent/Received/Archived filter tabs |
 
 ---
 
