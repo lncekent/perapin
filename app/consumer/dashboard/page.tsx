@@ -9,6 +9,8 @@ import {
   KeyRound,
   AlertTriangle,
   Lock,
+  Send,
+  ArrowDownToLine,
   ArrowUpRight,
   ShieldCheck,
   ShieldAlert,
@@ -248,6 +250,42 @@ export default function ConsumerDashboard() {
           </div>
         </Card>
       </Link>
+
+      {/* Send / Receive primary actions */}
+      <div className="grid grid-cols-2 gap-3">
+        <Link href="/consumer/send" className="group">
+          <Card
+            variant="surface"
+            padding="sm"
+            interactive
+            className="flex h-full items-center gap-3"
+          >
+            <div className="bg-brand-600 flex size-11 items-center justify-center rounded-2xl text-white shadow-sm">
+              <Send className="size-5" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900">Send Money</p>
+              <p className="text-[11px] text-slate-400">To another PeraPin user</p>
+            </div>
+          </Card>
+        </Link>
+        <Link href="/consumer/qr" className="group">
+          <Card
+            variant="surface"
+            padding="sm"
+            interactive
+            className="flex h-full items-center gap-3"
+          >
+            <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-11 items-center justify-center rounded-2xl ring-1">
+              <ArrowDownToLine className="size-5" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-slate-900">Receive</p>
+              <p className="text-[11px] text-slate-400">Show your QR sticker</p>
+            </div>
+          </Card>
+        </Link>
+      </div>
 
       {/* Quick Stats Row */}
       <section>
