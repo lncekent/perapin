@@ -12,7 +12,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Full name must be a string" }, { status: 400 });
     }
     if (fullName.trim().length > 100) {
-      return NextResponse.json({ error: "Full name must be 100 characters or less" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Full name must be 100 characters or less" },
+        { status: 400 },
+      );
     }
 
     const supabase = createClient(

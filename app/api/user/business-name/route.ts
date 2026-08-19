@@ -12,7 +12,10 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Business name is required" }, { status: 400 });
     }
     if (businessName.trim().length > 50) {
-      return NextResponse.json({ error: "Business name must be 50 characters or less" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Business name must be 50 characters or less" },
+        { status: 400 },
+      );
     }
 
     const supabase = createClient(

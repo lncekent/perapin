@@ -50,10 +50,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!/^G[A-Z2-7]{55}$/.test(recipientPublicKey)) {
-      return NextResponse.json(
-        { error: "Invalid recipient Stellar public key." },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: "Invalid recipient Stellar public key." }, { status: 400 });
     }
 
     // Block sending to yourself.
@@ -85,8 +82,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           error: "WALLET_LOCKED",
-          message:
-            "Your wallet is locked for 15 minutes after 3 consecutive failed PIN attempts.",
+          message: "Your wallet is locked for 15 minutes after 3 consecutive failed PIN attempts.",
         },
         { status: 423 },
       );
