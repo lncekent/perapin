@@ -269,16 +269,24 @@ export default function ConsumerRegisterPage() {
                     id="agree"
                     checked={agreed}
                     onChange={(e) => setAgreed(e.target.checked)}
-                    className="mt-1 size-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                    className="text-brand-600 focus:ring-brand-500 mt-1 size-4 rounded border-slate-300"
                     required
                   />
                   <label htmlFor="agree" className="text-xs leading-relaxed text-slate-600">
                     I agree to the{" "}
-                    <Link href="/privacy" target="_blank" className="text-brand-700 font-medium hover:underline">
+                    <Link
+                      href="/privacy"
+                      target="_blank"
+                      className="text-brand-700 font-medium hover:underline"
+                    >
                       Privacy Policy
                     </Link>{" "}
                     and{" "}
-                    <Link href="/terms" target="_blank" className="text-brand-700 font-medium hover:underline">
+                    <Link
+                      href="/terms"
+                      target="_blank"
+                      className="text-brand-700 font-medium hover:underline"
+                    >
                       Terms of Service
                     </Link>
                   </label>

@@ -24,6 +24,9 @@ export function Footer() {
               Product
             </h4>
             <nav className="flex flex-col gap-1.5 text-xs text-slate-500">
+              <Link href="/#use-cases" className="hover:text-brand-600 transition-colors">
+                Use Cases
+              </Link>
               <Link href="/#how-it-works" className="hover:text-brand-600 transition-colors">
                 How it Works
               </Link>
@@ -98,8 +101,8 @@ export function Footer() {
         <div className="mt-8 border-t border-slate-200/70 pt-6 text-center">
           <p className="text-[10px] leading-relaxed text-slate-400">
             Built by{" "}
-            <span className="font-semibold text-slate-600">Lance Kent Geoffrey B. Magollado</span>{" "}
-            · MIT License · 2026
+            <span className="font-semibold text-slate-600">Lance Kent Geoffrey B. Magollado</span> ·
+            MIT License · 2026
           </p>
           <p className="mt-1 text-[10px] text-slate-300">
             Stellar Testnet · Contract: CBEAS...V5P3D

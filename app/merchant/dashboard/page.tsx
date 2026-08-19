@@ -159,7 +159,8 @@ export default function MerchantDashboard() {
           )}
           <div className="mt-3 flex items-center gap-2">
             <p className="text-brand-200/80 font-mono text-[11px]">
-              {profile.user.stellarPublicKey.slice(0, 6)}····{profile.user.stellarPublicKey.slice(-6)}
+              {profile.user.stellarPublicKey.slice(0, 6)}····
+              {profile.user.stellarPublicKey.slice(-6)}
             </p>
             <button
               type="button"
@@ -168,10 +169,14 @@ export default function MerchantDashboard() {
                 e.preventDefault();
                 await copyToClipboard(profile.user.stellarPublicKey);
                 setWalletCopied(true);
-                toast.add({ title: "Address copied", description: "Wallet address copied to clipboard.", type: "success" });
+                toast.add({
+                  title: "Address copied",
+                  description: "Wallet address copied to clipboard.",
+                  type: "success",
+                });
                 setTimeout(() => setWalletCopied(false), 2000);
               }}
-              className="inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-[10px] font-medium text-brand-100 hover:bg-white/20 transition-colors"
+              className="text-brand-100 inline-flex items-center gap-1 rounded-lg bg-white/10 px-2 py-1 text-[10px] font-medium transition-colors hover:bg-white/20"
               aria-label="Copy wallet address"
             >
               {walletCopied ? <Check className="size-3" /> : <Copy className="size-3" />}
@@ -368,17 +373,20 @@ export default function MerchantDashboard() {
           },
           {
             title: "Scan Consumer's QR",
-            description: "Tap 'Accept Payment' and scan the consumer's QR sticker using your phone camera.",
+            description:
+              "Tap 'Accept Payment' and scan the consumer's QR sticker using your phone camera.",
             icon: <ScanLine className="size-7" />,
           },
           {
             title: "Enter Amount & Handoff",
-            description: "Type the payment amount, then hand your phone to the consumer to enter their PIN.",
+            description:
+              "Type the payment amount, then hand your phone to the consumer to enter their PIN.",
             icon: <ReceiptText className="size-7" />,
           },
           {
             title: "Instant Settlement",
-            description: "Once the PIN is verified, funds settle on the Stellar blockchain in seconds. Check your history anytime.",
+            description:
+              "Once the PIN is verified, funds settle on the Stellar blockchain in seconds. Check your history anytime.",
             icon: <TrendingUp className="size-7" />,
           },
         ]}

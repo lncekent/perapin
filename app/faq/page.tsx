@@ -56,7 +56,7 @@ const faqItems = [
   {
     question: "How do merchants get started?",
     answer:
-      "Register as a merchant with your business name and email. Once verified, use the \"Accept Payment\" button on your dashboard to scan consumer QR codes. No special hardware or card terminal needed — just your smartphone camera.",
+      'Register as a merchant with your business name and email. Once verified, use the "Accept Payment" button on your dashboard to scan consumer QR codes. No special hardware or card terminal needed — just your smartphone camera.',
   },
 ];
 
@@ -108,7 +108,7 @@ export default function FAQPage() {
                 <ChevronDown
                   className={cn(
                     "size-5 shrink-0 text-slate-400 transition-transform duration-200",
-                    openIndex === index && "rotate-180 text-brand-600",
+                    openIndex === index && "text-brand-600 rotate-180",
                   )}
                   aria-hidden="true"
                 />
@@ -120,7 +120,7 @@ export default function FAQPage() {
                 )}
               >
                 <div className="overflow-hidden">
-                  <p className="border-t border-slate-100 px-4 pb-4 pt-3 text-sm leading-relaxed text-slate-600">
+                  <p className="border-t border-slate-100 px-4 pt-3 pb-4 text-sm leading-relaxed text-slate-600">
                     {item.answer}
                   </p>
                 </div>

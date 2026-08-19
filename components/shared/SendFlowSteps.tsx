@@ -24,7 +24,7 @@ export function SendFlowSteps({ current }: { current: 1 | 2 | 3 | 4 }) {
                   className={cn(
                     "flex size-7 items-center justify-center rounded-full text-[10px] font-bold ring-1",
                     done && "bg-brand-100 text-brand-700 ring-brand-200",
-                    active && "bg-brand-600 text-white ring-brand-600",
+                    active && "bg-brand-600 ring-brand-600 text-white",
                     !done && !active && "bg-white text-slate-400 ring-slate-200",
                   )}
                 >

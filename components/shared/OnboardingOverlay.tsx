@@ -35,8 +35,15 @@ function shouldShowOnboarding(storageKey: string, onboardingCompleted?: boolean)
   return true;
 }
 
-export function OnboardingOverlay({ steps, storageKey, onboardingCompleted, onComplete }: OnboardingOverlayProps) {
-  const [visible, setVisible] = useState(() => shouldShowOnboarding(storageKey, onboardingCompleted));
+export function OnboardingOverlay({
+  steps,
+  storageKey,
+  onboardingCompleted,
+  onComplete,
+}: OnboardingOverlayProps) {
+  const [visible, setVisible] = useState(() =>
+    shouldShowOnboarding(storageKey, onboardingCompleted),
+  );
   const [currentStep, setCurrentStep] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -112,7 +119,7 @@ export function OnboardingOverlay({ steps, storageKey, onboardingCompleted, onCo
       />
 
       {/* Card */}
-      <div className="animate-fade-up relative w-full max-w-[340px] overflow-hidden rounded-3xl bg-white shadow-2xl shadow-black/30 ring-1 ring-black/5">
+      <div className="animate-fade-up relative w-full max-w-[340px] overflow-hidden rounded-3xl bg-white shadow-2xl ring-1 shadow-black/30 ring-black/5">
         {/* Top accent bar */}
         <div className="from-brand-500 via-brand-400 to-brand-600 h-1.5 bg-gradient-to-r" />
 

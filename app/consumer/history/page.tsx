@@ -84,7 +84,11 @@ export default function ConsumerHistoryPage() {
     const updated = archivedIds.filter((id) => id !== txId);
     setArchivedIds(updated);
     localStorage.setItem("perapin_consumer_archived_txs", JSON.stringify(updated));
-    toast.add({ title: "Restored", description: "Transaction restored to history.", type: "success" });
+    toast.add({
+      title: "Restored",
+      description: "Transaction restored to history.",
+      type: "success",
+    });
   }
 
   // Compute stats
@@ -279,13 +283,23 @@ export default function ConsumerHistoryPage() {
         </Card>
       ) : filteredTransactions.length === 0 ? (
         filter === "archived" ? (
-          <Card variant="ghost" padding="lg" className="flex flex-col items-center py-8 text-center">
+          <Card
+            variant="ghost"
+            padding="lg"
+            className="flex flex-col items-center py-8 text-center"
+          >
             <Archive className="size-8 text-slate-300" aria-hidden="true" />
             <p className="mt-3 text-sm font-medium text-slate-500">No archived transactions</p>
-            <p className="mt-1 text-xs text-slate-400">Transactions you archive will appear here.</p>
+            <p className="mt-1 text-xs text-slate-400">
+              Transactions you archive will appear here.
+            </p>
           </Card>
         ) : (
-          <Card variant="ghost" padding="lg" className="flex flex-col items-center py-8 text-center">
+          <Card
+            variant="ghost"
+            padding="lg"
+            className="flex flex-col items-center py-8 text-center"
+          >
             <p className="text-sm font-medium text-slate-500">
               No {filter === "sent" ? "sent" : "received"} transactions found.
             </p>
@@ -351,7 +365,7 @@ export default function ConsumerHistoryPage() {
                       {filter === "archived" ? (
                         <button
                           onClick={() => restoreTx(tx.id)}
-                          className="ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-brand-50 hover:text-brand-600"
+                          className="hover:bg-brand-50 hover:text-brand-600 ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors"
                           aria-label="Restore transaction"
                         >
                           <ArchiveRestore className="size-4" />

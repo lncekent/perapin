@@ -156,7 +156,10 @@ export default function MerchantSettingsPage() {
 
       // Update the cached profile
       if (profile) {
-        setCachedValue("me", { ...profile, user: { ...profile.user, businessName: data.businessName } });
+        setCachedValue("me", {
+          ...profile,
+          user: { ...profile.user, businessName: data.businessName },
+        });
       }
       await refetch();
       setNewBusinessName(null);

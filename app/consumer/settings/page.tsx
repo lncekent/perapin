@@ -310,10 +310,22 @@ export default function ConsumerSettingsPage() {
                       containerClassName="gap-3"
                     >
                       <InputOTPGroup className="gap-3">
-                        <InputOTPSlot index={0} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
-                        <InputOTPSlot index={1} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
-                        <InputOTPSlot index={2} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
-                        <InputOTPSlot index={3} className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold" />
+                        <InputOTPSlot
+                          index={0}
+                          className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold"
+                        />
+                        <InputOTPSlot
+                          index={1}
+                          className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold"
+                        />
+                        <InputOTPSlot
+                          index={2}
+                          className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold"
+                        />
+                        <InputOTPSlot
+                          index={3}
+                          className="size-12 rounded-xl border-2 border-slate-200 text-xl font-bold"
+                        />
                       </InputOTPGroup>
                     </InputOTP>
                   </div>

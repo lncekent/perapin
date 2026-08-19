@@ -290,7 +290,7 @@ export default function ConsumerDashboard() {
             </div>
             <div>
               <p className="text-sm font-bold text-slate-900">Receive</p>
-              <p className="text-[11px] hidden lg:block text-slate-400">Show your QR sticker</p>
+              <p className="hidden text-[11px] text-slate-400 lg:block">Show your QR sticker</p>
             </div>
           </Card>
         </Link>

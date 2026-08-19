@@ -149,7 +149,8 @@ export default function ConsumerSendConfirmPage() {
         <div className="text-center">
           <p className="text-xs font-medium text-slate-500">You are sending</p>
           <p className="mt-1 text-4xl font-bold text-slate-900 tabular-nums">
-            {formatBalance(amount)} <span className="text-lg font-semibold text-slate-500">XLM</span>
+            {formatBalance(amount)}{" "}
+            <span className="text-lg font-semibold text-slate-500">XLM</span>
           </p>
         </div>
         <div className="flex items-center gap-3 rounded-xl bg-slate-50 p-3">

@@ -65,8 +65,7 @@ export default function ConsumerSendAmountPage() {
     router.push("/consumer/send/confirm");
   }
 
-  if (!sendContext)
-    return <p className="py-12 text-center text-slate-500">Loading recipient…</p>;
+  if (!sendContext) return <p className="py-12 text-center text-slate-500">Loading recipient…</p>;
 
   return (
     <div className="animate-fade-up space-y-5">
@@ -78,7 +77,7 @@ export default function ConsumerSendAmountPage() {
         <ArrowLeft className="size-5" aria-hidden="true" />
         <span>Back to dashboard</span>
       </Link>
-      
+
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-900">How much to send?</h1>
