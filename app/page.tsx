@@ -17,11 +17,72 @@ import {
   Star,
   CheckCircle2,
   QrCode,
+  UtensilsCrossed,
+  Printer,
+  Bus,
+  AlertTriangle,
+  XCircle,
+  Sparkles,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Footer } from "@/components/shared/Footer";
+
+const useCases = [
+  {
+    icon: UtensilsCrossed,
+    badge: "University Canteen · Lunch Rush",
+    title: "Dead Phone Right Before Lunch",
+    quote:
+      "My battery hit 0% during a 3-hour lecture. The canteen line was 25 students deep and I had zero cash in my wallet.",
+    problem:
+      "Traditional e-wallets (GCash, Maya) cannot open without battery. Without exact cash, you either hold up the line or skip your meal.",
+    solution:
+      "Scan the static QR sticker on your school ID lanyard, punch your 4-digit PIN on the canteen operator's phone, and lunch is paid in 5 seconds.",
+    chips: ["0% Battery Needed", "~5s Settlement", "ID Lanyard Sticker"],
+    iconBg: "bg-amber-50 text-amber-600 ring-amber-100",
+  },
+  {
+    icon: Printer,
+    badge: "Campus Print Shop · 5 Mins to Class",
+    title: "Concrete Basement Dead Zones",
+    quote:
+      "Rushing to print our 30-page research paper in the university basement copy center where mobile cellular signal is completely dead.",
+    problem:
+      "Thick concrete walls block 4G/5G mobile signals. Digital payment apps get stuck on infinite loading spinners, risking missed deadlines.",
+    solution:
+      "Zero cellular data required from you. The shop's connected device scans your sticker and pulls payment directly via Stellar Soroban contract.",
+    chips: ["Zero Mobile Data", "Works in Dead Zones", "No Timeout Lag"],
+    iconBg: "bg-blue-50 text-blue-600 ring-blue-100",
+  },
+  {
+    icon: Store,
+    badge: "Sari-Sari Store · Quick Errands",
+    title: 'The "Walang Barya" (No Exact Change) Crisis',
+    quote:
+      "Tried paying with a ₱500 bill for a ₱15 bottle of water. The store had no change float and I left my heavy wallet at home.",
+    problem:
+      "Sari-sari store owners constantly run out of small coin float ('barya'). Transactions stall and large bills get turned away.",
+    solution:
+      "Tap the QR sticker on your tumbler or keychain. Merchant inputs exact ₱15, you enter your PIN, and payment clears with sub-cent fees.",
+    chips: ["Exact Amounts", "Keychains & Tumblers", "Zero Coin Hassle"],
+    iconBg: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+  },
+  {
+    icon: Bus,
+    badge: "PUVs, Jeepneys & Daily Transit",
+    title: "Snatch-Proof, Fast Transit Fares",
+    quote:
+      "Taking out a ₱40,000 smartphone in a tightly packed jeepney or tricycle just to scan a payment QR code is a major theft risk.",
+    problem:
+      "Flashing expensive smartphones in crowded public vehicles invites snatching and accidental drops, while fumbling for coins delays the ride.",
+    solution:
+      "Keep your phone safely zipped away. The driver or conductor scans the sticker on your bag strap or wristband. Safe, discreet, and fast.",
+    chips: ["Phone Stays in Bag", "Snatch-Proof", "Hands-Free Transit"],
+    iconBg: "bg-sky-50 text-sky-600 ring-sky-100",
+  },
+];
 
 const features = [
   {
@@ -179,11 +240,14 @@ export default function LandingPage() {
           </div>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#how-it-works" className="hover:text-brand-600 transition-colors">
-              How it Works
+            <a href="#use-cases" className="hover:text-brand-600 transition-colors">
+              Use Cases
             </a>
             <a href="#features" className="hover:text-brand-600 transition-colors">
               Features
+            </a>
+            <a href="#how-it-works" className="hover:text-brand-600 transition-colors">
+              How it Works
             </a>
             <a href="#security" className="hover:text-brand-600 transition-colors">
               Security
@@ -286,8 +350,197 @@ export default function LandingPage() {
         </motion.div>
       </section>
 
+      {/* ===== REAL LIFE USE CASES & PROBLEM TACKLED ===== */}
+      <section
+        id="use-cases"
+        className="scroll-mt-20 border-t border-slate-200/70 bg-white/80 px-6 py-16 md:py-24"
+      >
+        <div className="mx-auto max-w-md md:max-w-4xl">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.4 }}
+            className="mb-12 text-center"
+          >
+            <div className="text-brand-600 mb-3 inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
+              Real-World Scenarios
+            </div>
+            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 md:text-3xl">
+              Built for the moments everyday digital wallets fail
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-slate-500">
+              Traditional e-wallets lock you out when your phone dies, runs out of data, or loses
+              signal. Here is how PeraPin rescues real everyday micro-transactions where regular
+              apps leave you stranded.
+            </p>
+          </motion.div>
+
+          {/* Friction vs Solution Comparison Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+            className="shadow-soft mb-12 overflow-hidden rounded-3xl border border-slate-200 bg-white"
+          >
+            <div className="grid grid-cols-1 divide-y divide-slate-200 md:grid-cols-2 md:divide-x md:divide-y-0">
+              {/* The Breakdown */}
+              <div className="space-y-4 bg-slate-50/60 p-6 md:p-8">
+                <div className="inline-flex items-center gap-2 rounded-full border border-rose-200/80 bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-700">
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  The Everyday Digital Wallet Friction
+                </div>
+                <h3 className="text-base font-bold text-slate-900 md:text-lg">
+                  The Consumer-Device Dependency Bottleneck
+                </h3>
+                <p className="text-xs leading-relaxed text-slate-500">
+                  GCash and Maya require your phone to be charged, connected, and unlocked in
+                  crowded queues.
+                </p>
+                <ul className="space-y-2.5 pt-1 text-xs text-slate-600">
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-rose-500" />
+                    <span>
+                      <strong>0% Battery:</strong> Phone dies before lunch or during commute —
+                      locking you out of your money completely.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-rose-500" />
+                    <span>
+                      <strong>No Mobile Signal / Data:</strong> Basement copy centers, concrete
+                      lecture halls, or remote spots cause timeout errors.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-rose-500" />
+                    <span>
+                      <strong>Theft & Snatching:</strong> Flashing expensive smartphones in packed
+                      public transport invites crime.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+
+              {/* The PeraPin Solution */}
+              <div className="bg-brand-50/25 space-y-4 p-6 md:p-8">
+                <div className="border-brand-200/80 bg-brand-50 text-brand-700 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  The PeraPin Merchant-Pull Advantage
+                </div>
+                <h3 className="text-base font-bold text-slate-900 md:text-lg">
+                  Zero Power, Zero Data, Zero App on Consumer Side
+                </h3>
+                <p className="text-xs leading-relaxed text-slate-500">
+                  We flip the model: the merchant’s device handles blockchain submission while your
+                  raw PIN stays secure.
+                </p>
+                <ul className="space-y-2.5 pt-1 text-xs text-slate-600">
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
+                    <span>
+                      <strong>Permanent Static QR:</strong> Carry a waterproof sticker on your ID,
+                      lanyard, or keychain. Costs pennies to print.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
+                    <span>
+                      <strong>Client-Hashed 4-Digit PIN:</strong> Consumer punches their PIN on
+                      merchant screen; raw PIN never leaves browser.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 flex-shrink-0 text-emerald-600" />
+                    <span>
+                      <strong>On-Chain Atomic Settlement:</strong> Soroban smart contract verifies
+                      hash and transfers funds in ~5 seconds.
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* 4 Real Life Scenario Cards */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            {useCases.map((uc, i) => (
+              <motion.div
+                key={uc.title}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.35, delay: i * 0.08 }}
+              >
+                <Card
+                  variant="raised"
+                  padding="none"
+                  className="flex h-full flex-col justify-between overflow-hidden border-slate-200/90"
+                >
+                  <div className="space-y-4 p-6 md:p-7">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className={`rounded-2xl p-3 ring-1 ${uc.iconBg}`}>
+                          <uc.icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <span className="block text-[11px] font-semibold tracking-wider text-slate-400 uppercase">
+                            {uc.badge}
+                          </span>
+                          <h3 className="text-base font-bold text-slate-900">{uc.title}</h3>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Situational Quote */}
+                    <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-3.5">
+                      <p className="text-xs leading-relaxed text-slate-600 italic">
+                        &ldquo;{uc.quote}&rdquo;
+                      </p>
+                    </div>
+
+                    {/* Problem vs Fix Breakdown */}
+                    <div className="space-y-2.5 text-xs">
+                      <div className="flex items-start gap-2 text-slate-600">
+                        <span className="mt-0.5 inline-flex flex-shrink-0 items-center justify-center rounded-md border border-rose-100 bg-rose-50 px-1.5 py-0.5 text-[10px] font-bold text-rose-600">
+                          The Friction
+                        </span>
+                        <p className="leading-relaxed text-slate-500">{uc.problem}</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-slate-600">
+                        <span className="border-brand-100 bg-brand-50 text-brand-700 mt-0.5 inline-flex flex-shrink-0 items-center justify-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold">
+                          PeraPin Fix
+                        </span>
+                        <p className="leading-relaxed font-medium text-slate-700">{uc.solution}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Card Footer with Chips */}
+                  <div className="flex flex-wrap items-center gap-2 border-t border-slate-100 bg-slate-50/60 px-6 py-3.5">
+                    {uc.chips.map((chip) => (
+                      <span
+                        key={chip}
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-200/80 bg-white px-2.5 py-0.5 text-[10px] font-medium text-slate-600 shadow-2xs"
+                      >
+                        <CheckCircle2 className="text-brand-500 h-3 w-3" />
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ===== FEATURES SECTION ===== */}
-      <section id="features" className="border-t border-slate-200/70 bg-white px-6 py-16 md:py-20">
+      <section
+        id="features"
+        className="scroll-mt-20 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
+      >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -330,7 +583,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== HOW IT WORKS ===== */}
-      <section id="how-it-works" className="border-t border-slate-200/70 px-6 py-16 md:py-20">
+      <section
+        id="how-it-works"
+        className="scroll-mt-20 border-t border-slate-200/70 px-6 py-16 md:py-20"
+      >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -429,7 +685,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== SECURITY & TRUST ===== */}
-      <section id="security" className="border-t border-slate-200/70 bg-white px-6 py-16 md:py-20">
+      <section
+        id="security"
+        className="scroll-mt-20 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
+      >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -562,7 +821,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== TESTIMONIALS ===== */}
-      <section id="testimonials" className="border-t border-slate-200/70 px-6 py-16 md:py-20">
+      <section
+        id="testimonials"
+        className="scroll-mt-20 border-t border-slate-200/70 px-6 py-16 md:py-20"
+      >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
