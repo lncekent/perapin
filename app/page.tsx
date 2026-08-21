@@ -28,6 +28,7 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Footer } from "@/components/shared/Footer";
+import { Navigation } from "@/components/shared/Navigation";
 
 const useCases = [
   {
@@ -198,72 +199,8 @@ const stats = [
 export default function LandingPage() {
   return (
     <div className="bg-brand-wash min-h-screen font-sans text-slate-900">
-      {/* ===== HEADER ===== */}
-      <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 px-6 py-4 backdrop-blur-md">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <svg className="h-9 w-9 flex-shrink-0" viewBox="0 0 32 32" fill="none">
-              <defs>
-                <linearGradient id="landing-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#3b6af5" />
-                  <stop offset="100%" stopColor="#1e40af" />
-                </linearGradient>
-              </defs>
-              <rect width="32" height="32" rx="9" fill="url(#landing-logo-grad)" />
-              <rect
-                x="0.5"
-                y="0.5"
-                width="31"
-                height="31"
-                rx="8.5"
-                stroke="white"
-                strokeOpacity="0.2"
-              />
-              <text
-                x="50%"
-                y="50%"
-                dominantBaseline="central"
-                textAnchor="middle"
-                fill="white"
-                fontSize="18"
-                fontWeight="bold"
-              >
-                ₱
-              </text>
-            </svg>
-            <div>
-              <span className="block text-lg font-bold tracking-tight text-slate-900">PeraPin</span>
-              <span className="-mt-0.5 block font-mono text-[10px] tracking-[0.2em] text-slate-400">
-                SOROBAN PAY
-              </span>
-            </div>
-          </div>
-
-          <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-            <a href="#use-cases" className="hover:text-brand-600 transition-colors">
-              Use Cases
-            </a>
-            <a href="#features" className="hover:text-brand-600 transition-colors">
-              Features
-            </a>
-            <a href="#how-it-works" className="hover:text-brand-600 transition-colors">
-              How it Works
-            </a>
-            <a href="#security" className="hover:text-brand-600 transition-colors">
-              Security
-            </a>
-            <a href="#testimonials" className="hover:text-brand-600 transition-colors">
-              Feedback
-            </a>
-          </nav>
-
-          <Link href="/login">
-            <Button variant="secondary" size="sm">
-              Sign in
-            </Button>
-          </Link>
-        </div>
-      </header>
+      {/* NAVIGATION SECTION */}
+      <Navigation />
 
       {/* ===== HERO SECTION ===== */}
       <section className="relative overflow-hidden px-6 py-16 md:py-24">
@@ -353,7 +290,7 @@ export default function LandingPage() {
       {/* ===== REAL LIFE USE CASES & PROBLEM TACKLED ===== */}
       <section
         id="use-cases"
-        className="scroll-mt-20 border-t border-slate-200/70 bg-white/80 px-6 py-16 md:py-24"
+        className="scroll-mt-15 border-t border-slate-200/70 bg-white/80 px-6 py-16 md:py-24"
       >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
@@ -539,7 +476,7 @@ export default function LandingPage() {
       {/* ===== FEATURES SECTION ===== */}
       <section
         id="features"
-        className="scroll-mt-20 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
+        className="scroll-mt-15 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
       >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
@@ -585,7 +522,7 @@ export default function LandingPage() {
       {/* ===== HOW IT WORKS ===== */}
       <section
         id="how-it-works"
-        className="scroll-mt-20 border-t border-slate-200/70 px-6 py-16 md:py-20"
+        className="scroll-mt-15 border-t border-slate-200/70 px-6 py-16 md:py-20"
       >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
@@ -687,7 +624,7 @@ export default function LandingPage() {
       {/* ===== SECURITY & TRUST ===== */}
       <section
         id="security"
-        className="scroll-mt-20 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
+        className="scroll-mt-15 border-t border-slate-200/70 bg-white px-6 py-16 md:py-20"
       >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
@@ -823,7 +760,7 @@ export default function LandingPage() {
       {/* ===== TESTIMONIALS ===== */}
       <section
         id="testimonials"
-        className="scroll-mt-20 border-t border-slate-200/70 px-6 py-16 md:py-20"
+        className="scroll-mt-15 border-t border-slate-200/70 px-6 py-16 md:py-20"
       >
         <div className="mx-auto max-w-md md:max-w-4xl">
           <motion.div
