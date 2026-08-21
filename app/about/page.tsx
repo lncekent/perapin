@@ -18,6 +18,7 @@ import {
   Wifi,
   WifiOff,
 } from "lucide-react";
+import { Navigation } from "@/components/shared/Navigation";
 
 export default function AboutPage() {
   const steps = [
@@ -56,6 +57,9 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* NAVIGATION SECTION */}
+      <Navigation />
+
       <div className="mx-auto max-w-2xl px-5 py-10">
         {/* Back link */}
         <Link
