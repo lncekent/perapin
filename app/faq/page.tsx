@@ -6,6 +6,7 @@ import { ChevronDown, ArrowLeft, HelpCircle, MessageSquare } from "lucide-react"
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { Footer } from "@/components/shared/Footer";
+import { Navigation } from "@/components/shared/Navigation";
 
 const faqItems = [
   {
@@ -68,89 +69,93 @@ export default function FAQPage() {
   }
 
   return (
-    <main className="bg-brand-wash flex min-h-screen flex-col items-center px-6 py-12">
-      <div className="w-full max-w-2xl space-y-8">
-        {/* Back link */}
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" /> Back to home
-        </Link>
+    <div className="min-h-screen">
+      {/* Navigation Bar */}
+      <Navigation />
+      <main className="bg-brand-wash flex min-h-screen flex-col items-center gap-10 px-6 pt-12">
+        <div className="w-full max-w-2xl space-y-8">
+          {/* Back link */}
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" /> Back to home
+          </Link>
 
-        {/* Header */}
-        <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <div className="bg-brand-100 flex size-12 items-center justify-center rounded-2xl">
-              <HelpCircle className="text-brand-600 size-6" aria-hidden="true" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
-                Frequently Asked Questions
-              </h1>
-              <p className="text-sm text-slate-500">
-                Everything you need to know about using PeraPin
-              </p>
+          {/* Header */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="bg-brand-100 flex size-12 items-center justify-center rounded-2xl">
+                <HelpCircle className="text-brand-600 size-6" aria-hidden="true" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+                  Frequently Asked Questions
+                </h1>
+                <p className="text-sm text-slate-500">
+                  Everything you need to know about using PeraPin
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* FAQ Items */}
-        <div className="space-y-3">
-          {faqItems.map((item, index) => (
-            <Card
-              key={index}
-              className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
-              onClick={() => toggle(index)}
-            >
-              <div className="flex items-center justify-between p-4">
-                <h2 className="pr-4 text-sm font-semibold text-slate-800">{item.question}</h2>
-                <ChevronDown
-                  className={cn(
-                    "size-5 shrink-0 text-slate-400 transition-transform duration-200",
-                    openIndex === index && "text-brand-600 rotate-180",
-                  )}
-                  aria-hidden="true"
-                />
-              </div>
-              <div
-                className={cn(
-                  "grid transition-all duration-200 ease-in-out",
-                  openIndex === index ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
-                )}
+          {/* FAQ Items */}
+          <div className="space-y-3">
+            {faqItems.map((item, index) => (
+              <Card
+                key={index}
+                className="cursor-pointer overflow-hidden transition-shadow hover:shadow-md"
+                onClick={() => toggle(index)}
               >
-                <div className="overflow-hidden">
-                  <p className="border-t border-slate-100 px-4 pt-3 pb-4 text-sm leading-relaxed text-slate-600">
-                    {item.answer}
-                  </p>
+                <div className="flex items-center justify-between p-4">
+                  <h2 className="pr-4 text-sm font-semibold text-slate-800">{item.question}</h2>
+                  <ChevronDown
+                    className={cn(
+                      "size-5 shrink-0 text-slate-400 transition-transform duration-200",
+                      openIndex === index && "text-brand-600 rotate-180",
+                    )}
+                    aria-hidden="true"
+                  />
                 </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        {/* Still have questions? */}
-        <Card className="p-6 text-center">
-          <div className="flex flex-col items-center gap-3">
-            <div className="bg-brand-50 flex size-12 items-center justify-center rounded-full">
-              <MessageSquare className="text-brand-600 size-5" aria-hidden="true" />
-            </div>
-            <h2 className="text-lg font-bold text-slate-900">Still have questions?</h2>
-            <p className="max-w-sm text-sm text-slate-500">
-              We&apos;d love to hear from you. Send us your feedback or questions and we&apos;ll get
-              back to you as soon as possible.
-            </p>
-            <Link
-              href="/feedback"
-              className="bg-brand-600 hover:bg-brand-700 mt-2 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-colors"
-            >
-              <MessageSquare className="size-4" aria-hidden="true" />
-              Send Feedback
-            </Link>
+                <div
+                  className={cn(
+                    "grid transition-all duration-200 ease-in-out",
+                    openIndex === index ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                  )}
+                >
+                  <div className="overflow-hidden">
+                    <p className="border-t border-slate-100 px-4 pt-3 pb-4 text-sm leading-relaxed text-slate-600">
+                      {item.answer}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
-        </Card>
-      </div>
-      <Footer />
-    </main>
+
+          {/* Still have questions? */}
+          <Card className="p-6 pb-10 text-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="bg-brand-50 flex size-12 items-center justify-center rounded-full">
+                <MessageSquare className="text-brand-600 size-5" aria-hidden="true" />
+              </div>
+              <h2 className="text-lg font-bold text-slate-900">Still have questions?</h2>
+              <p className="max-w-sm text-sm text-slate-500">
+                We&apos;d love to hear from you. Send us your feedback or questions and we&apos;ll
+                get back to you as soon as possible.
+              </p>
+              <Link
+                href="/feedback"
+                className="bg-brand-600 hover:bg-brand-700 mt-2 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+              >
+                <MessageSquare className="size-4" aria-hidden="true" />
+                Send Feedback
+              </Link>
+            </div>
+          </Card>
+        </div>
+        <Footer />
+      </main>
+    </div>
   );
 }
