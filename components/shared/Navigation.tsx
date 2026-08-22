@@ -7,7 +7,7 @@ export function Navigation() {
       {/* ===== HEADER ===== */}
       <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 px-6 py-4 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-2.5">
+          <a href="/" className="flex items-center gap-2.5">
             <svg className="h-9 w-9 flex-shrink-0" viewBox="0 0 32 32" fill="none">
               <defs>
                 <linearGradient id="landing-logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -43,7 +43,7 @@ export function Navigation() {
                 SOROBAN PAY
               </span>
             </div>
-          </div>
+          </a>
 
           <nav className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
             <a href="/#use-cases" className="hover:text-brand-600 transition-colors">
