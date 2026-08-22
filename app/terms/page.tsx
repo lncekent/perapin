@@ -1,10 +1,14 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Footer } from "@/components/shared/Footer";
+import { Navigation } from "@/components/shared/Navigation";
 
 export default function TermsOfServicePage() {
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Navigation */}
+      <Navigation />
+
       <div className="mx-auto max-w-2xl px-5 py-10">
         {/* Back link */}
         <Link
