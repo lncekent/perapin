@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { dbGetUserByPublicKey } from "@/lib/supabase";
 import { getAuthenticatedUser } from "@/lib/auth";
 
-/** Merchant-only QR lookup. It deliberately exposes no consumer PII. */
+/** Merchant-only QR lookup. Returns consumer identity for confirmation screen. */
 export async function GET(request: NextRequest) {
   const authUser = await getAuthenticatedUser();
   if (!authUser) return NextResponse.json({ error: "AUTH_REQUIRED" }, { status: 401 });
@@ -12,5 +12,9 @@ export async function GET(request: NextRequest) {
   const user = await dbGetUserByPublicKey(wallet);
   if (!user || user.role !== "consumer" || !user.pin_registered_at)
     return NextResponse.json({ error: "CONSUMER_NOT_FOUND" }, { status: 404 });
-  return NextResponse.json({ consumerPublicKey: user.stellar_public_key });
+  return NextResponse.json({
+    consumerPublicKey: user.stellar_public_key,
+    consumerName: user.full_name || null,
+    consumerEmail: user.email,
+  });
 }
