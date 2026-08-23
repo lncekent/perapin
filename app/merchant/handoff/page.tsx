@@ -11,6 +11,8 @@ const PIN_LENGTH = 4;
 const keypad = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "delete"];
 interface PaymentContext {
   consumerPublicKey: string;
+  consumerName?: string | null;
+  consumerEmail?: string;
   amountXlm: number;
 }
 
