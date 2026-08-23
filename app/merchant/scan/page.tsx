@@ -52,7 +52,11 @@ export default function MerchantScanPage() {
         );
       sessionStorage.setItem(
         "perapin_payment_context",
-        JSON.stringify({ consumerPublicKey: data.consumerPublicKey }),
+        JSON.stringify({
+          consumerPublicKey: data.consumerPublicKey,
+          consumerName: data.consumerName || null,
+          consumerEmail: data.consumerEmail,
+        }),
       );
       controls.current?.stop();
       router.push("/merchant/amount");
@@ -142,12 +146,19 @@ export default function MerchantScanPage() {
             <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
               3
             </span>
-            <span className="text-[10px] font-medium text-slate-400">PIN</span>
+            <span className="text-[10px] font-medium text-slate-400">Confirm</span>
           </div>
           <div className="h-px flex-1 bg-slate-200" />
           <div className="flex flex-1 flex-col items-center gap-1">
             <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
               4
+            </span>
+            <span className="text-[10px] font-medium text-slate-400">PIN</span>
+          </div>
+          <div className="h-px flex-1 bg-slate-200" />
+          <div className="flex flex-1 flex-col items-center gap-1">
+            <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
+              5
             </span>
             <span className="text-[10px] font-medium text-slate-400">Done</span>
           </div>
@@ -294,8 +305,8 @@ export default function MerchantScanPage() {
         <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
           <span className="font-semibold text-slate-700">Payment flow:</span> Scan sticker → Enter
-          amount → Hand phone to consumer → They type PIN → Payment settles on Stellar Testnet →
-          Both see confirmation.
+          amount → Confirm details → Hand phone to consumer → They type PIN → Payment settles on
+          Stellar Testnet → Both see confirmation.
         </p>
       </Card>
     </div>
