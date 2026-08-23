@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { CircleAlert, Info, ArrowRight, CheckCircle2, ArrowLeft } from "lucide-react";
+import { CircleAlert, Info, ArrowRight, CheckCircle2, ArrowLeft, User } from "lucide-react";
 import { useSessionStorageValue } from "@/hooks/use-session-storage";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,10 +10,13 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldGroup, FieldLabel, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { maskName, maskEmail, maskWallet } from "@/lib/mask";
 import Link from "next/link";
 
 interface PaymentContext {
   consumerPublicKey: string;
+  consumerName?: string | null;
+  consumerEmail?: string;
   amountXlm?: number;
 }
 
@@ -27,6 +30,12 @@ export default function MerchantAmountPage() {
   }, [paymentContext, router]);
 
   const consumer = paymentContext?.consumerPublicKey ?? "";
+  const consumerDisplay = paymentContext?.consumerName
+    ? maskName(paymentContext.consumerName)
+    : paymentContext?.consumerEmail
+      ? maskEmail(paymentContext.consumerEmail)
+      : null;
+
   function submit(e: FormEvent) {
     e.preventDefault();
     const value = Number(amount);
@@ -38,9 +47,14 @@ export default function MerchantAmountPage() {
       return setError("Enter a positive XLM amount with up to 7 decimal places.");
     sessionStorage.setItem(
       "perapin_payment_context",
-      JSON.stringify({ consumerPublicKey: consumer, amountXlm: value }),
+      JSON.stringify({
+        consumerPublicKey: consumer,
+        consumerName: paymentContext?.consumerName || null,
+        consumerEmail: paymentContext?.consumerEmail || "",
+        amountXlm: value,
+      }),
     );
-    router.push("/merchant/handoff");
+    router.push("/merchant/confirm");
   }
 
   if (!paymentContext)
@@ -64,7 +78,7 @@ export default function MerchantAmountPage() {
         </p>
       </div>
 
-      {/* Flow step indicator */}
+      {/* Flow step indicator — 5 steps, step 2 active */}
       <Card variant="ghost" padding="sm">
         <div className="flex items-center justify-between text-center">
           <div className="flex flex-1 flex-col items-center gap-1">
@@ -85,31 +99,40 @@ export default function MerchantAmountPage() {
             <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
               3
             </span>
-            <span className="text-[10px] font-medium text-slate-400">PIN</span>
+            <span className="text-[10px] font-medium text-slate-400">Confirm</span>
           </div>
           <div className="h-px flex-1 bg-slate-200" />
           <div className="flex flex-1 flex-col items-center gap-1">
             <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
               4
             </span>
+            <span className="text-[10px] font-medium text-slate-400">PIN</span>
+          </div>
+          <div className="h-px flex-1 bg-slate-200" />
+          <div className="flex flex-1 flex-col items-center gap-1">
+            <span className="flex size-7 items-center justify-center rounded-full bg-white text-[10px] font-bold text-slate-400 ring-1 ring-slate-200">
+              5
+            </span>
             <span className="text-[10px] font-medium text-slate-400">Done</span>
           </div>
         </div>
       </Card>
 
-      {/* Consumer sticker info */}
+      {/* Consumer identity card */}
       <Card variant="surface" padding="sm" className="flex items-center gap-3">
         <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-10 items-center justify-center rounded-xl ring-1">
-          <CheckCircle2 className="size-5" aria-hidden="true" />
+          <User className="size-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium text-slate-500">Consumer sticker verified</p>
-          <p className="truncate font-mono text-[11px] text-slate-700">
-            {consumer ? `${consumer.slice(0, 8)}…${consumer.slice(-6)}` : "…"}
+          {consumerDisplay && (
+            <p className="text-sm font-semibold text-slate-800">{consumerDisplay}</p>
+          )}
+          <p className="truncate font-mono text-[11px] text-slate-500">
+            {maskWallet(consumer)}
           </p>
         </div>
         <Badge variant="secondary" className="text-[10px]">
-          Active
+          Verified
         </Badge>
       </Card>
 
@@ -184,9 +207,8 @@ export default function MerchantAmountPage() {
       <Card variant="ghost" padding="sm" className="flex items-start gap-2.5">
         <Info className="text-brand-500 mt-0.5 size-4 flex-shrink-0" aria-hidden="true" />
         <p className="text-xs leading-relaxed text-slate-500">
-          <span className="font-semibold text-slate-700">Next step: </span> You&apos;ll hand your
-          phone to the consumer. They&apos;ll enter their 4-digit PIN to authorize this payment. The
-          PIN never leaves the browser.
+          <span className="font-semibold text-slate-700">Next step: </span> You&apos;ll review the
+          payment details before handing your phone to the consumer for PIN entry.
         </p>
       </Card>
     </div>
