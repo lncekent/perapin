@@ -25,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { formatBalance, copyToClipboard } from "@/lib/utils";
+import { getCounterpartyDisplay, formatTransactionDate } from "@/lib/mask";
 import { OnboardingOverlay } from "@/components/shared/OnboardingOverlay";
 import { toast } from "@/components/ui/toast";
 
@@ -39,6 +40,12 @@ interface Tx {
   stellar_tx_hash: string;
   amount_xlm: number;
   created_at: string;
+  direction: "sent" | "received";
+  counterparty: {
+    name: string | null;
+    email: string | null;
+    wallet: string;
+  };
 }
 
 export default function MerchantDashboard() {
@@ -254,35 +261,36 @@ export default function MerchantDashboard() {
           </Card>
         ) : (
           <Card variant="surface" padding="none" className="divide-y divide-slate-100">
-            {recentTx.map((tx) => (
-              <div key={tx.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="rounded-xl bg-green-50 p-2 text-green-600 ring-1 ring-green-100">
-                  <ArrowDownLeft className="h-4 w-4" aria-hidden="true" />
+            {recentTx.map((tx) => {
+              const { displayName, maskedWallet } = getCounterpartyDisplay(tx.counterparty);
+              return (
+                <div key={tx.id} className="flex items-center gap-3 px-4 py-3">
+                  <div className="rounded-xl bg-green-50 p-2 text-green-600 ring-1 ring-green-100">
+                    <ArrowDownLeft className="h-4 w-4" aria-hidden="true" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900">{displayName}</p>
+                    <p className="truncate text-[11px] text-slate-400">
+                      {maskedWallet} • {formatTransactionDate(tx.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex flex-shrink-0 flex-col items-end gap-0.5">
+                    <p className="text-sm font-bold text-green-600 tabular-nums">
+                      +{tx.amount_xlm.toFixed(2)} XLM
+                    </p>
+                    <a
+                      href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-brand-500 text-slate-300"
+                      aria-label="View on Stellar Explorer"
+                    >
+                      <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                    </a>
+                  </div>
                 </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-900">
-                    +{tx.amount_xlm.toFixed(2)} XLM
-                  </p>
-                  <p className="truncate text-[11px] text-slate-400">
-                    {new Date(tx.created_at).toLocaleDateString(undefined, {
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                </div>
-                <a
-                  href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-brand-500 text-slate-300"
-                  aria-label="View on Stellar Explorer"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-                </a>
-              </div>
-            ))}
+              );
+            })}
           </Card>
         )}
       </section>
