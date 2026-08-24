@@ -1,18 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowDownLeft, ReceiptText, ExternalLink, Archive, ArchiveRestore } from "lucide-react";
+import Link from "next/link";
+import {
+  ArrowDownLeft,
+  ReceiptText,
+  Archive,
+  ChevronRight,
+} from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { cn, formatBalance } from "@/lib/utils";
-import { toast } from "@/components/ui/toast";
+import { getCounterpartyDisplay, formatTransactionDate } from "@/lib/mask";
 
 interface Tx {
   id: string;
   stellar_tx_hash: string;
   amount_xlm: number;
+  status: string;
   created_at: string;
+  from_public_key: string;
+  to_public_key: string;
+  direction: "sent" | "received";
+  counterparty: {
+    name: string | null;
+    email: string | null;
+    wallet: string;
+  };
 }
 
 type FilterTab = "all" | "received" | "archived";
@@ -29,10 +43,6 @@ function getArchivedIds(): string[] {
   }
 }
 
-function setArchivedIds(ids: string[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
-}
-
 export default function MerchantHistoryPage() {
   const { data: txData } = useCachedFetch<{ transactions: Tx[] }>("transactions", async () => {
     const r = await fetch("/api/transactions");
@@ -42,34 +52,12 @@ export default function MerchantHistoryPage() {
   const loading = !txData;
 
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [archivedIds, setArchivedIdsState] = useState<string[]>(() => getArchivedIds());
-
-  function archiveTx(txId: string) {
-    const updated = [...archivedIds, txId];
-    setArchivedIdsState(updated);
-    setArchivedIds(updated);
-    toast.add({
-      title: "Transaction archived",
-      description: "You can find it in the Archived tab.",
-      type: "success",
-    });
-  }
-
-  function unarchiveTx(txId: string) {
-    const updated = archivedIds.filter((id) => id !== txId);
-    setArchivedIdsState(updated);
-    setArchivedIds(updated);
-    toast.add({
-      title: "Transaction restored",
-      description: "Moved back to your active payments.",
-      type: "success",
-    });
-  }
+  const archivedIds = getArchivedIds();
 
   const filteredTransactions = transactions.filter((tx) => {
     const isArchived = archivedIds.includes(tx.id);
     if (activeTab === "archived") return isArchived;
-    return !isArchived; // "all" and "received" both show non-archived
+    return !isArchived;
   });
 
   const total = filteredTransactions.reduce((sum, tx) => sum + Number(tx.amount_xlm), 0);
@@ -83,8 +71,8 @@ export default function MerchantHistoryPage() {
   return (
     <div className="animate-fade-up space-y-4">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Incoming payments</h1>
-        <p className="text-sm text-slate-500">Your confirmed Testnet settlements.</p>
+        <h1 className="text-2xl font-bold text-slate-900">Payment History</h1>
+        <p className="text-sm text-slate-500">Tap a payment to view full details.</p>
       </div>
 
       {/* Filter Tabs */}
@@ -106,9 +94,9 @@ export default function MerchantHistoryPage() {
       </div>
 
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-16 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
       ) : filteredTransactions.length === 0 ? (
@@ -126,77 +114,51 @@ export default function MerchantHistoryPage() {
           <p className="mt-1 text-sm text-slate-400">
             {activeTab === "archived"
               ? "Archived transactions will appear here."
-              : "Accept a payment to see your settlements appear here."}
+              : "Accept a payment to see your settlements here."}
           </p>
         </Card>
       ) : (
         <>
+          {/* Summary */}
           <Card variant="surface" padding="sm" className="flex items-center justify-between">
             <span className="text-sm text-slate-500">
               {filteredTransactions.length} payment{filteredTransactions.length === 1 ? "" : "s"}
             </span>
             <span className="text-sm font-bold text-slate-900 tabular-nums">
-              {formatBalance(total)} XLM total
+              {formatBalance(total)} XLM
             </span>
           </Card>
-          <div className="space-y-3">
+
+          {/* Compact Transaction List */}
+          <Card variant="surface" padding="none" className="divide-y divide-slate-100">
             {filteredTransactions.map((tx) => {
-              const isArchived = archivedIds.includes(tx.id);
+              const { displayName, maskedWallet } = getCounterpartyDisplay(tx.counterparty);
+
               return (
-                <Card key={tx.id} variant="surface" padding="sm">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-brand-50 text-brand-600 ring-brand-100 flex size-10 flex-shrink-0 items-center justify-center rounded-xl ring-1">
-                      <ArrowDownLeft className="size-5" aria-hidden="true" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <Badge variant="secondary">Received</Badge>
-                        <span className="truncate text-[11px] text-slate-400">
-                          {new Date(tx.created_at).toLocaleString()}
-                        </span>
-                      </div>
-                      <a
-                        href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="hover:text-brand-600 mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400"
-                      >
-                        {tx.stellar_tx_hash.slice(0, 10)}…{tx.stellar_tx_hash.slice(-6)}
-                        <ExternalLink className="size-3" aria-hidden="true" />
-                      </a>
-                    </div>
-                    <div className="flex flex-shrink-0 flex-col items-end gap-1">
-                      <p className="text-brand-700 text-sm font-bold tabular-nums">
-                        +{formatBalance(tx.amount_xlm)} XLM
-                      </p>
-                      <button
-                        onClick={() => (isArchived ? unarchiveTx(tx.id) : archiveTx(tx.id))}
-                        className={cn(
-                          "flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-medium transition-colors",
-                          isArchived
-                            ? "text-brand-600 hover:bg-brand-50"
-                            : "text-slate-400 hover:bg-slate-100 hover:text-slate-600",
-                        )}
-                        aria-label={isArchived ? "Restore transaction" : "Archive transaction"}
-                      >
-                        {isArchived ? (
-                          <>
-                            <ArchiveRestore className="size-3" />
-                            Restore
-                          </>
-                        ) : (
-                          <>
-                            <Archive className="size-3" />
-                            Archive
-                          </>
-                        )}
-                      </button>
-                    </div>
+                <Link
+                  key={tx.id}
+                  href={`/merchant/history/${tx.id}`}
+                  className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 active:bg-slate-100"
+                >
+                  <div className="flex size-9 flex-shrink-0 items-center justify-center rounded-xl bg-green-50 text-green-600 ring-1 ring-green-100">
+                    <ArrowDownLeft className="size-4" aria-hidden="true" />
                   </div>
-                </Card>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900">{displayName}</p>
+                    <p className="truncate text-[11px] text-slate-400">
+                      {maskedWallet} • {formatTransactionDate(tx.created_at)}
+                    </p>
+                  </div>
+                  <div className="flex flex-shrink-0 items-center gap-2">
+                    <p className="text-sm font-bold text-green-600 tabular-nums">
+                      +{formatBalance(tx.amount_xlm)}
+                    </p>
+                    <ChevronRight className="size-4 text-slate-300" aria-hidden="true" />
+                  </div>
+                </Link>
               );
             })}
-          </div>
+          </Card>
         </>
       )}
     </div>
