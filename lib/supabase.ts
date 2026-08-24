@@ -197,6 +197,18 @@ export async function dbRecordTransaction(
   return record;
 }
 
+export async function dbGetUsersByIds(ids: string[]): Promise<UserRecord[]> {
+  if (ids.length === 0) return [];
+  if (supabaseClient) {
+    const { data, error } = await supabaseClient.from("users").select("*").in("id", ids);
+    if (error || !data) return [];
+    return data as UserRecord[];
+  }
+  return ids
+    .map((id) => memoryStore.users.get(id))
+    .filter((u): u is UserRecord => u !== undefined);
+}
+
 export async function dbGetTransactionsForUser(publicKey: string): Promise<TransactionRecord[]> {
   if (supabaseClient) {
     const { data, error } = await supabaseClient

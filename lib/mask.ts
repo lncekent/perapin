@@ -73,3 +73,45 @@ export function getConsumerDisplayName(name: string | null, email: string): stri
   if (name && name.trim()) return maskName(name);
   return maskEmail(email);
 }
+
+/**
+ * Format a transaction date in GCash-style.
+ * "2026-08-24T14:32:00Z" → "Aug 24, 2026 • 10:32 PM"
+ */
+export function formatTransactionDate(isoString: string): string {
+  const date = new Date(isoString);
+  const datePart = date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timePart = date.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+  return `${datePart} • ${timePart}`;
+}
+
+/**
+ * Get the masked display for a transaction counterparty.
+ * Returns masked name if available, otherwise masked email, with masked wallet below.
+ */
+export function getCounterpartyDisplay(counterparty: {
+  name: string | null;
+  email: string | null;
+  wallet: string;
+}): { displayName: string; maskedWallet: string } {
+  let displayName: string;
+  if (counterparty.name && counterparty.name.trim()) {
+    displayName = maskName(counterparty.name);
+  } else if (counterparty.email) {
+    displayName = maskEmail(counterparty.email);
+  } else {
+    displayName = maskWallet(counterparty.wallet);
+  }
+  return {
+    displayName,
+    maskedWallet: maskWallet(counterparty.wallet),
+  };
+}
