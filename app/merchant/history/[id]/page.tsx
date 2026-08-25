@@ -129,7 +129,7 @@ export default function MerchantHistoryDetailPage() {
         <Card variant="ghost" padding="lg" className="text-center">
           <p className="font-semibold text-slate-700">Transaction not found</p>
           <p className="mt-1 text-sm text-slate-400">
-            This transaction may have been removed or doesn't exist.
+            This transaction may have been removed or doesn&apos;t exist.
           </p>
         </Card>
       </div>
