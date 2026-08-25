@@ -26,13 +26,14 @@ import {
   ArrowUpLeft,
   Eye,
   EyeOff,
-  Copy,
+  Copy, 
   Check,
+  ChevronRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { formatBalance, copyToClipboard } from "@/lib/utils";
+import { getCounterpartyDisplay, formatTransactionDate } from "@/lib/mask";
 import { OnboardingOverlay } from "@/components/shared/OnboardingOverlay";
 
 interface Profile {
@@ -51,6 +52,12 @@ interface Tx {
   amount_xlm: number;
   status: string;
   created_at: string;
+  direction: "sent" | "received";
+  counterparty: {
+    name: string | null;
+    email: string | null;
+    wallet: string;
+  };
 }
 
 const actions = [
@@ -86,26 +93,6 @@ const tips = [
   "After 3 wrong PIN attempts, your wallet locks for 15 minutes automatically.",
   "Fund your wallet with testnet XLM before making your first payment.",
 ];
-
-function formatRelativeDate(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHrs = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHrs < 24) return `${diffHrs}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function truncateKey(key: string): string {
-  if (!key || key.length < 12) return key;
-  return `${key.slice(0, 6)}…${key.slice(-4)}`;
-}
 
 export default function ConsumerDashboard() {
   const [walletCopied, setWalletCopied] = useState(false);
@@ -152,7 +139,7 @@ export default function ConsumerDashboard() {
     );
 
   const transactions = txData?.transactions ?? [];
-  const recentTxs = transactions.slice(0, 3);
+  const recentTxs = transactions.slice(0, 5);
   const totalSpent = transactions
     .filter((tx) => tx.from_public_key === profile.user.stellarPublicKey && tx.status === "success")
     .reduce((sum, tx) => sum + tx.amount_xlm, 0);
@@ -337,57 +324,67 @@ export default function ConsumerDashboard() {
             </Link>
           )}
         </div>
-        <Card variant="surface" padding="sm">
+        <Card variant="surface" padding="none">
           {recentTxs.length === 0 ? (
-            <div className="flex flex-col items-center py-6 text-center">
-              <Activity className="h-8 w-8 text-slate-300" aria-hidden="true" />
-              <p className="mt-2 text-sm font-medium text-slate-500">No transactions yet</p>
-              <p className="text-xs text-slate-400">Your payment history will appear here</p>
+            <div className="flex flex-col items-center py-8 text-center">
+              <div className="flex size-14 items-center justify-center rounded-2xl bg-slate-50 ring-1 ring-slate-100">
+                <Activity className="size-6 text-slate-300" aria-hidden="true" />
+              </div>
+              <p className="mt-3 text-sm font-medium text-slate-500">No transactions yet</p>
+              <p className="mt-0.5 text-xs text-slate-400">
+                Your payment history will appear here
+              </p>
             </div>
           ) : (
             <ul className="divide-y divide-slate-100">
               {recentTxs.map((tx) => {
-                const isSender = tx.from_public_key === profile.user.stellarPublicKey;
+                const isSent = tx.direction === "sent";
+                const { displayName, maskedWallet } = getCounterpartyDisplay(tx.counterparty);
+
                 return (
-                  <li key={tx.id} className="flex items-center gap-3 py-3 first:pt-1 last:pb-1">
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        isSender ? "bg-red-50 text-red-500" : "bg-green-50 text-green-500"
-                      }`}
+                  <li key={tx.id}>
+                    <Link
+                      href={`/consumer/history/${tx.id}`}
+                      className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 active:bg-slate-100"
                     >
-                      {isSender ? (
-                        <ArrowUpLeft className="h-4 w-4" aria-hidden="true" />
-                      ) : (
-                        <ArrowDownLeft className="h-4 w-4" aria-hidden="true" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-slate-800">
-                        {isSender ? "Sent to" : "Received from"}{" "}
-                        <span className="font-mono text-xs text-slate-500">
-                          {truncateKey(isSender ? tx.to_public_key : tx.from_public_key)}
-                        </span>
-                      </p>
-                      <p className="text-[10px] text-slate-400">
-                        {formatRelativeDate(tx.created_at)}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p
-                        className={`text-sm font-bold tabular-nums ${
-                          isSender ? "text-red-600" : "text-green-600"
+                      {/* Direction Icon */}
+                      <div
+                        className={`flex size-9 shrink-0 items-center justify-center rounded-xl ring-1 ${
+                          isSent
+                            ? "bg-slate-50 text-slate-600 ring-slate-200"
+                            : "bg-green-50 text-green-600 ring-green-100"
                         }`}
                       >
-                        {isSender ? "−" : "+"}
-                        {tx.amount_xlm.toFixed(2)}
-                      </p>
-                      <Badge
-                        variant={tx.status === "success" ? "default" : "destructive"}
-                        className="mt-0.5 text-[9px]"
-                      >
-                        {tx.status}
-                      </Badge>
-                    </div>
+                        {isSent ? (
+                          <ArrowUpLeft className="size-4" aria-hidden="true" />
+                        ) : (
+                          <ArrowDownLeft className="size-4" aria-hidden="true" />
+                        )}
+                      </div>
+
+                      {/* Name + wallet · date */}
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900">
+                          {displayName}
+                        </p>
+                        <p className="truncate text-[11px] text-slate-400">
+                          {maskedWallet} • {formatTransactionDate(tx.created_at)}
+                        </p>
+                      </div>
+
+                      {/* Amount + Chevron */}
+                      <div className="flex shrink-0 items-center gap-2">
+                        <p
+                          className={`text-sm font-bold tabular-nums ${
+                            isSent ? "text-slate-700" : "text-green-600"
+                          }`}
+                        >
+                          {isSent ? "−" : "+"}
+                          {formatBalance(String(tx.amount_xlm))}
+                        </p>
+                        <ChevronRight className="size-4 text-slate-300" aria-hidden="true" />
+                      </div>
+                    </Link>
                   </li>
                 );
               })}
