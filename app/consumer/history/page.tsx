@@ -6,20 +6,19 @@ import {
   ArrowUpRight,
   ArrowDownLeft,
   ReceiptText,
-  ExternalLink,
   TrendingDown,
   TrendingUp,
   Activity,
   Hash,
   CalendarDays,
   Archive,
-  ArchiveRestore,
+  ChevronRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatBalance } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
-import { toast } from "@/components/ui/toast";
+import { getCounterpartyDisplay, formatTransactionDate } from "@/lib/mask";
 
 interface Tx {
   id: string;
@@ -29,9 +28,17 @@ interface Tx {
   amount_xlm: number;
   status: string;
   created_at: string;
+  direction: "sent" | "received";
+  counterparty: {
+    name: string | null;
+    email: string | null;
+    wallet: string;
+  };
 }
 
 type FilterType = "all" | "sent" | "received" | "archived";
+
+const STORAGE_KEY = "perapin_consumer_archived_txs";
 
 function getDateGroup(dateStr: string): string {
   const date = new Date(dateStr);
@@ -46,50 +53,23 @@ function getDateGroup(dateStr: string): string {
 
 export default function ConsumerHistoryPage() {
   const [filter, setFilter] = useState<FilterType>("all");
-  const [archivedIds, setArchivedIds] = useState<string[]>(() => {
+  const [archivedIds] = useState<string[]>(() => {
     if (typeof window === "undefined") return [];
     try {
-      const stored = localStorage.getItem("perapin_consumer_archived_txs");
+      const stored = localStorage.getItem(STORAGE_KEY);
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
     }
   });
 
-  const { data: profile } = useCachedFetch<{ user: { stellarPublicKey: string } }>(
-    "me",
-    async () => {
-      const r = await fetch("/api/user/me");
-      return r.json();
-    },
-  );
   const { data: txData } = useCachedFetch<{ transactions: Tx[] }>("transactions", async () => {
     const r = await fetch("/api/transactions");
     return r.json();
   });
 
-  const wallet = profile?.user.stellarPublicKey ?? "";
-  const transactions = txData?.transactions ?? [];
+  const transactions = useMemo(() => txData?.transactions ?? [], [txData]);
   const loading = !txData;
-
-  // Archive / Restore functions
-  function archiveTx(txId: string) {
-    const updated = [...archivedIds, txId];
-    setArchivedIds(updated);
-    localStorage.setItem("perapin_consumer_archived_txs", JSON.stringify(updated));
-    toast.add({ title: "Archived", description: "Transaction moved to archive.", type: "success" });
-  }
-
-  function restoreTx(txId: string) {
-    const updated = archivedIds.filter((id) => id !== txId);
-    setArchivedIds(updated);
-    localStorage.setItem("perapin_consumer_archived_txs", JSON.stringify(updated));
-    toast.add({
-      title: "Restored",
-      description: "Transaction restored to history.",
-      type: "success",
-    });
-  }
 
   // Compute stats
   const stats = useMemo(() => {
@@ -99,7 +79,7 @@ export default function ConsumerHistoryPage() {
     let receivedCount = 0;
 
     transactions.forEach((tx) => {
-      if (tx.from_public_key === wallet) {
+      if (tx.direction === "sent") {
         totalSent += Number(tx.amount_xlm);
         sentCount++;
       } else {
@@ -116,16 +96,16 @@ export default function ConsumerHistoryPage() {
       sentCount,
       receivedCount,
     };
-  }, [transactions, wallet]);
+  }, [transactions]);
 
   // Filter transactions
   const filteredTransactions = useMemo(() => {
     if (filter === "archived") return transactions.filter((tx) => archivedIds.includes(tx.id));
     const nonArchived = transactions.filter((tx) => !archivedIds.includes(tx.id));
     if (filter === "all") return nonArchived;
-    if (filter === "sent") return nonArchived.filter((tx) => tx.from_public_key === wallet);
-    return nonArchived.filter((tx) => tx.from_public_key !== wallet);
-  }, [transactions, wallet, filter, archivedIds]);
+    if (filter === "sent") return nonArchived.filter((tx) => tx.direction === "sent");
+    return nonArchived.filter((tx) => tx.direction === "received");
+  }, [transactions, filter, archivedIds]);
 
   // Group by date
   const groupedTransactions = useMemo(() => {
@@ -156,7 +136,7 @@ export default function ConsumerHistoryPage() {
     <div className="animate-fade-up space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-slate-900">Payment history</h1>
-        <p className="text-sm text-slate-500">Your confirmed PeraPin payments.</p>
+        <p className="text-sm text-slate-500">Tap a payment to view full details.</p>
       </div>
 
       {/* Summary Stats */}
@@ -266,9 +246,9 @@ export default function ConsumerHistoryPage() {
 
       {/* Transaction List */}
       {loading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-20 animate-pulse rounded-3xl bg-slate-200" />
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-16 animate-pulse rounded-2xl bg-slate-200" />
           ))}
         </div>
       ) : transactions.length === 0 ? (
@@ -308,81 +288,67 @@ export default function ConsumerHistoryPage() {
       ) : (
         <div className="space-y-4">
           {groupedTransactions.map((group) => (
-            <div key={group.label} className="space-y-2.5">
+            <div key={group.label} className="space-y-2">
               <div className="flex items-center gap-2 px-1">
                 <CalendarDays className="size-3.5 text-slate-400" aria-hidden="true" />
                 <p className="text-xs font-semibold tracking-wider text-slate-400 uppercase">
                   {group.label}
                 </p>
               </div>
-              {group.txs.map((tx) => {
-                const sent = tx.from_public_key === wallet;
-                return (
-                  <Card key={tx.id} variant="surface" padding="sm">
-                    <div className="flex items-center gap-3">
+              <Card variant="surface" padding="none" className="divide-y divide-slate-100">
+                {group.txs.map((tx) => {
+                  const sent = tx.direction === "sent";
+                  const { displayName, maskedWallet } = getCounterpartyDisplay(tx.counterparty);
+
+                  return (
+                    <Link
+                      key={tx.id}
+                      href={`/consumer/history/${tx.id}`}
+                      className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50 active:bg-slate-100"
+                    >
                       <div
                         className={cn(
-                          "flex size-10 flex-shrink-0 items-center justify-center rounded-xl ring-1",
+                          "flex size-9 flex-shrink-0 items-center justify-center rounded-xl ring-1",
                           sent
-                            ? "bg-slate-50 text-slate-500 ring-slate-100"
-                            : "bg-brand-50 text-brand-600 ring-brand-100",
+                            ? "bg-slate-50 text-slate-600 ring-slate-200"
+                            : "bg-green-50 text-green-600 ring-green-100",
                         )}
                       >
                         {sent ? (
-                          <ArrowUpRight className="size-5" aria-hidden="true" />
+                          <ArrowUpRight className="size-4" aria-hidden="true" />
                         ) : (
-                          <ArrowDownLeft className="size-5" aria-hidden="true" />
+                          <ArrowDownLeft className="size-4" aria-hidden="true" />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <Badge variant={sent ? "outline" : "secondary"}>
+                          <p className="truncate text-sm font-semibold text-slate-900">
+                            {displayName}
+                          </p>
+                          <Badge variant={sent ? "outline" : "secondary"} className="shrink-0">
                             {sent ? "Sent" : "Received"}
                           </Badge>
-                          <span className="truncate text-[11px] text-slate-400">
-                            {new Date(tx.created_at).toLocaleString()}
-                          </span>
                         </div>
-                        <a
-                          href={`https://stellar.expert/explorer/testnet/tx/${tx.stellar_tx_hash}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="hover:text-brand-600 mt-1 inline-flex items-center gap-1 font-mono text-[11px] text-slate-400"
-                        >
-                          {tx.stellar_tx_hash.slice(0, 10)}…{tx.stellar_tx_hash.slice(-6)}
-                          <ExternalLink className="size-3" aria-hidden="true" />
-                        </a>
+                        <p className="truncate text-[11px] text-slate-400">
+                          {maskedWallet} • {formatTransactionDate(tx.created_at)}
+                        </p>
                       </div>
-                      <p
-                        className={cn(
-                          "flex-shrink-0 text-sm font-bold tabular-nums",
-                          sent ? "text-slate-900" : "text-brand-700",
-                        )}
-                      >
-                        {sent ? "−" : "+"}
-                        {formatBalance(tx.amount_xlm)} XLM
-                      </p>
-                      {filter === "archived" ? (
-                        <button
-                          onClick={() => restoreTx(tx.id)}
-                          className="hover:bg-brand-50 hover:text-brand-600 ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors"
-                          aria-label="Restore transaction"
+                      <div className="flex flex-shrink-0 items-center gap-2">
+                        <p
+                          className={cn(
+                            "text-sm font-bold tabular-nums",
+                            sent ? "text-slate-700" : "text-green-600",
+                          )}
                         >
-                          <ArchiveRestore className="size-4" />
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => archiveTx(tx.id)}
-                          className="ml-2 flex size-8 flex-shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
-                          aria-label="Archive transaction"
-                        >
-                          <Archive className="size-4" />
-                        </button>
-                      )}
-                    </div>
-                  </Card>
-                );
-              })}
+                          {sent ? "−" : "+"}
+                          {formatBalance(tx.amount_xlm)}
+                        </p>
+                        <ChevronRight className="size-4 text-slate-300" aria-hidden="true" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </Card>
             </div>
           ))}
         </div>
