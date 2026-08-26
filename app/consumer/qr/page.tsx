@@ -25,9 +25,10 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { cn, copyToClipboard } from "@/lib/utils";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { toast } from "@/components/ui/toast";
+import { maskName } from "@/lib/mask";
 
 interface Profile {
-  user: { stellarPublicKey: string };
+  user: { stellarPublicKey: string; fullName: string | null };
 }
 
 const HOW_TO_USE_STEPS = [
@@ -71,6 +72,12 @@ export default function ConsumerQrPage() {
     return d;
   });
   const wallet = profile?.user.stellarPublicKey ?? "";
+  const fullName = profile?.user.fullName ?? "";
+  const maskedDisplayName = fullName ? maskName(fullName) : "";
+  // Show more characters for the sticker (first 6 + last 6) for better visual weight
+  const maskedWalletAddress = wallet
+    ? wallet.slice(0, 6) + "••••••••••••••••••" + wallet.slice(-6)
+    : "";
 
   useEffect(() => {
     if (!wallet) return;
@@ -136,6 +143,12 @@ export default function ConsumerQrPage() {
               Scan to Pay
             </span>
           </div>
+          {/* Masked name display */}
+          {maskedDisplayName && (
+            <p className="text-center text-2xl font-semibold tracking-wide text-white/90">
+              {maskedDisplayName}
+            </p>
+          )}
           <div className="mx-auto w-full max-w-[260px] rounded-2xl bg-white p-3 shadow-lg">
             {wallet ? (
               <canvas ref={canvas} className="block h-auto w-full" />
@@ -143,8 +156,9 @@ export default function ConsumerQrPage() {
               <div className="aspect-square w-full animate-pulse rounded bg-slate-200" />
             )}
           </div>
-          <p className="selectable text-brand-100 rounded-xl bg-black/20 p-3 font-mono text-xs break-all">
-            {wallet || "…"}
+          {/* Masked wallet address */}
+          <p className="text-brand-100 rounded-xl bg-black/20 p-3 text-center font-mono text-xs tracking-wider">
+            {maskedWalletAddress || "…"}
           </p>
         </div>
       </Card>
