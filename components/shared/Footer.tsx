@@ -1,6 +1,35 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function Footer() {
+  const pathname = usePathname();
+  const [activeHash, setActiveHash] = useState<string>("");
+
+  // Sync hash for product section links
+  useEffect(() => {
+    const syncHash = () => {
+      setActiveHash(window.location.hash);
+    };
+
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, []);
+
+  const isActiveRoute = (href: string) => {
+    // For hash links (e.g. /#use-cases)
+    if (href.startsWith("/#")) {
+      const hash = href.replace("/", "");
+      return pathname === "/" && activeHash === hash;
+    }
+    // For page links (e.g. /about, /faq)
+    return pathname === href;
+  };
+
   return (
     <footer className="border-t border-slate-200/70 bg-slate-50 px-6 py-10">
       <div className="mx-auto max-w-md md:max-w-4xl">
@@ -24,19 +53,59 @@ export function Footer() {
               Product
             </h4>
             <nav className="flex flex-col gap-1.5 text-xs text-slate-500">
-              <Link href="/#use-cases" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/#use-cases"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/#use-cases")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 Use Cases
               </Link>
-              <Link href="/#how-it-works" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/#how-it-works"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/#how-it-works")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 How it Works
               </Link>
-              <Link href="/#features" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/#features"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/#features")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 Features
               </Link>
-              <Link href="/#security" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/#security"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/#security")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 Security
               </Link>
-              <Link href="/feedback" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/feedback"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/feedback")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 Submit Feedback
               </Link>
             </nav>
@@ -81,16 +150,42 @@ export function Footer() {
               Company
             </h4>
             <nav className="flex flex-col gap-1.5 text-xs text-slate-500">
-              <Link href="/about" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/about"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/about") ? "text-brand-600 font-semibold" : "hover:text-brand-600",
+                )}
+              >
                 About PeraPin
               </Link>
-              <Link href="/faq" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/faq"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/faq") ? "text-brand-600 font-semibold" : "hover:text-brand-600",
+                )}
+              >
                 FAQ / Help
               </Link>
-              <Link href="/privacy" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/privacy"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/privacy")
+                    ? "text-brand-600 font-semibold"
+                    : "hover:text-brand-600",
+                )}
+              >
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-brand-600 transition-colors">
+              <Link
+                href="/terms"
+                className={cn(
+                  "transition-colors",
+                  isActiveRoute("/terms") ? "text-brand-600 font-semibold" : "hover:text-brand-600",
+                )}
+              >
                 Terms of Service
               </Link>
             </nav>
