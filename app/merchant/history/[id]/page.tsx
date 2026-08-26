@@ -164,9 +164,8 @@ export default function MerchantHistoryDetailPage() {
       {/* GCash-style paragraph receipt */}
       <Card variant="surface" padding="md">
         <p className="text-sm leading-relaxed text-slate-700">
-          You have received{" "}
-          <span className="font-bold text-slate-900">{formattedAmount} XLM</span> from{" "}
-          <span className="font-bold text-slate-900">{displayName}</span> on{" "}
+          You have received <span className="font-bold text-slate-900">{formattedAmount} XLM</span>{" "}
+          from <span className="font-bold text-slate-900">{displayName}</span> on{" "}
           <span className="font-medium text-slate-800">{formattedDate}</span>.
         </p>
         <p className="mt-3 text-sm leading-relaxed text-slate-700">
@@ -176,7 +175,11 @@ export default function MerchantHistoryDetailPage() {
             onClick={handleCopyWallet}
             className="ml-1.5 inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-[10px] font-medium text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
           >
-            {copiedWallet ? <Check className="size-3 text-green-500" /> : <Copy className="size-3" />}
+            {copiedWallet ? (
+              <Check className="size-3 text-green-500" />
+            ) : (
+              <Copy className="size-3" />
+            )}
             {copiedWallet ? "Copied" : "Copy"}
           </button>
         </p>

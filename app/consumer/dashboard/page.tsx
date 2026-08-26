@@ -26,7 +26,7 @@ import {
   ArrowUpLeft,
   Eye,
   EyeOff,
-  Copy, 
+  Copy,
   Check,
   ChevronRight,
 } from "lucide-react";
@@ -331,9 +331,7 @@ export default function ConsumerDashboard() {
                 <Activity className="size-6 text-slate-300" aria-hidden="true" />
               </div>
               <p className="mt-3 text-sm font-medium text-slate-500">No transactions yet</p>
-              <p className="mt-0.5 text-xs text-slate-400">
-                Your payment history will appear here
-              </p>
+              <p className="mt-0.5 text-xs text-slate-400">Your payment history will appear here</p>
             </div>
           ) : (
             <ul className="divide-y divide-slate-100">

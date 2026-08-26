@@ -2,12 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import {
-  ArrowDownLeft,
-  ReceiptText,
-  Archive,
-  ChevronRight,
-} from "lucide-react";
+import { ArrowDownLeft, ReceiptText, Archive, ChevronRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useCachedFetch } from "@/lib/use-cached-fetch";
 import { cn, formatBalance } from "@/lib/utils";

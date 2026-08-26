@@ -204,9 +204,7 @@ export async function dbGetUsersByIds(ids: string[]): Promise<UserRecord[]> {
     if (error || !data) return [];
     return data as UserRecord[];
   }
-  return ids
-    .map((id) => memoryStore.users.get(id))
-    .filter((u): u is UserRecord => u !== undefined);
+  return ids.map((id) => memoryStore.users.get(id)).filter((u): u is UserRecord => u !== undefined);
 }
 
 export async function dbGetTransactionsForUser(publicKey: string): Promise<TransactionRecord[]> {

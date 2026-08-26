@@ -127,9 +127,7 @@ export default function MerchantAmountPage() {
           {consumerDisplay && (
             <p className="text-sm font-semibold text-slate-800">{consumerDisplay}</p>
           )}
-          <p className="truncate font-mono text-[11px] text-slate-500">
-            {maskWallet(consumer)}
-          </p>
+          <p className="truncate font-mono text-[11px] text-slate-500">{maskWallet(consumer)}</p>
         </div>
         <Badge variant="secondary" className="text-[10px]">
           Verified

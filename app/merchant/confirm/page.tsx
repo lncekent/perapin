@@ -125,9 +125,7 @@ export default function MerchantConfirmPage() {
 
       {/* Amount hero */}
       <Card variant="raised" padding="lg" className="text-center">
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-          Payment Amount
-        </p>
+        <p className="text-xs font-medium tracking-wide text-slate-500 uppercase">Payment Amount</p>
         <p className="mt-2 text-5xl font-extrabold text-slate-900 tabular-nums">
           {formatBalance(paymentContext.amountXlm)}
         </p>
@@ -136,7 +134,7 @@ export default function MerchantConfirmPage() {
 
       {/* Payment details card */}
       <Card variant="surface" padding="md" className="space-y-4">
-        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+        <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
           Transaction Details
         </p>
 
@@ -202,12 +200,7 @@ export default function MerchantConfirmPage() {
           Proceed to PIN Entry
           <ArrowRight className="ml-1 size-4" aria-hidden="true" />
         </Button>
-        <Button
-          variant="ghost"
-          block
-          size="lg"
-          onClick={() => router.push("/merchant/amount")}
-        >
+        <Button variant="ghost" block size="lg" onClick={() => router.push("/merchant/amount")}>
           Go Back
         </Button>
       </div>
